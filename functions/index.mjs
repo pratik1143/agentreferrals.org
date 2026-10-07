@@ -286,8 +286,16 @@ async function authorize(request, permission) {
   // Keep the verified platform-owner fallback aligned with firestore.rules and
   // the client route guard. This is an exact address check after Firebase Auth
   // confirms both identity and email verification; it does not trust request data.
-  const role = account.customClaims?.platformRole || account.customClaims?.role ||
+  let role = account.customClaims?.platformRole || account.customClaims?.role ||
     (account.email?.toLowerCase() === 'support@agentreferrals.org' && account.emailVerified ? ROLES.SUPER_ADMIN : null);
+  // Some existing administrator accounts were provisioned in Firestore before
+  // custom claims were added. Their protected profile role is the trusted
+  // compatibility source; regular users cannot change role fields in rules.
+  if (!can(role, permission)) {
+    const profile = await db.collection('users').doc(account.uid).get();
+    const storedRole = profile.data()?.platformRole || profile.data()?.role;
+    if (can(storedRole, permission)) role = storedRole;
+  }
   if (!can(role, permission)) fail('permission-denied', 'You do not have permission for this action.');
   return { uid: account.uid, role, email: account.email || null };
 }
@@ -544,9 +552,14 @@ export const approveProfessionalVerification = onCall(callable, async request =>
   const notificationRef = db.collection('notifications').doc();
   const eventRef = submissionRef.collection('events').doc();
 
-  await db.runTransaction(async tx => {
-    const userSnap = await tx.get(userRef);
+  const result = await db.runTransaction(async tx => {
+    const [userSnap, submissionSnap] = await Promise.all([tx.get(userRef), tx.get(submissionRef)]);
     if (!userSnap.exists) fail('not-found', 'Professional user not found.');
+    const user = userSnap.data();
+    if (String(user.verificationStatus || '').toLowerCase() === 'approved') return { ok: true, status: 'approved', alreadyApproved: true };
+    if (submissionSnap.exists && !['PENDING_REVIEW', 'REQUIRES_CHANGES'].includes(String(submissionSnap.data()?.status || '').toUpperCase())) {
+      fail('failed-precondition', 'This verification submission is no longer awaiting a decision. Refresh the directory and review its current status.');
+    }
 
     tx.update(userRef, {
       verificationStatus: 'approved',
@@ -557,7 +570,6 @@ export const approveProfessionalVerification = onCall(callable, async request =>
       updatedAt: FieldValue.serverTimestamp()
     });
 
-    const submissionSnap = await tx.get(submissionRef);
     if (submissionSnap.exists) {
       tx.update(submissionRef, {
         status: 'APPROVED',
@@ -592,9 +604,10 @@ export const approveProfessionalVerification = onCall(callable, async request =>
       targetId: uid,
       createdAt: FieldValue.serverTimestamp()
     });
+    return { ok: true, status: 'approved', alreadyApproved: false };
   });
 
-  return { ok: true, status: 'approved' };
+  return result;
 });
 
 export const rejectProfessionalVerificationSubmission = onCall(callable, async request => {
