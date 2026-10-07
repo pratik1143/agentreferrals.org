@@ -14,6 +14,10 @@ const auth = getAuth();
 const storage = getStorage();
 const callable = {
   region: 'us-central1',
+  // Callable requests carry Firebase Auth in the callable payload. Cloud Run
+  // must allow the browser's unauthenticated OPTIONS preflight to reach the
+  // callable handler; authorize() still enforces verified admin identity.
+  invoker: 'public',
   enforceAppCheck: false,
   maxInstances: 10,
   cors: [
