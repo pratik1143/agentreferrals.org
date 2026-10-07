@@ -1,0 +1,302 @@
+:root { --verify-line: #dce6f2; --verify-muted: #667791; }
+/* Shared directory, credential review, documents and history workspace. */
+#fernly-superadmin-view .verificationWorkspaceV2 {
+  --verify-line: #dce6f2;
+  --verify-muted: #667791;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+  scroll-margin-top: 24px;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDirectory,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyManager { border: 1px solid var(--verify-line); box-shadow: 0 8px 28px #12315e10; background: #fff; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDirectoryHead { padding: 24px; background: linear-gradient(110deg, #f0f7f2, #fff 65%); }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDirectoryHead h2 span,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFilters button span { background: #eaf1fd; color: #2454a6 !important; border-color: #dce6f2; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFilters { padding: 14px 20px; gap: 8px; background: #f5f8fe; border-color: var(--verify-line); overflow-x: auto; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFilters button { flex-shrink: 0; background: #fff; border: 1px solid var(--verify-line); box-shadow: none; color: #536783 !important; border-radius: 12px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFilters button.active { background: linear-gradient(125deg, #112d5d, #2f66c9); color: white !important; border-color: #1f4fa8; box-shadow: 0 6px 14px #184b9c2a; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFilters button.active span { background: #ffffff25; color: #fff !important; border-color: #ffffff38; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationToolbar { background: white; gap: 10px; padding: 16px 20px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSearch,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSelect { border-color: var(--verify-line); background: #fbfcfb; color: #647791; min-height: 42px; border-radius: 10px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSearch input::placeholder { color: #7b8ba3; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTable th { color: #61748f; background: #f2f6fc; border-color: var(--verify-line); letter-spacing: .045em; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTable td { border-color: #edf1f8; padding-top: 17px; padding-bottom: 17px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTable tbody tr { transition: background .18s ease; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTableWrap { scrollbar-color: #a8bce0 #f3f7fd; transition: opacity .2s ease; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTableWrap[aria-busy=true] { opacity: .5; pointer-events: none; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyManager summary { background: #f9fbff; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicySummaryIcon { color: #2f66c9; background: #eaf1fd; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyContent { border-color: var(--verify-line); background: #fff; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageHead .verificationBackButton {
+  display: inline-flex !important; width: auto !important; height: auto !important; min-height: 42px;
+  align-items: center; justify-content: center; gap: 6px; padding: 10px 14px !important;
+  white-space: nowrap; line-height: 1.3; transform: none;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageHead .verificationBackButton svg { flex-shrink: 0; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageHead .verificationAccountMeta { padding-left: 12px; border-left: 1px solid var(--verify-line); }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageIdentity {
+  min-height: 154px; padding: 28px !important;
+  background: radial-gradient(ellipse at 95% 0, #3c7ae647, transparent 60%), repeating-radial-gradient(ellipse at 110% 130%, transparent 0 29px, #ffffff07 30px 31px), linear-gradient(115deg,#102b5a,#19488e);
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageIdentity > div b { color: #fff !important; font-weight: 650; font-size: clamp(22px, 2vw, 30px) !important; line-height: 1.25; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageIdentity > div span { color: #e0f0e6 !important; overflow-wrap: anywhere; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageIdentity > div small { color: #bad5c5 !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageIdentity .verificationAvatar { background: #ffffff18; border-color: #ffffff40; color: #fff; box-shadow: inset 0 1px 0 #ffffff25; width: 70px !important; height: 70px !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs { gap: 6px; padding: 12px 24px !important; background: #fff; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; font-weight: 600; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs button.active { color: #fff; background: #2454a6; border-color: #2454a6; box-shadow: 0 4px 12px #183e8b23; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs button small { border-radius: 5px; padding: 2px 5px; background: #eaf1fd; color: #26529a; font-size: 10px !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs button.active small { background: #ffffff24; color: #fff; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTabPanel { animation: verifyPanelReveal .28s ease both; min-height: 260px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationProfileBody { align-items: start; background: #f5f7f5; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationProfileBody > section { height: auto; min-height: 0; animation: none; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationProfileBody > section:hover { transform: none; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationProfileBody h3 { font-weight: 650; letter-spacing: .065em; padding-bottom: 12px; border-bottom: 1px solid #edf1f8; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationInfo > span { display: grid; grid-template-columns: minmax(105px, .8fr) minmax(0, 1.2fr); align-items: baseline; gap: 16px !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationInfo b { font-weight: 550; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationInfo + .verificationInfo { border-top: 1px solid #f1f5fb; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTabPanel--documents .verificationProfileBody,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTabPanel--verification .verificationProfileBody { grid-template-columns: minmax(0, 1fr); }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocumentList { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocument { padding: 18px; gap: 12px; border: 1px solid var(--verify-line); border-radius: 13px; background: #fcfdff; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocument > div { min-width: 0; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocument b { overflow-wrap: anywhere; color: #213753 !important; font-weight: 600; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocument button { display: inline-flex; width: auto; min-height: 38px; gap: 6px; padding: 8px 10px; border-color: #cbdaf0; background: #eaf1fd; color: #1d663e; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocumentEmpty { padding: 40px 24px; gap: 12px; border: 1px dashed #cdded2; border-radius: 14px; background: #f7faff; color: #587363; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocumentEmpty > svg { color: #308355; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocumentEmpty b { color: #244532; font-size: 15px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocumentEmpty span { max-width: 480px; font-size: 12px; line-height: 1.7; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReviewItem { padding: 22px; margin-top: 18px; border: 1px solid var(--verify-line); border-radius: 14px; background: #fbfdff; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReviewItem header { gap: 12px; padding-bottom: 14px; border-bottom: 1px solid var(--verify-line); }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSourceFields { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 18px 0; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSourceFields label,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationItemActions label { display: grid; gap: 7px; color: #55685b; font-size: 12px !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSourceFields input,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationItemActions textarea { box-sizing: border-box; width: 100%; min-width: 0; padding: 12px; border: 1px solid #d3e0d7; border-radius: 9px; background: #fff; color: #243d2d; font: inherit; font-size: 13px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationItemActions > div { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationItemActions button { min-height: 40px; padding: 10px 15px; border-radius: 9px; font-size: 12px; cursor: pointer; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationItemActions button.approve { color: #fff; background: #206d46; border: 1px solid #206d46; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationItemActions button.changes { color: #8a6416; background: #fff9eb; border: 1px solid #eadab8; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationItemActions button.reject { color: #b14343; background: #fff6f5; border: 1px solid #edcdca; }
+#fernly-superadmin-view .verificationWorkspaceV2 button:disabled { cursor: not-allowed; opacity: .5; }
+#fernly-superadmin-view .verificationWorkspaceV2 :is(button,input,select,textarea):focus-visible { outline: 3px solid #89aeea; outline-offset: 3px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTimeline { padding: 8px 4px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTimeline > div { padding: 0 0 24px 20px; border-left: 1px solid #cbd9ef; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTimeline b { color: #23416c !important; line-height: 1.5; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTimeline small { display: block; margin: 6px 0; color: #65756b !important; line-height: 1.6; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTimeline time { display: inline-block; color: #65756b !important; padding: 3px 7px; background: #eff4fc; border-radius: 5px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFeedback { display: flex; gap: 8px; align-items: center; margin: 14px 24px; padding: 13px 16px; border: 1px solid #d4e0f4; border-radius: 10px; background: #f0f5fc; color: #35537a; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+#fernly-superadmin-view .verificationReferralPanel { margin: 22px 24px 26px; padding: 22px; border: 1px solid var(--verify-line); border-radius: 16px; background: #fff; box-shadow: 0 8px 24px #122e5a0c; animation: verifyPanelReveal .28s ease both; }
+#fernly-superadmin-view .verificationReferralPanel > header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--verify-line); }
+#fernly-superadmin-view .verificationReferralPanel > header h2 { margin: 0; color: #1b355d; font-size: 20px; font-weight: 650; }
+#fernly-superadmin-view .verificationReferralPanel > header p { margin: 6px 0 0; color: #647791; font-size: 12px; line-height: 1.5; }
+#fernly-superadmin-view .verificationReferralPanel > header > svg { color: #2f66c9; }
+#fernly-superadmin-view .verificationReferralCounts { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; padding: 18px 0; }
+#fernly-superadmin-view .verificationReferralCounts button { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 7px; min-height: 74px; padding: 13px 15px; border: 1px solid #dce6f2; border-radius: 12px; background: #fbfdff; color: #546581; text-align: left; cursor: pointer; transition: border .18s ease, background .18s ease, transform .18s ease; }
+#fernly-superadmin-view .verificationReferralCounts button:hover { transform: translateY(-2px); border-color: #a9c4ed; }
+#fernly-superadmin-view .verificationReferralCounts button.active { background: #eaf1fd; border-color: #a6bee8; color: #2454a6; }
+#fernly-superadmin-view .verificationReferralCounts button span { font-size: 12px; font-weight: 600; }
+#fernly-superadmin-view .verificationReferralCounts button strong { color: #183766; font-size: 24px; font-weight: 650; }
+#fernly-superadmin-view .verificationReferralList { display: grid; gap: 9px; }
+#fernly-superadmin-view .verificationReferralRow { overflow: hidden; border: 1px solid #dfe8f4; border-radius: 12px; background: white; transition: border-color .18s ease, box-shadow .18s ease; }
+#fernly-superadmin-view .verificationReferralRow[open] { border-color: #b4c8e7; box-shadow: 0 7px 20px #122e5a0b; }
+#fernly-superadmin-view .verificationReferralRow > summary { display: grid; grid-template-columns: 42px minmax(140px,1fr) auto auto 18px; align-items: center; gap: 13px; padding: 14px 16px; list-style: none; cursor: pointer; }
+#fernly-superadmin-view .verificationReferralRow > summary::-webkit-details-marker { display: none; }
+#fernly-superadmin-view .verificationReferralIcon { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 11px; background: #eaf1fd; color: #2f66c9; }
+#fernly-superadmin-view .verificationReferralTitle { display: grid; min-width: 0; gap: 5px; }
+#fernly-superadmin-view .verificationReferralTitle b { overflow: hidden; color: #213753; font-size: 13px; font-weight: 620; text-overflow: ellipsis; white-space: nowrap; }
+#fernly-superadmin-view .verificationReferralTitle small { display: inline-flex; align-items: center; gap: 4px; color: #718076; font-size: 11px; }
+#fernly-superadmin-view .verificationReferralType { padding: 5px 9px; border-radius: 99px; background: #eff4fc; color: #45648c; font-size: 10px; font-weight: 650; }
+#fernly-superadmin-view .verificationReferralRow > summary > svg { color: #668371; transition: transform .18s ease; }
+#fernly-superadmin-view .verificationReferralRow[open] > summary > svg { transform: rotate(180deg); }
+#fernly-superadmin-view .verificationReferralDetails { padding: 16px 18px 18px 71px; border-top: 1px solid #edf1f8; background: #fbfdff; animation: verifyPanelReveal .2s ease both; }
+#fernly-superadmin-view .verificationReferralDetails dl { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; margin: 0; }
+#fernly-superadmin-view .verificationReferralDetails dl div { display: grid; gap: 4px; }
+#fernly-superadmin-view .verificationReferralDetails dt { color: #77847b; font-size: 10px; }
+#fernly-superadmin-view .verificationReferralDetails dd { margin: 0; color: #2a4062; font-size: 11px; font-weight: 600; overflow-wrap: anywhere; }
+#fernly-superadmin-view .verificationReferralDetails > p { margin: 12px 0 0; color: #56665b; font-size: 12px; line-height: 1.65; }
+#fernly-superadmin-view .verificationFeedback button { padding: 5px 9px; border: 1px solid #b8cbe8; border-radius: 7px; background: white; color: #2350a0; cursor: pointer; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationActivityLoading { display: grid; gap: 10px; padding: 24px; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationActivityLoading span { height: 35px; border-radius: 8px; background: linear-gradient(90deg,#eef3fb,#dfe9f8,#eef3fb); background-size: 200% 100%; animation: verifyShimmer 1.3s linear infinite; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationActivityLoading b { font-size: 12px; color: #586f91; }
+.verificationSpinner, .isRefreshing svg { animation: verifySpin 1s linear infinite; }
+@keyframes verifySpin { to { transform: rotate(360deg); } }
+@keyframes verifyShimmer { to { background-position: -200% 0; } }
+@keyframes verifyPanelReveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media(max-width:1100px) {
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationInfo > span { display: flex; gap: 4px !important; }
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationDocumentList { grid-template-columns: 1fr; }
+}
+@media(max-width:760px) {
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageHead .verificationAccountMeta { padding: 6px 0 0; border: 0; }
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageIdentity { min-height: 130px; padding: 20px !important; }
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs { padding: 9px !important; }
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs button { gap: 5px; padding: 0 10px !important; }
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationSourceFields { grid-template-columns: 1fr; }
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationReviewItem { padding: 14px; }
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationDocument { flex-wrap: wrap; }
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationFeedback { margin: 12px; }
+  #fernly-superadmin-view .verificationWorkspaceV2 .verificationDocsTeaser { flex-wrap: wrap; gap: 14px; }
+  #fernly-superadmin-view .verificationReferralPanel { margin: 12px; padding: 15px; }
+  #fernly-superadmin-view .verificationReferralCounts { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  #fernly-superadmin-view .verificationReferralRow > summary { grid-template-columns: 38px minmax(0,1fr) 16px; gap: 9px; padding: 12px; }
+  #fernly-superadmin-view .verificationReferralIcon { width: 36px; height: 36px; }
+  #fernly-superadmin-view .verificationReferralType { grid-column: 2; justify-self: start; }
+  #fernly-superadmin-view .verificationReferralRow > summary > svg { grid-column: 3; grid-row: 1 / span 3; }
+  #fernly-superadmin-view .verificationReferralDetails { padding: 14px; }
+  #fernly-superadmin-view .verificationReferralDetails dl { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media(prefers-reduced-motion:reduce) {
+  #fernly-superadmin-view .verificationWorkspaceV2 *, #fernly-superadmin-view .verificationWorkspaceV2 *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Blue and white glass across the full verification workspace. */
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDirectory,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationProfile,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyManager,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPage,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralPanel {
+  border-color: #d6e4f8 !important;
+  background: #ffffffd9 !important;
+  box-shadow: 0 14px 36px #193f7614, inset 0 1px 0 #ffffff;
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDirectoryHead,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyManager summary,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFilters,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationToolbar,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTable th,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationProfileBody,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs {
+  background: #f5f9ffdb !important;
+  border-color: #dce7f7 !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDirectoryHead,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTable th,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyManager summary,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyManager summary b,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicySummaryIcon,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFilters button span,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSearch > svg,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSelect > svg,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPerson b,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReview,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStatIcon,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStatArrow,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationIntro h1 span,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationEyebrow {
+  color: #245fc0 !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicySummaryIcon,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStatIcon,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationAvatar,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocument > span,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralIcon {
+  background: linear-gradient(145deg, #ffffff, #e8f1ff) !important;
+  border-color: #d5e4fa !important;
+  color: #245fc0 !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFilters button.active,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs button.active,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationButton,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullProfile,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReview.approve,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralCounts button.active {
+  border-color: #2766ca !important;
+  background: linear-gradient(125deg, #173f86, #3479e6) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 22px #1b56ad25, inset 0 1px 0 #ffffff35;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralCounts button.active strong,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralCounts button.active span,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFilters button.active span,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs button.active small { color: #fff !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStatus.approved,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStatus.pending,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStatus.requires_changes,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStatus.rejected,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStatus.not_submitted {
+  border-color: #cbdcf5 !important;
+  background: #edf4ff !important;
+  color: #2454a6 !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationProfileBody > section,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocument,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReviewItem,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralRow,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSearch,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationSelect,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralCounts button {
+  border-color: #dbe7f7 !important;
+  background: #ffffffd9 !important;
+  box-shadow: 0 8px 24px #183f7810, inset 0 1px 0 #ffffff;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageIdentity {
+  background: radial-gradient(ellipse at 95% 0, #6f9ff044, transparent 60%), repeating-radial-gradient(ellipse at 110% 130%, transparent 0 29px, #ffffff0c 30px 31px), linear-gradient(115deg,#102b5a,#245fc0) !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDetailTabs button,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralCounts button,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralTitle b,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralDetails dd,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralType,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationProfileBody h3,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationInfo > svg,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocumentEmpty > svg,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTimeline > div > i {
+  color: #244f94 !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralType,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTimeline time,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationDocumentEmpty,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFeedback {
+  background: #f1f6ff !important;
+  border-color: #d8e5f7 !important;
+  color: #536b8c !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationTimeline > div { border-left-color: #cbdcf3 !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralDetails,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationReferralRow[open] > summary { background: #f8fbff !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationItemActions button.approve { background: #2766ca; border-color: #2766ca; }
+#fernly-superadmin-view .verificationWorkspaceV2 :is(button,input,select,textarea):focus-visible { outline-color: #4d87e7 !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageIdentity > div span { color: #e8f1ff !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationFullPageIdentity > div small { color: #c5d8f5 !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyManager summary > svg,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyContent svg,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyPrivacy > svg { color: #2f66c9 !important; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationPolicyForm input[type=checkbox] { accent-color: #2f66c9; }
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStat.green .verificationStatIcon,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStat.blue .verificationStatIcon,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStat.amber .verificationStatIcon,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStat.orange .verificationStatIcon,
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationStat.red .verificationStatIcon { color: #245fc0 !important; background: #e8f1ff !important; }
+
+/* Ensure coterie overview cards in SuperAdmin retain their layout and styling */
+#fernly-superadmin-view .verificationWorkspaceV2 .verificationProfileOverviewGrid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  background: #f7f6f2 !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .coterieOverviewCard {
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.035) !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .coterieOverviewCard:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(246, 195, 67, 0.45) !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .coterieCardHeader h3 {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  letter-spacing: -0.015em !important;
+}
+#fernly-superadmin-view .verificationWorkspaceV2 .coterieFieldTile {
+  background: #faf9f6 !important;
+}

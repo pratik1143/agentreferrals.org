@@ -1,0 +1,207 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function verifiedMember() {
+      return signedIn() && request.auth.token.email_verified == true
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.verificationStatus == 'approved';
+    }
+    function isAdmin() {
+      return signedIn() && (
+        request.auth.token.platformRole == 'ADMIN' ||
+        request.auth.token.platformRole == 'SUPER_ADMIN' ||
+        request.auth.token.role == 'ADMIN' ||
+        request.auth.token.role == 'SUPER_ADMIN' ||
+        request.auth.token.admin == true ||
+        (request.auth.token.email == 'support@agentreferrals.org' && request.auth.token.email_verified == true)
+      );
+    }
+    function isSuperAdmin() {
+      return signedIn() && (
+        request.auth.token.platformRole == 'SUPER_ADMIN' ||
+        request.auth.token.role == 'SUPER_ADMIN' ||
+        (request.auth.token.email == 'support@agentreferrals.org' && request.auth.token.email_verified == true)
+      );
+    }
+    function owner(uid) { return signedIn() && request.auth.uid == uid; }
+    function ownReferral() { return signedIn() && (resource.data.creatorProfessionalId == request.auth.uid || resource.data.creatorId == request.auth.uid); }
+    function ownApplication() { return signedIn() && (resource.data.applicantProfessionalId == request.auth.uid || resource.data.referralCreatorId == request.auth.uid); }
+    function ownAgreement() { return signedIn() && (resource.data.referringProfessionalId == request.auth.uid || resource.data.receivingProfessionalId == request.auth.uid); }
+
+    match /users/{uid} {
+      allow get: if owner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if (owner(uid) && request.resource.data.uid == uid
+        && request.resource.data.role == 'PROFESSIONAL'
+        && !request.resource.data.keys().hasAny(['platformRole', 'permissions'])
+        && (!request.resource.data.keys().hasAny(['accountStatus']) || request.resource.data.accountStatus == 'PENDING')
+        && (!request.resource.data.keys().hasAny(['emailVerified']) || request.resource.data.emailVerified == request.auth.token.email_verified)
+        && (!request.resource.data.keys().hasAny(['verificationStatus']) || request.resource.data.verificationStatus in ['pending', 'PENDING_REVIEW'])
+        && (!request.resource.data.keys().hasAny(['professionalVerificationStatus']) || request.resource.data.professionalVerificationStatus == 'PENDING_REVIEW'))
+        || (isAdmin() && (!request.resource.data.keys().hasAny(['emailVerified']) || request.resource.data.emailVerified == false)
+          && (!request.resource.data.keys().hasAny(['verificationStatus']) || request.resource.data.verificationStatus in ['pending', 'PENDING_REVIEW'])
+          && (!request.resource.data.keys().hasAny(['professionalVerificationStatus']) || request.resource.data.professionalVerificationStatus == 'PENDING_REVIEW'));
+      allow update: if (
+        ((owner(uid) && !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['uid', 'email', 'role', 'platformRole', 'permissions', 'accountStatus',
+            'verificationStatus', 'professionalVerificationStatus', 'verificationReviewedBy', 'verificationReviewedAt', 'verificationReason',
+            'verificationItems', 'verificationDocuments', 'verificationSubmittedAt', 'verificationSubmissionId',
+            'verificationPolicyId', 'verificationPolicyVersion', 'verificationPolicyConfigurationRequired']))
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['onboardingStatus'])
+            || request.resource.data.onboardingStatus in ['EMAIL_VERIFICATION_PENDING', 'NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'])
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['currentOnboardingStep'])
+            || (request.resource.data.currentOnboardingStep is int && request.resource.data.currentOnboardingStep >= 0 && request.resource.data.currentOnboardingStep <= 7))
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['profileCompletion'])
+            || (request.resource.data.profileCompletion is int && request.resource.data.profileCompletion >= 0 && request.resource.data.profileCompletion <= 100))
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['onboardingCompleted'])
+            || request.resource.data.onboardingCompleted is bool)
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny([
+            'firstName', 'middleName', 'lastName', 'displayName', 'phoneNumber', 'licenseNumber', 'licenseState', 'licenseStates',
+            'licenseStateCode', 'licenseType', 'licenseExpirationDate', 'professionalType', 'brokerageName', 'brokerageRelationship',
+            'responsibleBroker', 'brokerLicenseNumber', 'brokerageAddress'
+          ]) || !resource.data.keys().hasAny(['verificationSubmittedAt']) || resource.data.verificationStatus in ['requires_changes', 'rejected'])
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['emailVerified'])
+            || (request.auth.token.email_verified == true && request.resource.data.emailVerified == true)))
+        || (isAdmin() && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'emailVerified', 'verificationStatus', 'professionalVerificationStatus', 'verificationReviewedBy',
+          'verificationReviewedAt', 'verificationReason', 'verificationItems', 'verificationDocuments',
+          'verificationSubmittedAt', 'verificationSubmissionId', 'verificationPolicyId', 'verificationPolicyVersion',
+          'verificationPolicyConfigurationRequired', 'onboardingStatus', 'currentOnboardingStep', 'onboardingCompleted', 'completedSteps', 'profileCompletion', 'firstName', 'middleName', 'lastName', 'displayName',
+          'phoneNumber', 'licenseNumber', 'licenseState', 'licenseStates', 'licenseStateCode', 'licenseType', 'licenseExpirationDate',
+          'professionalType', 'brokerageName', 'brokerageRelationship', 'responsibleBroker', 'brokerLicenseNumber', 'brokerageAddress'
+        ])));
+      allow delete: if isSuperAdmin();
+    }
+    // Shareable virtual cards contain only professional fields explicitly
+    // published from the owner's profile. Public visitors can fetch one card
+    // by its known URL, but cannot enumerate the directory.
+    match /public_agent_cards/{uid} {
+      allow get: if true;
+      allow list: if false;
+      allow create, update: if owner(uid)
+        && request.resource.data.keys().hasOnly([
+          'displayName', 'title', 'brokerageName', 'yearsExperience', 'website',
+          'bio', 'specialties', 'serviceAreas', 'languages', 'photoURL',
+          'virtualCardTheme', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll(['displayName', 'updatedAt']);
+      allow delete: if owner(uid);
+    }
+    match /verification_submissions/{uid} {
+      allow get: if owner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create, update, delete: if false;
+      match /events/{eventId} {
+        allow get, list: if owner(uid) || isAdmin();
+        allow create, update, delete: if false;
+      }
+      match /versions/{versionId} {
+        allow get, list: if owner(uid) || isAdmin();
+        allow create, update, delete: if false;
+      }
+    }
+    match /verificationPolicies/{stateCode} {
+      allow get: if signedIn();
+      allow list: if isAdmin();
+      allow create, update, delete: if false;
+      match /versions/{versionId} {
+        allow get: if signedIn();
+        allow list: if isAdmin();
+        allow create, update, delete: if false;
+      }
+    }
+    match /system_settings/active_agreement_template {
+      allow get: if signedIn();
+      allow list, create, update, delete: if false;
+    }
+    // OTP hashes and delivery limits are Admin SDK only; never expose them to clients.
+    match /email_verification_codes/{uid} { allow read, write: if false; }
+    match /email_otp_rate_limits/{id} { allow read, write: if false; }
+    match /referrals/{id} {
+      allow get, list: if isAdmin() || (verifiedMember() && (resource.data.status in ['open', 'Published', 'Active', 'published', 'active'] || ownReferral()));
+      allow create: if isAdmin() || (verifiedMember() && request.resource.data.creatorProfessionalId == request.auth.uid && request.resource.data.status in ['draft', 'published']);
+      allow update: if isSuperAdmin()
+        || (isAdmin()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt', 'moderatedBy', 'moderatedAt', 'moderationReason', 'suspensionReason', 'suspensionNotes'])
+          && request.resource.data.status in ['published', 'open', 'paused', 'suspended', 'closed', 'archived', 'flagged', 'cancelled'])
+        || (verifiedMember() && ownReferral()
+          && ((resource.data.keys().hasAny(['creatorProfessionalId'])
+            && request.resource.data.creatorProfessionalId == resource.data.creatorProfessionalId)
+            || (!resource.data.keys().hasAny(['creatorProfessionalId'])
+              && request.resource.data.creatorProfessionalId == request.auth.uid))
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'title', 'category', 'clientType', 'city', 'state', 'zip', 'propertyType',
+            'minValue', 'maxValue', 'estimatedValueCents', 'feePercent', 'description',
+            'preferences', 'creatorName', 'creatorBrokerage', 'creatorEmail', 'updatedAt', 'status'
+          ])
+          && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status'])
+            || (resource.data.status == 'draft' && request.resource.data.status in ['draft', 'published'])));
+      allow delete: if isSuperAdmin() || (verifiedMember() && ownReferral());
+    }
+    match /applications/{id} {
+      allow get, list: if isAdmin() || (signedIn() && ownApplication());
+      // Application creation is validated by submitReferralApplication (Admin SDK).
+      allow create: if false;
+      allow update: if isAdmin()
+        || (signedIn()
+          && resource.data.applicantProfessionalId == request.auth.uid
+          && request.resource.data.applicantProfessionalId == resource.data.applicantProfessionalId
+          && request.resource.data.referralCreatorId == resource.data.referralCreatorId
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt'])
+          && request.resource.data.status == 'WITHDRAWN');
+      // Referring-agent decisions are performed by decideReferralApplication (Admin SDK).
+      allow delete: if isAdmin() || (signedIn() && resource.data.applicantProfessionalId == request.auth.uid);
+    }
+    match /saved_referrals/{id} {
+      allow get, list, delete: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isAdmin() || (signedIn() && request.resource.data.userId == request.auth.uid);
+      allow update: if isAdmin() || (signedIn() && resource.data.userId == request.auth.uid && request.resource.data.userId == request.auth.uid);
+    }
+    match /agreements/{id} {
+      allow get, list: if isAdmin() || (signedIn() && ownAgreement());
+      // Agreement lifecycle changes are server-only; executed records and signatures are immutable to clients.
+      allow create, update, delete: if false;
+      match /events/{eventId} {
+        allow get, list: if isAdmin() || (signedIn() && (get(/databases/$(database)/documents/agreements/$(id)).data.referringProfessionalId == request.auth.uid || get(/databases/$(database)/documents/agreements/$(id)).data.receivingProfessionalId == request.auth.uid));
+        allow create, update, delete: if false;
+      }
+    }
+    match /agreement_templates/{id} {
+      allow get, list: if isAdmin();
+      allow create, update, delete: if false;
+    }
+    match /notifications/{id} {
+      allow get, list, update, delete: if signedIn() && (isAdmin() || resource.data.userId == request.auth.uid);
+      allow create: if signedIn();
+    }
+    match /activity/{id} {
+      allow get, list: if signedIn() && (isAdmin() || resource.data.userId == request.auth.uid || resource.data.targetUserId == request.auth.uid);
+      allow create: if signedIn();
+      allow update, delete: if isAdmin();
+    }
+    match /audit_logs/{id} {
+      allow get, list: if isAdmin();
+      allow create: if isAdmin();
+      allow update, delete: if false;
+    }
+    match /support_requests/{id} {
+      allow get, list: if isAdmin() || (signedIn() && (resource.data.userId == request.auth.uid || resource.data.requesterEmail == request.auth.token.email));
+      allow create: if signedIn();
+      allow update, delete: if isAdmin();
+    }
+    match /brokerages/{id} {
+      allow get, list: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+    match /system_settings/{id} {
+      allow get, list: if isSuperAdmin() || isAdmin();
+      allow create, update, delete: if isSuperAdmin();
+    }
+    match /content/{id} {
+      allow get, list: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

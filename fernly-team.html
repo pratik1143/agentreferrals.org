@@ -1,0 +1,29 @@
+n class="view" data-view="team" aria-labelledby="h-team" hidden>
+          <div class="board__head">
+            <div>
+              <h1 class="board__title" id="h-team" tabindex="-1">Team</h1>
+              <p class="board__sub">Everyone on the workspace, what they're carrying and who's around.</p>
+            </div>
+            <div class="board__actions">
+              <button class="btn btn--primary magnetic" type="button" data-open="dlg-member"><svg><use href="#i-plus"/></svg>Invite member</button>
+            </div>
+          </div>
+          <div class="toolbar" data-head>
+            <div class="seg" role="group" aria-label="Filter by department" data-dept-filters>
+              <span class="seg__pill" aria-hidden="true"></span>
+              <button class="seg__btn" type="button" data-dept="all" aria-pressed="true">All</button>
+              <button class="seg__btn" type="button" data-dept="Engineering" aria-pressed="false">Engineering</button>
+              <button class="seg__btn" type="button" data-dept="Design" aria-pressed="false">Design</button>
+              <button class="seg__btn" type="button" data-dept="Marketing" aria-pressed="false">Marketing</button>
+              <button class="seg__btn" type="button" data-dept="Management" aria-pressed="false">Management</button>
+            </div>
+            <p class="toolbar__meta"><b data-online>0</b> online now</p>
+          </div>
+          <ul class="people" data-people></ul>
+          <p class="empty empty--block" data-people-empty hidden>No one matches that search.</p>
+        </section>
+
+        <!-- ================================================================
+             SETTINGS
+             ================================================================ -->
+        <sectio

@@ -1,0 +1,26 @@
+{
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "AgentReferrals.org",
+        "supportEmail": "agent@agentreferrals.org"
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": { "rules": "storage.rules" },
+  "functions": [
+    { "source": "functions", "codebase": "default", "runtime": "nodejs22" },
+    { "source": "functions-email", "codebase": "email-otp", "runtime": "nodejs22" }
+  ],
+  "hosting": {
+    "site": "agent-referrals-ec588",
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "destination": "/index.html" }]
+  }
+}

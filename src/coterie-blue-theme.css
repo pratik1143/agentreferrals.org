@@ -1,0 +1,478 @@
+/* Blue and white user-portal palette. Scoped so the admin theme is unaffected. */
+.coterie-portal {
+  --coterie-backdrop: #eaf2ff;
+  --app-1: #f8fbff;
+  --app-2: #eff6ff;
+  --app-3: #dceaff;
+  --card: #ffffffc9;
+  --card-2: #fffffff2;
+  --solid: #ffffff;
+  --well: #f1f6ff;
+  --hair: #ffffffed;
+  --line: rgba(29, 78, 160, 0.1);
+  --line-2: rgba(29, 78, 160, 0.18);
+  --ink: #14243e;
+  --dim: #536985;
+  --faint: #7186a2;
+  --honey: #2878f0;
+  --honey-2: #e5f0ff;
+  --honey-ink: #1558bd;
+  --night: #1558bd;
+  --night-2: #0e438f;
+  --night-ink: #ffffff;
+  --night-dim: #c9ddff;
+  --grey: #c6d5e9;
+  --ok: #2878f0;
+  --warn: #2878f0;
+  --shadow: 0 1px 0 #ffffff inset, 0 18px 40px -26px rgba(37, 91, 171, 0.2);
+  --shadow-app: 0 40px 90px -50px rgba(32, 78, 148, 0.28), 0 0 0 1px #ffffffd9 inset;
+}
+
+/* Replace the portal's baked-in warm background glows without changing layout. */
+.coterie-portal .app {
+  background:
+    radial-gradient(90% 70% at 100% 100%, rgba(64, 145, 255, 0.18), transparent 70%),
+    radial-gradient(60% 50% at 88% 0%, rgba(120, 180, 255, 0.2), transparent 70%),
+    linear-gradient(160deg, var(--app-1), var(--app-2) 55%, var(--app-3));
+}
+
+/* Blue replaces decorative amber/green states throughout the user portal. */
+.coterie-portal .coterie-accent-bar.green,
+.coterie-portal .coterie-accent-bar,
+.coterie-portal .coterie-accent-bar.charcoal,
+.coterie-portal .coterie-accent-bar.blue,
+.coterie-portal .coterie-kpi-badge.green,
+.coterie-portal .coterie-kpi-badge.urgent,
+.coterie-portal .coterie-kpi-badge.dark,
+.coterie-portal .coterie-kpi-badge.blue,
+.coterie-portal .coterie-badge-ok,
+.coterie-portal .coterie-badge-urgent,
+.coterie-portal .coterie-verif-badge-pill.approved,
+.coterie-portal .coterie-verif-badge-pill.pending,
+.coterie-portal .coterie-check-chip.done,
+.coterie-portal .coterie-check-chip.pending,
+.coterie-portal .coterie-priority-empty {
+  background: #e5f0ff !important;
+  color: #1558bd !important;
+  border-color: #c6ddff !important;
+}
+
+.coterie-portal .coterie-kpi-card:hover .coterie-kpi-icon-pill,
+.coterie-portal .coterie-kpi-card.kpi--apps:hover .coterie-kpi-icon-pill,
+.coterie-portal .coterie-kpi-card.kpi--agreements:hover .coterie-kpi-icon-pill,
+.coterie-portal .coterie-priority-icon,
+.coterie-portal .coterie-funnel-icon.amber,
+.coterie-portal .coterie-funnel-icon.emerald,
+.coterie-portal .coterie-priority-empty-icon,
+.coterie-portal .coterie-priority-empty-text h4,
+.coterie-portal .coterie-priority-empty-text p,
+.coterie-portal .coterie-kpi-badge.honey,
+.coterie-portal .coterie-ring-fill,
+.coterie-portal .coterie-kpi-card.kpi--agreements:hover .coterie-kpi-icon-pill {
+  background-color: #e5f0ff !important;
+  color: #1558bd !important;
+  border-color: #c6ddff !important;
+}
+
+.coterie-portal .coterie-ring-fill {
+  stroke: #2878f0 !important;
+}
+
+.coterie-portal .coterie-priority-empty {
+  background: #f3f8ff !important;
+  border-color: #c6ddff !important;
+}
+
+.coterie-portal .coterie-kpi-card:hover,
+.coterie-portal .coterie-kpi-card:focus-visible,
+.coterie-portal .coterie-priority-item:hover {
+  border-color: rgba(40, 120, 240, 0.55) !important;
+  box-shadow: 0 8px 24px rgba(40, 120, 240, 0.1) !important;
+}
+
+.coterie-portal .coterie-kpi-card.kpi--apps:hover .coterie-kpi-icon-pill,
+.coterie-portal .coterie-kpi-card.kpi--agreements:hover .coterie-kpi-icon-pill {
+  background: #e5f0ff !important;
+  color: #1558bd !important;
+}
+
+.coterie-portal [style*="#fef3c7"],
+.coterie-portal [style*="#fde68a"],
+.coterie-portal [style*="#f6c343"],
+.coterie-portal [style*="#fbe29a"],
+.coterie-portal [style*="#92400e"] {
+  background-color: #e5f0ff !important;
+  background-image: none !important;
+  border-color: #c6ddff !important;
+  color: #1558bd !important;
+}
+
+.coterie-portal [style*="#92400e"],
+.coterie-portal [style*="#b45309"],
+.coterie-portal [style*="#15803d"],
+.coterie-portal [style*="#059669"],
+.coterie-portal [style*="#166534"],
+.coterie-portal [style*="#d97706"],
+.coterie-portal [style*="#b45309"],
+.coterie-portal [style*="#f59e0b"],
+.coterie-portal [style*="#10b981"],
+.coterie-portal [style*="#fdf6e2"],
+.coterie-portal [style*="#8a6200"] {
+  color: #1558bd !important;
+}
+
+/* Marketplace, referrals, applications and agreements keep their existing UI,
+   while their legacy warm/success status colors follow the blue-white palette. */
+.coterie-portal .coterie-tag-pill.seller,
+.coterie-portal .coterie-fee-badge,
+.coterie-portal .coterie-star-btn:hover,
+.coterie-portal .coterie-star-btn.is-saved,
+.coterie-portal .coterie-status-pill.status-draft,
+.coterie-portal .coterie-kpi-icon.icon-urgent,
+.coterie-portal .coterie-kpi-icon.icon-success,
+.coterie-portal .coterie-kpi-tag.tag-urgent,
+.coterie-portal .coterie-kpi-tag.tag-success,
+.coterie-portal .coterie-pill-urgent,
+.coterie-portal .coterie-node-status-badge.badge-action,
+.coterie-portal .coterie-notif-item.unread {
+  background: #e5f0ff !important;
+  background-image: none !important;
+  color: #1558bd !important;
+  border-color: #c6ddff !important;
+}
+
+.coterie-portal .coterie-status-pill.status-published,
+.coterie-portal .coterie-status-pill.status-open,
+.coterie-portal .coterie-status-pill.status-active,
+.coterie-portal .coterie-pill-executed,
+.coterie-portal .coterie-node-status-badge.badge-signed {
+  background: #e5f0ff !important;
+  color: #1558bd !important;
+  border-color: #c6ddff !important;
+}
+
+.coterie-portal .coterie-market-description,
+.coterie-portal .coterie-timeframe-btn.active,
+.coterie-portal .coterie-subtab-btn.active,
+.coterie-portal .coterie-btn-sm-primary,
+.coterie-portal button.coterie-btn-sm-primary {
+  background: #2878f0 !important;
+  border-color: #2878f0 !important;
+  color: #ffffff !important;
+}
+
+.coterie-portal .coterie-avatar-circle {
+  background: linear-gradient(135deg, #72b1ff, #2878f0) !important;
+}
+
+.coterie-portal .coterie-funnel-fill.amber,
+.coterie-portal .coterie-funnel-fill.emerald,
+.coterie-portal .coterie-flow-node.is-active-action .coterie-node-circle,
+.coterie-portal .coterie-flow-node.is-done .coterie-node-circle {
+  background: #2878f0 !important;
+  border-color: #2878f0 !important;
+  color: #ffffff !important;
+}
+
+.coterie-portal .coterie-flow-track-fill,
+.coterie-portal .coterie-flow-node.is-active-action::before,
+.coterie-portal .coterie-flow-node.is-done::before {
+  background-color: #2878f0 !important;
+}
+
+.coterie-portal .coterie-status-pill.status-draft .coterie-status-pill-dot,
+.coterie-portal .coterie-pill-dot.dot-amber {
+  background: #2878f0 !important;
+}
+
+.coterie-portal .coterie-agreement-specs .coterie-spec-highlight,
+.coterie-portal .coterie-copied-hint,
+.coterie-portal .coterie-verified-icon {
+  color: #1558bd !important;
+}
+
+.coterie-portal .coterie-agreement-kpi.is-selected,
+.coterie-portal .coterie-kpi-card:hover .coterie-kpi-icon-pill,
+.coterie-portal .coterie-kpi-card.kpi--referrals:hover .coterie-kpi-icon-pill {
+  background: #1558bd !important;
+  color: #ffffff !important;
+}
+
+/* Agreement workspace refinement: stronger hierarchy, crisp blue surfaces,
+   and a clear live-signing timeline while preserving all existing controls. */
+.coterie-portal .coterie-agreements-flow {
+  color: #14243e;
+}
+
+.coterie-portal .coterie-agreements-flow > .coterie-welcome-header {
+  padding: clamp(20px, 3vw, 34px);
+  margin: 0 0 22px;
+  border: 1px solid #cfe0f8;
+  border-radius: 24px;
+  background: linear-gradient(115deg, rgba(255,255,255,.97), rgba(239,246,255,.92));
+  box-shadow: 0 16px 42px rgba(37, 91, 171, .08), inset 0 1px 0 #fff;
+}
+
+.coterie-portal .coterie-agreements-flow > .coterie-welcome-header h1 {
+  color: #14243e !important;
+  font-size: clamp(28px, 3vw, 38px) !important;
+  letter-spacing: -.035em !important;
+}
+
+.coterie-portal .coterie-agreements-flow > .coterie-welcome-header p {
+  color: #536985 !important;
+}
+
+.coterie-portal .coterie-agreements-flow > .coterie-welcome-header .pp-eyebrow-chip {
+  background: #e5f0ff !important;
+  border: 1px solid #c6ddff !important;
+  color: #1558bd !important;
+}
+
+.coterie-portal .coterie-agreements-stats-grid {
+  gap: 16px;
+  margin-top: 0;
+}
+
+.coterie-portal .coterie-agreement-kpi {
+  min-height: 100px;
+  padding: 18px 20px;
+  border: 1px solid #d6e4f7 !important;
+  border-radius: 20px;
+  background: rgba(255,255,255,.92) !important;
+  box-shadow: 0 8px 26px rgba(37, 91, 171, .07), inset 0 1px 0 #fff;
+}
+
+.coterie-portal .coterie-agreement-kpi:hover,
+.coterie-portal .coterie-agreement-kpi.is-selected {
+  border-color: #7db2ff !important;
+  box-shadow: 0 0 0 2px rgba(40,120,240,.1), 0 14px 30px rgba(37,91,171,.12) !important;
+}
+
+.coterie-portal .coterie-agreement-kpi.is-selected {
+  background: linear-gradient(145deg, #fff, #f2f7ff) !important;
+}
+
+.coterie-portal .coterie-kpi-icon.icon-neutral,
+.coterie-portal .coterie-kpi-icon.icon-urgent,
+.coterie-portal .coterie-kpi-icon.icon-success {
+  background: #e8f2ff !important;
+  color: #1766d5 !important;
+}
+
+.coterie-portal .coterie-kpi-num {
+  color: #14243e;
+  font-size: 30px;
+  letter-spacing: -.04em;
+}
+
+.coterie-portal .coterie-kpi-lbl {
+  color: #536985;
+}
+
+.coterie-portal .coterie-kpi-tag {
+  background: #f1f6ff !important;
+  color: #536985 !important;
+  border: 1px solid #dce8f8 !important;
+}
+
+.coterie-portal .coterie-subtabs-bar {
+  gap: 6px;
+  width: fit-content;
+  max-width: 100%;
+  padding: 6px;
+  border: 1px solid #d8e5f6;
+  border-radius: 16px;
+  background: rgba(255,255,255,.82);
+  box-shadow: 0 5px 18px rgba(37,91,171,.05);
+}
+
+.coterie-portal .coterie-subtab-btn {
+  border-radius: 12px !important;
+  color: #536985 !important;
+}
+
+.coterie-portal .coterie-subtab-btn.active {
+  background: #1766d5 !important;
+  color: #fff !important;
+  box-shadow: 0 5px 14px rgba(23,102,213,.22);
+}
+
+.coterie-portal .coterie-subtab-count {
+  background: #e8f2ff !important;
+  color: #1558bd !important;
+}
+
+.coterie-portal .coterie-subtab-btn.active .coterie-subtab-count {
+  background: rgba(255,255,255,.2) !important;
+  color: #fff !important;
+}
+
+.coterie-portal .coterie-agreements-list {
+  gap: 18px;
+}
+
+.coterie-portal .coterie-agreement-card {
+  overflow: hidden;
+  border: 1px solid #d5e3f6 !important;
+  border-radius: 24px !important;
+  padding: clamp(20px, 2.4vw, 30px) !important;
+  background: linear-gradient(155deg, #fff 0%, #fff 60%, #f8fbff 100%) !important;
+  box-shadow: 0 14px 38px rgba(37,91,171,.08), inset 0 1px 0 #fff !important;
+}
+
+.coterie-portal .coterie-agreement-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #75b5ff, #1766d5 55%, #6eaaff);
+}
+
+.coterie-portal .coterie-agreement-card:hover {
+  border-color: #9fc5fb !important;
+  box-shadow: 0 20px 48px rgba(37,91,171,.13) !important;
+}
+
+.coterie-portal .coterie-agreement-id-chip {
+  background: #f1f6ff !important;
+  border-color: #dce8f8 !important;
+  color: #31557f !important;
+}
+
+.coterie-portal .coterie-pill-executed,
+.coterie-portal .coterie-pill-urgent,
+.coterie-portal .coterie-pill-waiting {
+  background: #e8f2ff !important;
+  border-color: #c6ddff !important;
+  color: #1558bd !important;
+  animation: none !important;
+}
+
+.coterie-portal .coterie-contract-type-pill {
+  background: #f7faff !important;
+  border-color: #dce8f8 !important;
+  color: #536985 !important;
+}
+
+.coterie-portal .coterie-pill-dot.dot-green,
+.coterie-portal .coterie-pill-dot.dot-amber,
+.coterie-portal .coterie-pill-dot.dot-blue {
+  background: #2878f0 !important;
+  box-shadow: 0 0 0 3px rgba(40,120,240,.12) !important;
+}
+
+.coterie-portal .coterie-agreement-title {
+  color: #14243e !important;
+  font-size: clamp(20px, 2vw, 25px) !important;
+  letter-spacing: -.025em !important;
+}
+
+.coterie-portal .coterie-partner-avatar {
+  background: linear-gradient(145deg, #e9f3ff, #d9eaff) !important;
+  border: 1px solid #c6ddff !important;
+  color: #1558bd !important;
+}
+
+.coterie-portal .coterie-agreement-flow-container {
+  border: 1px solid #d6e5f8 !important;
+  border-radius: 20px !important;
+  background: linear-gradient(150deg, #f8fbff, #eef5ff) !important;
+  box-shadow: inset 0 1px 0 #fff;
+}
+
+.coterie-portal .coterie-flow-title {
+  color: #1558bd !important;
+}
+
+.coterie-portal .coterie-flow-title svg {
+  color: #2878f0 !important;
+}
+
+.coterie-portal .coterie-flow-track-bg {
+  background: #d8e6f8 !important;
+}
+
+.coterie-portal .coterie-flow-track-fill {
+  background: linear-gradient(90deg, #70b2ff, #1766d5) !important;
+}
+
+.coterie-portal .coterie-flow-node.is-pending .coterie-node-circle,
+.coterie-portal .coterie-flow-node.is-upcoming .coterie-node-circle {
+  background: #fff !important;
+  border-color: #c9d9ee !important;
+  color: #7e94b1 !important;
+}
+
+.coterie-portal .coterie-node-status-badge.badge-wait {
+  background: #f1f6ff !important;
+  color: #536985 !important;
+  border-color: #dce8f8 !important;
+}
+
+.coterie-portal .coterie-agreement-specs {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid #dce8f8;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.coterie-portal .coterie-agreement-specs .coterie-spec-cell {
+  padding: 18px;
+  background: transparent !important;
+}
+
+.coterie-portal .coterie-agreement-specs .coterie-spec-cell + .coterie-spec-cell {
+  border-left: 1px solid #e7eef8;
+}
+
+.coterie-portal .coterie-agreement-specs .coterie-spec-cell small {
+  color: #7186a2 !important;
+}
+
+.coterie-portal .coterie-agreement-specs .coterie-spec-cell b {
+  color: #14243e !important;
+}
+
+.coterie-portal .coterie-agreement-foot {
+  padding-top: 18px;
+  border-top: 1px solid #e6eef8 !important;
+}
+
+.coterie-portal .coterie-audit-pill {
+  color: #536985 !important;
+}
+
+.coterie-portal .coterie-audit-pill svg {
+  color: #2878f0 !important;
+}
+
+.coterie-portal .coterie-agreement-empty-box {
+  border: 1px solid #d6e5f8 !important;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, #fff, #f3f8ff) !important;
+  box-shadow: 0 14px 38px rgba(37,91,171,.08);
+}
+
+.coterie-portal .coterie-empty-icon-wrap {
+  background: #e5f0ff !important;
+  color: #1766d5 !important;
+}
+
+@media (max-width: 700px) {
+  .coterie-portal .coterie-subtabs-bar {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .coterie-portal .coterie-subtab-btn {
+    flex: 0 0 auto;
+  }
+
+  .coterie-portal .coterie-agreement-specs .coterie-spec-cell + .coterie-spec-cell {
+    border-left: 0;
+    border-top: 1px solid #e7eef8;
+  }
+}

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 120" fill="none" role="img" aria-labelledby="title">
+  <title id="title">AgentReferrals — Real estate professionals. Together.</title>
+  <defs>
+    <linearGradient id="blueRoof" x1="14" y1="80" x2="67" y2="7" gradientUnits="userSpaceOnUse"><stop stop-color="#0755D9"/><stop offset=".55" stop-color="#0878F9"/><stop offset="1" stop-color="#34A9FF"/></linearGradient>
+    <linearGradient id="navyRoof" x1="48" y1="44" x2="90" y2="85" gradientUnits="userSpaceOnUse"><stop stop-color="#123A79"/><stop offset="1" stop-color="#071B3B"/></linearGradient>
+    <linearGradient id="wordBlue" x1="383" y1="26" x2="598" y2="68" gradientUnits="userSpaceOnUse"><stop stop-color="#1284FA"/><stop offset="1" stop-color="#0756D9"/></linearGradient>
+  </defs>
+  <g transform="translate(4 7) scale(1.04)">
+    <path d="M8 82 41.1 19.2C45.1 11.6 55.8 11.6 59.7 19.2l20.7 39.3H60.1L49.5 38.4 25.9 82H8Z" fill="url(#blueRoof)"/>
+    <path d="M8 82 48.4 56.8c7.5-4.7 17.3-2.2 21.6 5.5L88 82H65.7L57 67.6 35 82H8Z" fill="url(#navyRoof)"/>
+    <path d="m16.4 75.7 34.5-21.5c7.1-4.4 16.3-2 20.4 5.2" stroke="#fff" stroke-width="5.2" stroke-linecap="round"/>
+    <path d="M43.8 69.1h6v5.8h-6zm9.2 0h6v5.8h-6zm-9.2 8.9h6v5.8h-6zm9.2 0h6v5.8h-6z" fill="#fff"/>
+  </g>
+  <text x="112" y="66" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-size="43" font-weight="760" letter-spacing="-2.2"><tspan fill="#101c31">Agent</tspan><tspan fill="url(#wordBlue)">Referrals</tspan><tspan dx="2" dy="-20" fill="#132442" font-size="12" font-weight="650">®</tspan></text>
+  <text x="115" y="91" fill="#687990" font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif" font-size="10" font-weight="600" letter-spacing="3.4">REAL ESTATE PROFESSIONALS. TOGETHER.</text>
+</svg>

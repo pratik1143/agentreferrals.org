@@ -1,0 +1,4908 @@
+/* COTERIE — Warm Yellow Bento UI System — AgentReferrals User Portal */
+:root {
+  --coterie-backdrop: #e4e1d8;
+  --app-1: #f5f3ee;
+  --app-2: #f2efe6;
+  --app-3: #fbeec0;
+  --card: #fffdf8a8;
+  --card-2: #fffdf8db;
+  --solid: #f9f7f1;
+  --well: #efece4;
+  --hair: #ffffffe6;
+  --line: rgba(29, 29, 27, 0.09);
+  --line-2: rgba(29, 29, 27, 0.16);
+  --ink: #1d1d1b;
+  --dim: #5c5a54;
+  --faint: #75726a;
+  --honey: #f6c343;
+  --honey-2: #fbe29a;
+  --honey-ink: #5a4306;
+  --night: #252523;
+  --night-2: #34332f;
+  --night-ink: #f4f2ec;
+  --night-dim: #a9a69c;
+  --grey: #b9b6ad;
+  --ok: #3f8f5a;
+  --warn: #b86b12;
+  --shadow: 0 1px 0 #fffc inset, 0 18px 40px -26px #3c321459;
+  --shadow-app: 0 40px 90px -50px #28200a8c, 0 0 0 1px #ffffffb3 inset;
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --r-app: 38px;
+  --r-card: 28px;
+  --gap: 14px;
+}
+
+.coterie-portal {
+  background: var(--coterie-backdrop);
+  min-height: 100vh;
+  color: var(--ink);
+  font: 400 14px/1.45 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.coterie-portal * {
+  box-sizing: border-box;
+}
+
+.coterie-portal button,
+.coterie-portal input {
+  font: inherit;
+  color: inherit;
+}
+
+.coterie-portal button {
+  cursor: pointer;
+  background: 0 0;
+  border: 0;
+  padding: 0;
+}
+
+.coterie-portal h1,
+.coterie-portal h2,
+.coterie-portal h3,
+.coterie-portal p,
+.coterie-portal ul,
+.coterie-portal dl,
+.coterie-portal dd {
+  margin: 0;
+}
+
+.coterie-portal ul {
+  padding: 0;
+  list-style: none;
+}
+
+.coterie-portal img {
+  max-width: 100%;
+  display: block;
+}
+
+.coterie-portal :focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.coterie-portal .sprite {
+  width: 0;
+  height: 0;
+  position: absolute;
+  overflow: hidden;
+}
+
+.coterie-portal .ico {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+
+.coterie-portal .stage {
+  z-index: 1;
+  position: relative;
+  min-height: 100vh;
+}
+
+.coterie-portal .app {
+  background: radial-gradient(90% 70% at 100% 100%, #f8d66e8c, #f8d66e00 70%),
+              radial-gradient(60% 50% at 88% 0%, #fae4a080, #fae4a000 70%),
+              linear-gradient(160deg, var(--app-1), var(--app-2) 55%, var(--app-3));
+  flex-direction: column;
+  min-height: 100vh;
+  padding: clamp(16px, 1.6vw, 28px) clamp(16px, 2vw, 40px) 60px;
+  display: flex;
+  position: relative;
+  overflow-x: clip;
+  overflow-y: visible;
+  box-shadow: var(--shadow-app);
+}
+
+.coterie-portal .view {
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: visible;
+}
+
+.coterie-portal .top {
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 26px;
+  display: flex;
+}
+
+.coterie-portal .brand {
+  border: 1px solid var(--line-2);
+  font: 400 20px/1 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  border-radius: 999px;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 18px 8px 12px;
+  text-decoration: none;
+  display: inline-flex;
+  background: var(--card-2);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.coterie-portal .brand:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(40, 32, 10, 0.08);
+}
+
+.coterie-portal .brand__dot {
+  background: conic-gradient(var(--honey) 0 50%, var(--ink) 0 100%);
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+}
+
+.coterie-portal .tabs {
+  background: var(--card-2);
+  box-shadow: 0 0 0 1px var(--hair) inset;
+  border-radius: 999px;
+  gap: 2px;
+  margin-left: auto;
+  padding: 4px;
+  display: flex;
+  position: relative;
+}
+
+.coterie-portal .tabs__pill {
+  pointer-events: none;
+  opacity: 1;
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  border-radius: 999px;
+  background: var(--night);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), width 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s;
+  z-index: 1;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.coterie-portal .tab {
+  z-index: 2;
+  color: var(--dim);
+  transition: color 0.35s var(--ease);
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  position: relative;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.coterie-portal .tab:hover {
+  color: var(--ink);
+}
+
+.coterie-portal .tab.is-active {
+  color: var(--night-ink) !important;
+}
+
+
+.coterie-portal .top__tools {
+  align-items: center;
+  gap: 8px;
+  display: flex;
+}
+
+.coterie-portal .chip-btn {
+  background: var(--card-2);
+  box-shadow: 0 0 0 1px var(--hair) inset;
+  border-radius: 999px;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.coterie-portal .chip-btn:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.coterie-portal .round-btn {
+  background: var(--card-2);
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 0 0 1px var(--hair) inset;
+  border-radius: 50%;
+  place-items: center;
+  display: grid;
+  position: relative;
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.coterie-portal .round-btn:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+.coterie-portal .round-btn__badge {
+  background: var(--honey);
+  min-width: 17px;
+  height: 17px;
+  color: var(--honey-ink);
+  font: 600 10px/1 var(--font-body);
+  box-shadow: 0 0 0 2px var(--app-1);
+  border-radius: 9px;
+  place-items: center;
+  padding: 0 4px;
+  display: grid;
+  position: absolute;
+  top: -2px;
+  right: -2px;
+}
+
+.coterie-portal .hello__title {
+  font: 300 clamp(32px, 4.2vw, 54px)/1.05 var(--font-display);
+  letter-spacing: -0.025em;
+  margin-bottom: 22px;
+  color: var(--ink);
+}
+
+.coterie-portal .hello__row {
+  align-items: flex-end;
+  gap: 40px;
+  margin-bottom: 24px;
+  display: flex;
+}
+
+.coterie-portal .rail {
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+  display: flex;
+}
+
+.coterie-portal .seg {
+  flex: var(--w) 1 0;
+  min-width: 64px;
+}
+
+.coterie-portal .seg__label {
+  color: var(--dim);
+  white-space: nowrap;
+  margin-bottom: 8px;
+  font-size: 12.5px;
+  display: block;
+}
+
+.coterie-portal .seg__bar {
+  isolation: isolate;
+  border-radius: 999px;
+  align-items: center;
+  height: 40px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.coterie-portal .seg__fill {
+  border-radius: inherit;
+  transform-origin: 0;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transition: transform 0.8s var(--ease);
+}
+
+.coterie-portal .seg__num {
+  font: 500 12px/1 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  padding-left: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.coterie-portal .seg--ink .seg__fill { background: var(--night); }
+.coterie-portal .seg--ink .seg__num { color: var(--night-ink); }
+.coterie-portal .seg--honey .seg__fill { background: var(--honey); }
+.coterie-portal .seg--honey .seg__num { color: var(--honey-ink); }
+.coterie-portal .seg--grey .seg__fill { background: var(--grey); }
+.coterie-portal .seg--grey .seg__num { color: var(--ink); }
+.coterie-portal .seg--line .seg__fill { box-shadow: inset 0 0 0 1px #1d1d1b73; background: #ffffff60; }
+.coterie-portal .seg--line .seg__num { color: var(--ink); }
+
+.coterie-portal .seg--hatch .seg__fill {
+  box-shadow: 0 0 0 1px var(--line) inset;
+  background: #ffffff80;
+}
+.coterie-portal .seg--hatch .seg__num { color: var(--ink); }
+
+.coterie-portal .seg__stripes {
+  background: repeating-linear-gradient(-55deg, rgba(29, 29, 27, 0.16) 0 1.5px, transparent 1.5px 9px);
+  animation: 3.2s linear infinite coterie-stripes;
+  position: absolute;
+  inset: 0 0 0 -40px;
+}
+
+@keyframes coterie-stripes {
+  to { transform: translate(22px); }
+}
+
+.coterie-portal .stats {
+  gap: 34px;
+  display: flex;
+}
+
+.coterie-portal .stat {
+  grid-template-areas: "num" "lab";
+  display: grid;
+}
+
+.coterie-portal .stat__num {
+  font: 300 clamp(40px, 4.6vw, 64px)/0.9 var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  grid-area: num;
+  color: var(--ink);
+}
+
+.coterie-portal .stat__lab {
+  color: var(--dim);
+  grid-area: lab;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 12.5px;
+  display: flex;
+}
+
+.coterie-portal .stat__lab .ico {
+  width: 15px;
+  height: 15px;
+}
+
+/* Bento Grid */
+.coterie-portal .bento {
+  gap: var(--gap);
+  grid-template-rows: minmax(260px, 1.1fr) minmax(240px, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: grid;
+  flex: 1;
+}
+
+.coterie-portal .card--profile { grid-area: 1 / 1; }
+.coterie-portal .card--progress { grid-area: 1 / 2; }
+.coterie-portal .card--timer { grid-area: 1 / 3; }
+.coterie-portal .card--onboard { grid-area: 1 / 4 / span 2; }
+.coterie-portal .card--acc { grid-area: 2 / 1; }
+.coterie-portal .card--cal { grid-area: 2 / 2 / auto / span 2; }
+
+.coterie-portal .card {
+  border-radius: var(--r-card);
+  background: var(--card);
+  box-shadow: var(--shadow), 0 0 0 1px var(--hair) inset;
+  min-width: 0;
+  padding: 20px;
+  position: relative;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+
+.coterie-portal .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1px 0 #fffc inset, 0 24px 48px -24px #3c321470;
+}
+
+.coterie-portal .card__head {
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  display: flex;
+}
+
+.coterie-portal .card__title {
+  font: 400 20px/1.2 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.coterie-portal .big {
+  font: 300 34px/1 var(--font-display);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.coterie-portal .big--pct {
+  font-size: 38px;
+}
+
+.coterie-portal .icon-btn {
+  background: var(--card-2);
+  width: 38px;
+  height: 38px;
+  box-shadow: 0 0 0 1px var(--line) inset;
+  border-radius: 50%;
+  flex: none;
+  place-items: center;
+  display: grid;
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.coterie-portal .icon-btn:hover {
+  box-shadow: 0 0 0 1px var(--line-2) inset;
+  transform: scale(1.05);
+}
+
+.coterie-portal .icon-btn--ghost {
+  box-shadow: none;
+  background: 0 0;
+}
+
+/* Card 1: Profile */
+.coterie-portal .card--profile {
+  background: #d9cdb6;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.coterie-portal .portrait {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.coterie-portal .portrait__img {
+  object-fit: cover;
+  object-position: 50% 20%;
+  width: 100%;
+  height: 100%;
+  scale: 1.08;
+  transition: transform 0.4s var(--ease);
+}
+
+.coterie-portal .card--profile:hover .portrait__img {
+  transform: scale(1.04);
+}
+
+.coterie-portal .portrait.is-missing {
+  background: radial-gradient(80% 60% at 30% 20%, #f7dfa2, #f7dfa200 70%), linear-gradient(160deg, #e9d3a8, #b99263);
+}
+
+.coterie-portal .portrait.is-missing:after {
+  content: attr(data-initials);
+  text-align: center;
+  font: 200 110px/1 var(--font-display);
+  letter-spacing: -0.04em;
+  color: #ffffffb3;
+  position: absolute;
+  top: 30%;
+  left: 0;
+  right: 0;
+}
+
+.coterie-portal .portrait.is-missing img {
+  display: none;
+}
+
+.coterie-portal .portrait:before {
+  content: "";
+  z-index: 1;
+  background: linear-gradient(#1e180c00, #1e180c9e);
+  position: absolute;
+  inset: 45% 0 0;
+}
+
+.coterie-portal .profile__meta {
+  z-index: 2;
+  color: #fffaf0;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+  display: flex;
+  position: absolute;
+  bottom: 18px;
+  left: 18px;
+  right: 18px;
+}
+
+.coterie-portal .profile__name {
+  font: 400 22px/1.1 var(--font-display);
+  color: #fffaf0;
+}
+
+.coterie-portal .profile__role {
+  opacity: 0.85;
+  margin-top: 3px;
+  font-size: 12.5px;
+}
+
+.coterie-portal .glass-chip {
+  font: 500 14px/1 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  background: #ffffff29;
+  border: 1px solid #fff9;
+  border-radius: 999px;
+  padding: 10px 16px;
+  backdrop-filter: blur(8px);
+}
+
+/* Card 2: Progress */
+.coterie-portal .progress__sum {
+  align-items: flex-start;
+  gap: 14px;
+  margin: 10px 0 0;
+  display: flex;
+}
+
+.coterie-portal .progress__cap {
+  color: var(--dim);
+  padding-top: 3px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.coterie-portal .week {
+  grid-template-columns: repeat(7, 1fr);
+  height: clamp(120px, 17vh, 164px);
+  margin-top: clamp(8px, 1.6vh, 18px);
+  padding-top: 34px;
+  display: grid;
+  position: relative;
+}
+
+.coterie-portal .day {
+  cursor: pointer;
+  grid-template-rows: 1fr auto auto;
+  justify-items: center;
+  display: grid;
+}
+
+.coterie-portal .day__track {
+  justify-content: center;
+  align-items: flex-end;
+  width: 100%;
+  display: flex;
+  position: relative;
+}
+
+.coterie-portal .day__stub {
+  background: repeating-linear-gradient(var(--line-2) 0 3px, transparent 3px 7px);
+  width: 2px;
+  height: 100%;
+  margin-left: -1px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+}
+
+.coterie-portal .day__bar {
+  width: 7px;
+  height: calc(var(--h) * 100%);
+  background: var(--night);
+  transform-origin: 50% 100%;
+  border-radius: 6px;
+  position: relative;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.coterie-portal .day.is-weekend .day__bar { background: var(--grey); }
+.coterie-portal .day.is-today .day__bar { background: var(--honey); width: 9px; }
+.coterie-portal .day__dot {
+  background: var(--night);
+  border-radius: 50%;
+  width: 5px;
+  height: 5px;
+  margin: 8px 0 7px;
+}
+.coterie-portal .day.is-weekend .day__dot { background: var(--grey); }
+.coterie-portal .day.is-today .day__dot { background: var(--honey); }
+.coterie-portal .day__lab {
+  color: var(--faint);
+  font-size: 11px;
+}
+
+.coterie-portal .week.is-hover .day:not(.is-hot) .day__bar { opacity: 0.35; }
+.coterie-portal .day.is-hot .day__lab { color: var(--ink); font-weight: 600; }
+
+.coterie-portal .week__tip {
+  z-index: 2;
+  background: var(--honey);
+  color: var(--honey-ink);
+  font: 600 10.5px/1 var(--font-body);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  border-radius: 999px;
+  padding: 5px 9px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-shadow: 0 4px 10px rgba(246, 195, 67, 0.4);
+  transition: transform 0.2s var(--ease), opacity 0.2s;
+}
+
+/* Card 3: Timer */
+.coterie-portal .card--timer {
+  flex-direction: column;
+  display: flex;
+}
+
+.coterie-portal .dial {
+  aspect-ratio: 1;
+  width: min(100%, 216px, 100vh - 640px);
+  margin: 6px auto 0;
+  position: relative;
+}
+
+.coterie-portal .dial__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.coterie-portal .dial__ticks line {
+  stroke: var(--line-2);
+  stroke-width: 1.4px;
+  stroke-linecap: round;
+}
+
+.coterie-portal .dial__ticks line.is-lit {
+  stroke: var(--ink);
+}
+
+.coterie-portal .dial__track {
+  fill: none;
+  stroke: var(--well);
+  stroke-width: 14px;
+}
+
+.coterie-portal .dial__arc {
+  fill: none;
+  stroke: var(--honey);
+  stroke-width: 14px;
+  stroke-linecap: round;
+  stroke-dasharray: 100 100;
+  stroke-dashoffset: 67.7px;
+  transform-origin: 100px 100px;
+  transform: rotate(-90deg);
+  transition: stroke-dashoffset 0.6s var(--ease);
+}
+
+.coterie-portal .dial__sweep circle {
+  fill: var(--ink);
+}
+
+.coterie-portal .dial__read {
+  text-align: center;
+  place-content: center;
+  display: grid;
+  position: absolute;
+  inset: 0;
+}
+
+.coterie-portal .clock {
+  font: 300 38px/1 var(--font-display);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  justify-content: center;
+  display: flex;
+  color: var(--ink);
+}
+
+.coterie-portal .clock__sep {
+  text-align: center;
+  width: 0.3em;
+}
+
+.coterie-portal .clock__sec {
+  vertical-align: bottom;
+  font-variant-numeric: tabular-nums;
+  display: inline-flex;
+}
+
+.coterie-portal .dg {
+  height: 1em;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.coterie-portal .dg__col {
+  transition: transform 0.5s var(--ease);
+  flex-direction: column;
+  display: flex;
+}
+
+.coterie-portal .dg__col span {
+  height: 1em;
+  line-height: 1;
+}
+
+.coterie-portal .dial__cap {
+  color: var(--dim);
+  margin-top: 6px;
+  font-size: 11.5px;
+}
+
+.coterie-portal .dial__state {
+  font-weight: 600;
+}
+
+.coterie-portal .card--timer.is-running .dial__state {
+  color: var(--ok);
+}
+
+.coterie-portal .timer__ctrls {
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+}
+
+.coterie-portal .ctrl-btn {
+  background: var(--card-2);
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 0 0 1px var(--line) inset;
+  border-radius: 50%;
+  place-items: center;
+  display: grid;
+  transition: transform 0.2s var(--ease), background 0.2s;
+}
+
+.coterie-portal .ctrl-btn:hover {
+  transform: scale(1.08);
+  background: #fff;
+}
+
+.coterie-portal .ctrl-btn .ico {
+  width: 17px;
+  height: 17px;
+}
+
+.coterie-portal .ctrl-btn.is-primary .ico--play {
+  fill: currentColor;
+  stroke-width: 1.2px;
+}
+
+.coterie-portal .ctrl-btn--dark {
+  background: var(--night);
+  color: var(--night-ink);
+  box-shadow: none;
+  margin-left: auto;
+}
+
+.coterie-portal .ctrl-btn--dark[aria-pressed="true"] {
+  background: var(--honey);
+  color: var(--honey-ink);
+}
+
+/* Card 4: Onboarding (Tall) */
+.coterie-portal .card--onboard {
+  flex-direction: column;
+  min-height: 0;
+  padding-bottom: 14px;
+  display: flex;
+  overflow: hidden;
+}
+
+.coterie-portal .phases {
+  grid-template-columns: 1.25fr 1fr 0.8fr;
+  gap: 6px;
+  margin: 16px 0;
+  display: grid;
+}
+
+.coterie-portal .phase__pct {
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 6px;
+  padding-left: 2px;
+  font-size: 11.5px;
+  display: block;
+}
+
+.coterie-portal .phase__bar {
+  height: 46px;
+  box-shadow: 0 0 0 1px var(--line) inset;
+  background: #1d1d1b0f;
+  border-radius: 12px;
+  align-items: flex-end;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.coterie-portal .phase__fill {
+  transform-origin: 0;
+  transform: scaleX(var(--p, 0));
+  transition: transform 0.9s var(--ease);
+  position: absolute;
+  inset: 0;
+}
+
+.coterie-portal .phase--honey .phase__fill { background: var(--honey); }
+.coterie-portal .phase--ink .phase__fill { background: var(--night); }
+.coterie-portal .phase--grey .phase__fill { background: var(--grey); }
+
+.coterie-portal .phase__name {
+  color: var(--ink);
+  padding: 0 0 7px 9px;
+  font-size: 11.5px;
+  font-weight: 500;
+  position: relative;
+}
+
+.coterie-portal .phase--honey .phase__name { color: var(--honey-ink); }
+.coterie-portal .phase--ink .phase__name { mix-blend-mode: difference; color: #fff; }
+
+.coterie-portal .tasks {
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  position: relative;
+}
+
+.coterie-portal .tasks__stack {
+  background: #8f8c84;
+  border-radius: 18px 18px 0 0;
+  height: 14px;
+  margin: 0 14px -2px;
+}
+
+.coterie-portal .tasks__card {
+  background: var(--night);
+  min-height: 220px;
+  color: var(--night-ink);
+  border-radius: 22px;
+  flex-direction: column;
+  flex: 1;
+  padding: 18px 12px 12px 16px;
+  display: flex;
+}
+
+.coterie-portal .tasks__head {
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+  padding-right: 6px;
+  display: flex;
+}
+
+.coterie-portal .tasks__head h3 {
+  font: 400 17px/1.2 var(--font-display);
+  color: var(--night-ink);
+}
+
+.coterie-portal .tasks__count {
+  font: 300 30px/1 var(--font-display);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  color: var(--night-ink);
+}
+
+.coterie-portal .tasks__list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--night-2) transparent;
+  flex: 1;
+  align-content: start;
+  gap: 4px;
+  min-height: 0;
+  padding-right: 4px;
+  display: grid;
+  overflow-y: auto;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 26px), #0000);
+  mask-image: linear-gradient(#000 calc(100% - 26px), #0000);
+}
+
+.coterie-portal .task {
+  text-align: left;
+  border-radius: 14px;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 7px 6px 7px 4px;
+  transition: background-color 0.3s;
+  display: flex;
+}
+
+.coterie-portal .task:hover {
+  background: #ffffff0d;
+}
+
+.coterie-portal .task:focus-visible {
+  outline-color: var(--honey);
+}
+
+.coterie-portal .task__ico {
+  width: 36px;
+  height: 36px;
+  color: var(--night);
+  background: #f1efe8;
+  border-radius: 50%;
+  flex: none;
+  place-items: center;
+  transition: background-color 0.35s, color 0.35s;
+  display: grid;
+}
+
+.coterie-portal .task[aria-pressed="true"] .task__ico {
+  background: var(--night-2);
+  color: var(--night-dim);
+}
+
+.coterie-portal .task__txt {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+
+.coterie-portal .task__title {
+  justify-self: start;
+  font-size: 13px;
+  transition: color 0.35s;
+  position: relative;
+  color: var(--night-ink);
+}
+
+.coterie-portal .task__strike {
+  transform-origin: 0;
+  height: 1.5px;
+  transition: transform 0.45s var(--ease);
+  background: currentColor;
+  position: absolute;
+  top: 52%;
+  left: -1px;
+  right: -1px;
+  transform: scaleX(0);
+}
+
+.coterie-portal .task[aria-pressed="true"] .task__title {
+  color: var(--night-dim);
+}
+
+.coterie-portal .task[aria-pressed="true"] .task__strike {
+  transform: scaleX(1);
+}
+
+.coterie-portal .task__when {
+  color: var(--night-dim);
+  margin-top: 1px;
+  font-size: 11px;
+}
+
+.coterie-portal .task__tick {
+  width: 22px;
+  height: 22px;
+  color: var(--night);
+  background: #4a4944;
+  border-radius: 50%;
+  flex: none;
+  place-items: center;
+  transition: background-color 0.3s;
+  display: grid;
+}
+
+.coterie-portal .task__tick .ico {
+  stroke-width: 2.6px;
+  opacity: 0;
+  width: 14px;
+  height: 14px;
+}
+
+.coterie-portal .task[aria-pressed="true"] .task__tick {
+  background: var(--honey);
+}
+
+.coterie-portal .task[aria-pressed="true"] .task__tick .ico {
+  opacity: 1;
+}
+
+/* Card 5: Accordion */
+.coterie-portal .card--acc {
+  padding: 8px 18px;
+  overflow: hidden;
+}
+
+.coterie-portal .acc__item + .acc__item {
+  border-top: 1px solid var(--line);
+}
+
+.coterie-portal .acc__head {
+  text-align: left;
+  width: 100%;
+  font: 400 15px/1.2 var(--font-body);
+  color: var(--ink);
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 2px;
+  display: flex;
+}
+
+.coterie-portal .acc__chev {
+  color: var(--dim);
+  transition: transform 0.45s var(--ease);
+}
+
+.coterie-portal .acc__head[aria-expanded="true"] .acc__chev {
+  transform: rotate(180deg);
+}
+
+.coterie-portal .acc__body {
+  padding: 0 2px 14px;
+}
+
+.coterie-portal .acc__line {
+  color: var(--dim);
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: 13px;
+  display: flex;
+}
+
+.coterie-portal .acc__line b {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.coterie-portal .device {
+  align-items: center;
+  gap: 12px;
+  display: flex;
+}
+
+.coterie-portal .device__img {
+  background: var(--well);
+  border-radius: 10px;
+  flex: none;
+  place-items: center;
+  width: 64px;
+  height: 44px;
+  display: grid;
+  position: relative;
+  overflow: hidden;
+}
+
+.coterie-portal .device__ico {
+  width: 22px;
+  height: 22px;
+  color: var(--dim);
+}
+
+.coterie-portal .device__txt {
+  flex: 1;
+  display: grid;
+}
+
+.coterie-portal .device__txt b {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.coterie-portal .device__txt small {
+  color: var(--faint);
+  font-size: 11.5px;
+}
+
+/* Card 6: Week Calendar */
+.coterie-portal .card--cal {
+  flex-direction: column;
+  padding: 16px 18px 18px;
+  display: flex;
+  overflow: hidden;
+}
+
+.coterie-portal .cal__head {
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  display: flex;
+}
+
+.coterie-portal .cal__title {
+  font: 400 17px/1 var(--font-display);
+  color: var(--ink);
+}
+
+.coterie-portal .pill-btn {
+  background: var(--card-2);
+  box-shadow: 0 0 0 1px var(--line) inset;
+  border-radius: 999px;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  transition: background 0.2s;
+}
+
+.coterie-portal .pill-btn:hover:not(:disabled) {
+  background: #fff;
+}
+
+.coterie-portal .pill-btn .ico {
+  width: 14px;
+  height: 14px;
+}
+
+.coterie-portal .pill-btn--static {
+  cursor: default;
+}
+
+.coterie-portal .cal {
+  flex: 1;
+  grid-template-rows: auto repeat(8, minmax(15px, 1fr));
+  grid-template-columns: 58px repeat(6, minmax(0, 1fr));
+  display: grid;
+  position: relative;
+}
+
+.coterie-portal .cal__day {
+  text-align: center;
+  grid-row: 1;
+  padding: 6px 0 10px;
+}
+
+.coterie-portal .cal__dname {
+  color: var(--faint);
+  font-size: 12px;
+  display: block;
+}
+
+.coterie-portal .cal__dnum {
+  font: 300 17px/1.3 var(--font-display);
+  color: var(--faint);
+  display: block;
+}
+
+.coterie-portal .cal__day.is-today .cal__dname {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.coterie-portal .cal__day.is-today .cal__dnum {
+  background: var(--night);
+  width: 30px;
+  height: 30px;
+  color: var(--night-ink);
+  border-radius: 50%;
+  place-items: center;
+  margin-top: 2px;
+  display: inline-grid;
+}
+
+.coterie-portal .cal__col {
+  border-left: 1px dashed var(--line-2);
+  grid-row: 2 / -1;
+}
+
+.coterie-portal .cal__time {
+  color: var(--dim);
+  white-space: nowrap;
+  grid-column: 1;
+  align-self: start;
+  font-size: 11.5px;
+  transform: translateY(-0.55em);
+}
+
+.coterie-portal .cal__rule {
+  border-top: 1px solid rgba(29, 29, 27, 0.05);
+  grid-column: 2 / -1;
+  align-self: start;
+}
+
+.coterie-portal .ev {
+  z-index: 1;
+  background: var(--solid);
+  box-shadow: 0 0 0 1px var(--line) inset, 0 10px 20px -16px #281e0a99;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 12px;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 2px 4px;
+  padding: 7px 10px;
+  display: flex;
+  position: relative;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.coterie-portal .ev:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px var(--line-2) inset, 0 14px 24px -16px #281e0ab3;
+}
+
+.coterie-portal .ev--dark {
+  background: var(--night);
+  color: var(--night-ink);
+  box-shadow: 0 10px 20px -14px #000000b3;
+}
+
+.coterie-portal .ev--honey {
+  background: var(--honey-2);
+  box-shadow: inset 0 0 0 1px #a0781433;
+}
+
+.coterie-portal .ev__txt {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+
+.coterie-portal .ev__txt b {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12.5px;
+  font-weight: 500;
+  overflow: hidden;
+}
+
+.coterie-portal .ev__txt small {
+  opacity: 0.7;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  overflow: hidden;
+}
+
+.coterie-portal .cal__now {
+  z-index: 2;
+  pointer-events: none;
+  grid-column: 2 / -1;
+  align-self: stretch;
+  position: relative;
+}
+
+.coterie-portal .cal__now:after {
+  content: "";
+  left: 0;
+  right: 0;
+  top: calc(var(--f) * 100%);
+  border-top: 1.5px solid var(--honey);
+  position: absolute;
+}
+
+.coterie-portal .cal__now:before {
+  content: "";
+  left: -4px;
+  top: calc(var(--f) * 100% - 3.5px);
+  background: var(--honey);
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  box-shadow: 0 0 0 3px #f6c3434d;
+}
+
+.coterie-portal .avatar {
+  background: var(--av, #d8cfbd);
+  color: #1d1d1bcc;
+  width: 34px;
+  height: 34px;
+  font: 500 12px/1 var(--font-body);
+  border-radius: 50%;
+  flex: none;
+  place-items: center;
+  display: inline-grid;
+  position: relative;
+  overflow: hidden;
+}
+
+.coterie-portal .avatar--xl {
+  width: 88px;
+  height: 88px;
+  font: 300 30px/1 var(--font-display);
+}
+
+.coterie-portal .avatars {
+  display: flex;
+}
+
+.coterie-portal .avatars .avatar {
+  width: 24px;
+  height: 24px;
+  box-shadow: 0 0 0 2px var(--solid);
+  font-size: 9px;
+}
+
+.coterie-portal .ev--dark .avatars .avatar {
+  box-shadow: 0 0 0 2px var(--night);
+}
+
+.coterie-portal .avatars .avatar + .avatar {
+  margin-left: -7px;
+}
+
+/* VIEW 2: Table / Marketplace */
+.coterie-portal .view__head {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  display: flex;
+}
+
+.coterie-portal .view__head .hello__title {
+  margin-bottom: 18px;
+}
+
+.coterie-portal .toolbar {
+  gap: 8px;
+  margin-bottom: 20px;
+  display: flex;
+}
+
+.coterie-portal .search {
+  background: var(--card-2);
+  width: 280px;
+  max-width: 100%;
+  height: 42px;
+  box-shadow: 0 0 0 1px var(--line) inset;
+  color: var(--dim);
+  border-radius: 999px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  display: flex;
+}
+
+.coterie-portal .search input {
+  min-width: 0;
+  color: var(--ink);
+  background: 0 0;
+  border: 0;
+  outline: 0;
+  flex: 1;
+  font-size: 13.5px;
+}
+
+.coterie-portal .search:focus-within {
+  box-shadow: 0 0 0 1.5px var(--ink) inset;
+}
+
+.coterie-portal .dark-btn {
+  background: var(--night);
+  height: 42px;
+  color: var(--night-ink);
+  white-space: nowrap;
+  border-radius: 999px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 18px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  transition: transform 0.2s var(--ease), background 0.2s;
+}
+
+.coterie-portal .dark-btn:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+
+.coterie-portal .filters {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  display: flex;
+}
+
+.coterie-portal .filter {
+  background: var(--card-2);
+  box-shadow: 0 0 0 1px var(--line) inset;
+  color: var(--dim);
+  transition: background-color 0.35s var(--ease), color 0.35s var(--ease);
+  border-radius: 999px;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+}
+
+.coterie-portal .filter.is-on {
+  background: var(--night);
+  color: var(--night-ink);
+}
+
+.coterie-portal .filter__n {
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+}
+
+.coterie-portal .card--table {
+  padding: 8px 10px;
+}
+
+.coterie-portal .table {
+  position: relative;
+}
+
+.coterie-portal .trow {
+  border-radius: 16px;
+  grid-template-columns: 36px minmax(160px, 1.5fr) minmax(120px, 1.2fr) 1fr 1fr 0.8fr 110px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  display: grid;
+}
+
+.coterie-portal .trow--head {
+  color: var(--faint);
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 12px;
+}
+
+.coterie-portal .tbody .trow {
+  cursor: pointer;
+  position: relative;
+}
+
+.coterie-portal .tbody .trow + .trow:before {
+  content: "";
+  background: var(--line);
+  height: 1px;
+  position: absolute;
+  top: 0;
+  left: 12px;
+  right: 12px;
+}
+
+.coterie-portal .trow__bg {
+  border-radius: inherit;
+  background: var(--honey);
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.25s var(--ease);
+}
+
+.coterie-portal .tbody .trow:hover .trow__bg {
+  opacity: 0.18;
+}
+
+.coterie-portal .tbody .trow.is-sel .trow__bg {
+  opacity: 1;
+}
+
+.coterie-portal .trow > :not(.trow__bg) {
+  min-width: 0;
+  position: relative;
+}
+
+.coterie-portal .trow__name {
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  display: flex;
+}
+
+.coterie-portal .trow__name span {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.coterie-portal .trow__cell {
+  color: var(--dim);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.coterie-portal .trow.is-sel .trow__cell {
+  color: var(--ink);
+}
+
+.coterie-portal .check {
+  width: 20px;
+  height: 20px;
+  box-shadow: 0 0 0 1.5px var(--line-2) inset;
+  background: var(--card-2);
+  border-radius: 6px;
+  place-items: center;
+  display: grid;
+  transition: background 0.2s;
+}
+
+.coterie-portal .check .ico {
+  stroke-width: 2.6px;
+  opacity: 0;
+  width: 13px;
+  height: 13px;
+}
+
+.coterie-portal .trow.is-sel .check {
+  background: var(--night);
+  color: var(--honey);
+  box-shadow: none;
+}
+
+.coterie-portal .trow.is-sel .check .ico {
+  opacity: 1;
+}
+
+.coterie-portal .status {
+  color: #2e6d43;
+  background: #3f8f5a1f;
+  border-radius: 999px;
+  justify-self: start;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+}
+
+.coterie-portal .status:before {
+  content: "";
+  background: currentColor;
+  border-radius: 50%;
+  width: 6px;
+  height: 6px;
+}
+
+.coterie-portal .status--away {
+  color: #8a4f0c;
+  background: #b86b121f;
+}
+
+.coterie-portal .status--new {
+  background: var(--night);
+  color: var(--night-ink);
+}
+
+.coterie-portal .table__empty {
+  text-align: center;
+  color: var(--faint);
+  padding: 40px;
+  font-size: 15px;
+}
+
+/* VIEW 3: Payroll / Agreements */
+.coterie-portal .payroll {
+  gap: var(--gap);
+  flex: 1;
+  grid-template-columns: 280px minmax(0, 1fr) 320px;
+  align-items: stretch;
+  display: grid;
+}
+
+.coterie-portal .card--roster .card__title {
+  margin: 4px 4px 12px;
+}
+
+.coterie-portal .roster {
+  gap: 4px;
+  display: grid;
+}
+
+.coterie-portal .roster__item {
+  text-align: left;
+  border-radius: 16px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  display: flex;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.coterie-portal .roster__item:hover {
+  background: rgba(29, 29, 27, 0.05);
+}
+
+.coterie-portal .roster__item[aria-selected="true"] {
+  background: var(--night);
+  color: var(--night-ink);
+}
+
+.coterie-portal .roster__txt {
+  min-width: 0;
+  display: grid;
+}
+
+.coterie-portal .roster__txt b {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.coterie-portal .roster__txt small {
+  color: var(--faint);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 11.5px;
+  overflow: hidden;
+}
+
+.coterie-portal .roster__item[aria-selected="true"] small {
+  color: var(--night-dim);
+}
+
+.coterie-portal .month__head {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  display: flex;
+}
+
+.coterie-portal .month__sum {
+  font: 300 20px/1 var(--font-display);
+  color: var(--dim);
+}
+
+.coterie-portal .month__sum .big {
+  color: var(--ink);
+}
+
+.coterie-portal .month__unit {
+  margin-left: 4px;
+  font-size: 16px;
+}
+
+.coterie-portal .rail--mini {
+  flex: none;
+  margin-bottom: 16px;
+}
+
+.coterie-portal .rail--mini .seg__bar {
+  height: 34px;
+}
+
+.coterie-portal .card--month {
+  flex-direction: column;
+  display: flex;
+}
+
+.coterie-portal .month {
+  grid-template-rows: auto;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-auto-rows: minmax(64px, auto);
+  align-content: start;
+  gap: 6px;
+  display: grid;
+}
+
+.coterie-portal .month__dname {
+  color: var(--faint);
+  text-align: center;
+  padding-bottom: 4px;
+  font-size: 11.5px;
+}
+
+.coterie-portal .mday {
+  min-height: 64px;
+  box-shadow: 0 0 0 1px var(--line) inset;
+  background: #ffffff73;
+  border-radius: 14px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 7px 8px;
+  display: flex;
+  position: relative;
+}
+
+.coterie-portal .mday__n {
+  color: var(--dim);
+  font-size: 12px;
+}
+
+.coterie-portal .mday.is-off {
+  background: 0 0;
+}
+
+.coterie-portal .mday.is-off .mday__n {
+  color: var(--faint);
+}
+
+.coterie-portal .mday.is-today {
+  box-shadow: 0 0 0 1.5px var(--ink) inset;
+}
+
+.coterie-portal .mday__chip {
+  font: 600 10.5px/1.2 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  background: var(--honey-2);
+  color: var(--honey-ink);
+  border-radius: 999px;
+  align-self: flex-start;
+  padding: 3px 7px;
+}
+
+.coterie-portal .mday__chip--ot {
+  background: var(--night);
+  color: var(--night-ink);
+}
+
+.coterie-portal .mday__chip--leave {
+  color: var(--dim);
+  background: #1d1d1b14;
+}
+
+.coterie-portal .mday.is-pad {
+  visibility: hidden;
+}
+
+.coterie-portal .card--person {
+  text-align: left;
+}
+
+.coterie-portal .person__hero {
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  justify-items: center;
+  margin-bottom: 14px;
+  padding: 8px 0 16px;
+  display: grid;
+}
+
+.coterie-portal .person__name {
+  font: 400 21px/1.2 var(--font-display);
+  margin-top: 12px;
+  color: var(--ink);
+}
+
+.coterie-portal .person__role {
+  color: var(--dim);
+  font-size: 12.5px;
+}
+
+.coterie-portal .info {
+  gap: 9px;
+  margin-bottom: 18px;
+  display: grid;
+}
+
+.coterie-portal .info div {
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  display: flex;
+}
+
+.coterie-portal .info dt {
+  color: var(--dim);
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  width: 92px;
+  display: flex;
+}
+
+.coterie-portal .info dt .ico {
+  width: 15px;
+  height: 15px;
+}
+
+.coterie-portal .info dd {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+}
+
+.coterie-portal .person__sub {
+  font: 500 13px/1 var(--font-body);
+  margin-bottom: 10px;
+  color: var(--ink);
+}
+
+.coterie-portal .docs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 18px;
+  display: grid;
+}
+
+.coterie-portal .doc {
+  background: var(--card-2);
+  box-shadow: 0 0 0 1px var(--line) inset;
+  color: var(--ink);
+  border-radius: 14px;
+  align-items: center;
+  gap: 6px;
+  padding: 10px;
+  font-size: 11.5px;
+  text-decoration: none;
+  display: flex;
+  transition: transform 0.2s var(--ease);
+}
+
+.coterie-portal .doc:hover {
+  transform: translateY(-1px);
+  background: #fff;
+}
+
+.coterie-portal .doc span {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.coterie-portal .doc .ico {
+  width: 15px;
+  height: 15px;
+}
+
+.coterie-portal .doc__dl {
+  color: var(--faint);
+}
+
+.coterie-portal .meters {
+  gap: 12px;
+  display: grid;
+}
+
+.coterie-portal .meter__top {
+  color: var(--dim);
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12px;
+  display: flex;
+}
+
+.coterie-portal .meter__top b {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.coterie-portal .meter__bar {
+  background: #1d1d1b14;
+  border-radius: 99px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.coterie-portal .meter__fill {
+  border-radius: inherit;
+  background: var(--night);
+  transform-origin: 0;
+  height: 100%;
+  transition: width 0.8s var(--ease);
+}
+
+.coterie-portal .meter:first-child .meter__fill {
+  background: var(--honey);
+}
+
+/* Notifications Tray */
+.coterie-portal .tray {
+  z-index: 100;
+  background: var(--night);
+  width: 320px;
+  color: var(--night-ink);
+  transform-origin: 90% 0;
+  border-radius: 24px;
+  padding: 14px;
+  position: fixed;
+  top: 84px;
+  right: clamp(16px, 2vw, 40px);
+  box-shadow: 0 30px 60px -24px #0000008c;
+  animation: coterie-tray-in 0.3s var(--ease);
+}
+
+@keyframes coterie-tray-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.coterie-portal .tray__head {
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 2px 8px 6px;
+  display: flex;
+}
+
+.coterie-portal .tray__head h2 {
+  font: 400 17px/1 var(--font-display);
+  color: var(--night-ink);
+}
+
+.coterie-portal .tray__head .icon-btn {
+  color: var(--night-ink);
+  background: transparent;
+  box-shadow: none;
+}
+
+.coterie-portal .tray__list li {
+  border-radius: 14px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 6px;
+  display: flex;
+}
+
+.coterie-portal .tray__list li + li {
+  border-top: 1px solid #ffffff12;
+}
+
+.coterie-portal .tray__list p {
+  font-size: 13px;
+  display: grid;
+  color: var(--night-ink);
+}
+
+.coterie-portal .tray__list b {
+  font-weight: 500;
+}
+
+.coterie-portal .tray__list small {
+  color: var(--night-dim);
+  font-size: 11.5px;
+}
+
+/* Toast */
+.coterie-portal .toast {
+  z-index: 200;
+  background: var(--night);
+  width: fit-content;
+  max-width: calc(100vw - 32px);
+  color: var(--night-ink);
+  border-radius: 999px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  position: fixed;
+  bottom: 26px;
+  left: 0;
+  right: 0;
+  box-shadow: 0 20px 40px -20px #0009;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: coterie-toast-in 0.4s var(--ease);
+}
+
+@keyframes coterie-toast-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Responsive queries */
+@media (width <= 1240px) {
+  .coterie-portal .bento {
+    grid-template-rows: auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .coterie-portal .card--profile {
+    grid-area: 1 / 1;
+    min-height: 320px;
+  }
+  .coterie-portal .card--progress { grid-area: 1 / 2; }
+  .coterie-portal .card--timer { grid-area: 1 / 3; }
+  .coterie-portal .card--onboard { grid-area: 2 / 3 / span 2; }
+  .coterie-portal .card--acc { grid-area: 2 / 1 / auto / span 2; }
+  .coterie-portal .card--cal {
+    grid-area: 3 / 1 / auto / span 2;
+    min-height: 300px;
+  }
+  .coterie-portal .payroll {
+    grid-template-columns: 230px minmax(0, 1fr);
+  }
+  .coterie-portal .card--person {
+    grid-column: 1 / -1;
+    grid-template-columns: 220px 1fr 1fr;
+    gap: 0 24px;
+    display: grid;
+  }
+  .coterie-portal .card--person .person__hero {
+    border: 0;
+    grid-row: span 4;
+  }
+  .coterie-portal .hello__row { flex-wrap: wrap; }
+  .coterie-portal .hello__row .rail { flex-basis: 100%; }
+  .coterie-portal .stats { margin-left: auto; }
+}
+
+@media (width <= 900px) {
+  .coterie-portal .app { padding: 16px; }
+  .coterie-portal .top { flex-wrap: wrap; row-gap: 12px; }
+  .coterie-portal .tabs {
+    order: 3;
+    justify-content: space-between;
+    width: 100%;
+    margin-left: 0;
+  }
+  .coterie-portal .tab { flex: 1; padding: 9px 8px; text-align: center; }
+  .coterie-portal .top__tools { margin-left: auto; }
+  .coterie-portal .chip-btn span { display: none; }
+  .coterie-portal .chip-btn { justify-content: center; width: 40px; height: 40px; padding: 0; }
+  .coterie-portal .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .coterie-portal .card--profile { grid-area: auto; min-height: 340px; }
+  .coterie-portal .card--progress,
+  .coterie-portal .card--timer,
+  .coterie-portal .card--onboard,
+  .coterie-portal .card--acc { grid-area: auto; }
+  .coterie-portal .card--cal { grid-area: auto / 1 / auto / span 2; }
+  .coterie-portal .payroll { grid-template-columns: 1fr; }
+  .coterie-portal .card--person { display: block; }
+  .coterie-portal .trow {
+    grid-template-columns: 30px minmax(0, 1.6fr) minmax(0, 1.2fr) 96px;
+  }
+  .coterie-portal .c-team,
+  .coterie-portal .c-city,
+  .coterie-portal .c-since { display: none; }
+  .coterie-portal .tray {
+    width: auto;
+    top: 140px;
+    left: 16px;
+    right: 16px;
+  }
+}
+
+@media (width <= 640px) {
+  .coterie-portal .bento { grid-template-columns: minmax(0, 1fr); }
+  .coterie-portal .card--cal { grid-area: auto; }
+  .coterie-portal .card--cal .cal {
+    overflow-x: auto;
+    grid-template-columns: 50px repeat(6, minmax(96px, 1fr));
+  }
+  .coterie-portal .hello__row { gap: 18px; }
+  .coterie-portal .rail { flex-wrap: wrap; row-gap: 12px; }
+  .coterie-portal .seg { flex: calc(50% - 8px); }
+  .coterie-portal .stats {
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    margin-left: 0;
+  }
+  .coterie-portal .view__head { display: block; }
+  .coterie-portal .toolbar { flex-wrap: wrap; }
+  .coterie-portal .search { flex: 1; width: auto; }
+  .coterie-portal .trow--head { display: none; }
+  .coterie-portal .tbody .trow {
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    grid-template-areas: "check name status" "check role status";
+    gap: 0 10px;
+    padding: 10px;
+  }
+  .coterie-portal .c-check { grid-area: check; }
+  .coterie-portal .c-name { grid-area: name; }
+  .coterie-portal .c-role {
+    grid-area: role;
+    margin-top: -8px;
+    padding-left: 44px;
+    font-size: 12px;
+  }
+  .coterie-portal .c-status { grid-area: status; }
+}
+
+/* Modal and Drawer Overlays in Coterie Theme */
+.coterie-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(37, 37, 35, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: coterie-fade-in 0.25s var(--ease);
+}
+
+.coterie-modal-box {
+  background: var(--app-1);
+  border-radius: var(--r-card);
+  box-shadow: 0 30px 70px -20px rgba(40, 32, 10, 0.4), 0 0 0 1px var(--hair) inset;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 28px;
+  position: relative;
+  animation: coterie-scale-in 0.3s var(--ease);
+}
+
+.coterie-modal-box.coterie-modal-lg {
+  max-width: 860px;
+}
+
+@keyframes coterie-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes coterie-scale-in {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.coterie-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.coterie-modal-head h2 {
+  font: 400 22px/1.2 var(--font-display);
+  color: var(--ink);
+}
+
+.coterie-modal-close {
+  background: var(--card-2);
+  border: 1px solid var(--line-2);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  place-items: center;
+  display: grid;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.coterie-modal-close:hover {
+  transform: scale(1.08);
+  background: #fff;
+}
+
+.coterie-form-group {
+  margin-bottom: 16px;
+}
+
+.coterie-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dim);
+  margin-bottom: 6px;
+}
+
+.coterie-input,
+.coterie-textarea {
+  width: 100%;
+  background: var(--card-2);
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.coterie-input:focus,
+.coterie-textarea:focus {
+  border-color: var(--honey);
+  box-shadow: 0 0 0 3px rgba(246, 195, 67, 0.25);
+}
+
+.coterie-textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.coterie-btn-primary {
+  background: var(--night);
+  color: var(--night-ink);
+  font: 500 14px/1 var(--font-body);
+  border-radius: 999px;
+  padding: 12px 24px;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.coterie-btn-primary:hover {
+  background: #000;
+  transform: translateY(-1px);
+}
+
+.coterie-btn-honey {
+  background: var(--honey);
+  color: var(--honey-ink);
+  font: 600 14px/1 var(--font-body);
+  border-radius: 999px;
+  padding: 12px 24px;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.coterie-btn-honey:hover {
+  background: #f1b72e;
+  transform: translateY(-1px);
+}
+
+.coterie-btn-ghost {
+  background: var(--card-2);
+  border: 1px solid var(--line-2);
+  color: var(--ink);
+  font: 500 14px/1 var(--font-body);
+  border-radius: 999px;
+  padding: 11px 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.coterie-btn-ghost:hover {
+  background: #fff;
+}
+
+/* Confetti particles */
+@keyframes coterie-confetti-float {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(60px) rotate(360deg); opacity: 0; }
+}
+
+.coterie-confetti-dot {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  animation: coterie-confetti-float 0.8s ease-out forwards;
+}
+
+/* ========================================================================= */
+/* COTERIE PAGE CHANGING MOTION SYSTEM                                       */
+/* ========================================================================= */
+
+.coterie-view-entering {
+  animation: coterie-view-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes coterie-view-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.coterie-view-exiting {
+  animation: coterie-view-exit 0.18s cubic-bezier(0.4, 0, 1, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes coterie-view-exit {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.995);
+  }
+}
+
+/* Hello Title Rising Entrance */
+.coterie-view-entering .hello__title {
+  animation: coterie-title-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.02s both;
+}
+
+@keyframes coterie-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Row & Toolbar Subtle Rise */
+.coterie-view-entering .hello__row,
+.coterie-view-entering .toolbar,
+.coterie-view-entering .filters {
+  animation: coterie-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
+}
+
+@keyframes coterie-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Bento Cards Cascading Entrance */
+.coterie-view-entering .card--profile {
+  animation: coterie-card-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
+}
+.coterie-view-entering .card--progress {
+  animation: coterie-card-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+.coterie-view-entering .card--timer {
+  animation: coterie-card-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+}
+.coterie-view-entering .card--onboard {
+  animation: coterie-card-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both;
+}
+.coterie-view-entering .card--acc {
+  animation: coterie-card-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
+}
+.coterie-view-entering .card--cal {
+  animation: coterie-card-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+}
+
+@keyframes coterie-card-in {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.982);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Marketplace Table & Rows Inward Stagger */
+.coterie-view-entering .card--table {
+  animation: coterie-card-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+}
+
+.coterie-view-entering .tbody .trow:nth-child(1) { animation: coterie-row-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both; }
+.coterie-view-entering .tbody .trow:nth-child(2) { animation: coterie-row-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both; }
+.coterie-view-entering .tbody .trow:nth-child(3) { animation: coterie-row-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both; }
+.coterie-view-entering .tbody .trow:nth-child(4) { animation: coterie-row-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.26s both; }
+.coterie-view-entering .tbody .trow:nth-child(5) { animation: coterie-row-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.30s both; }
+.coterie-view-entering .tbody .trow:nth-child(6) { animation: coterie-row-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.34s both; }
+
+@keyframes coterie-row-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Payroll & Agreements Roster / Cards Entrance */
+.coterie-view-entering .card--roster {
+  animation: coterie-card-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
+}
+.coterie-view-entering .card--month {
+  animation: coterie-card-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+.coterie-view-entering .card--person {
+  animation: coterie-card-in 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+}
+
+.coterie-view-entering .roster li:nth-child(1) { animation: coterie-roster-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both; }
+.coterie-view-entering .roster li:nth-child(2) { animation: coterie-roster-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both; }
+.coterie-view-entering .roster li:nth-child(3) { animation: coterie-roster-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.20s both; }
+.coterie-view-entering .roster li:nth-child(4) { animation: coterie-roster-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.24s both; }
+.coterie-view-entering .roster li:nth-child(5) { animation: coterie-roster-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both; }
+.coterie-view-entering .roster li:nth-child(6) { animation: coterie-roster-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both; }
+
+@keyframes coterie-roster-in {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ==========================================================================
+   AGENTREFERRALS — PROFESSIONAL PORTAL SPECIFIC STYLES (COTERIE SYSTEM)
+   ========================================================================== */
+
+/* 1. Header & Navigation Refinements */
+.coterie-portal .tabs {
+  position: relative;
+  max-width: 620px;
+}
+
+.coterie-portal .tabs__pill {
+  z-index: 1;
+  background: var(--night);
+}
+
+.coterie-portal .tab {
+  white-space: nowrap;
+}
+
+.coterie-portal .brand-logo-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* 2. Welcome Header */
+.coterie-welcome-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.coterie-welcome-header h1 {
+  font: 300 clamp(28px, 3.8vw, 44px)/1.1 var(--font-display);
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.coterie-welcome-header p {
+  color: var(--dim);
+  font-size: 14px;
+}
+
+.coterie-welcome-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.coterie-btn-primary {
+  background: var(--night);
+  color: var(--night-ink);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  box-shadow: 0 2px 8px rgba(37, 37, 35, 0.18);
+  cursor: pointer;
+  border: none;
+}
+
+.coterie-btn-primary:hover {
+  background: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(37, 37, 35, 0.28);
+}
+
+.coterie-btn-honey {
+  background: var(--honey);
+  color: var(--honey-ink);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s var(--ease), filter 0.2s var(--ease);
+  cursor: pointer;
+  border: none;
+}
+
+.coterie-btn-honey:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.coterie-btn-secondary {
+  background: var(--card-2);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--hair) inset, 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+  cursor: pointer;
+  border: none;
+}
+
+.coterie-btn-secondary:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+/* 3. Primary KPI Cards Grid (4 Columns) - Advanced & Polished */
+.coterie-kpis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1100px) {
+  .coterie-kpis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .coterie-kpis-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.coterie-kpi-card {
+  background: #ffffff;
+  border: 1px solid rgba(29, 29, 27, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 8px 24px -8px rgba(45, 35, 10, 0.06);
+  padding: 20px 22px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  min-height: 154px;
+  box-sizing: border-box;
+  overflow: visible;
+  outline: none;
+}
+
+.coterie-kpi-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(246, 195, 67, 0.9);
+  box-shadow: 0 14px 34px -8px rgba(60, 48, 20, 0.14), 0 0 0 1px rgba(246, 195, 67, 0.5);
+}
+
+.coterie-kpi-card:focus-visible {
+  box-shadow: 0 0 0 3px rgba(246, 195, 67, 0.6);
+}
+
+.coterie-kpi-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.coterie-kpi-header-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.coterie-accent-bar {
+  width: 3.5px;
+  height: 14px;
+  border-radius: 2px;
+  background: var(--honey);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.coterie-accent-bar.charcoal { background: var(--night); }
+.coterie-accent-bar.blue { background: #0284c7; }
+.coterie-accent-bar.green { background: #059669; }
+
+.coterie-kpi-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.coterie-kpi-icon-pill {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--well);
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  transition: all 0.25s var(--ease);
+  flex-shrink: 0;
+}
+
+.coterie-kpi-card:hover .coterie-kpi-icon-pill {
+  transform: scale(1.08);
+  background: var(--honey);
+  color: var(--honey-ink);
+}
+
+.coterie-kpi-card.kpi--referrals:hover .coterie-kpi-icon-pill {
+  background: var(--night);
+  color: #fff;
+}
+
+.coterie-kpi-card.kpi--apps:hover .coterie-kpi-icon-pill {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.coterie-kpi-card.kpi--agreements:hover .coterie-kpi-icon-pill {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.coterie-kpi-middle {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.coterie-kpi-value {
+  font: 600 clamp(38px, 3.8vw, 46px)/1 var(--font-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  margin: 0;
+}
+
+.coterie-kpi-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.coterie-kpi-badge.honey { background: var(--honey-2); color: var(--honey-ink); }
+.coterie-kpi-badge.dark { background: var(--night); color: #fff; }
+.coterie-kpi-badge.blue { background: #e0f2fe; color: #0369a1; }
+.coterie-kpi-badge.green { background: #dcfce7; color: #15803d; }
+.coterie-kpi-badge.neutral { background: var(--well); color: var(--dim); }
+
+.coterie-kpi-footer {
+  border-top: 1px solid rgba(29, 29, 27, 0.06);
+  padding-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.coterie-kpi-footer-text {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coterie-kpi-footer-text strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.coterie-kpi-arrow {
+  color: var(--dim);
+  transition: transform 0.25s var(--ease), color 0.25s;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+.coterie-kpi-card:hover .coterie-kpi-arrow {
+  transform: translateX(3px);
+  color: var(--ink);
+}
+
+/* 4. Priority / Action Required Section (Advanced Bento) */
+.coterie-priority-section {
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 960px) {
+  .coterie-priority-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.coterie-priority-card {
+  background: #ffffff;
+  border: 1px solid rgba(29, 29, 27, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 8px 24px -8px rgba(45, 35, 10, 0.06);
+  padding: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.coterie-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.06);
+}
+
+.coterie-heading-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coterie-heading-title h2 {
+  font: 600 16px/1.2 var(--font-display);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.coterie-badge-urgent {
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.coterie-badge-ok {
+  background: #dcfce7;
+  color: #166534;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.coterie-priority-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.coterie-priority-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #faf9f6;
+  border: 1px solid rgba(29, 29, 27, 0.06);
+  border-radius: 14px;
+  padding: 14px 18px;
+  gap: 16px;
+  transition: all 0.2s var(--ease);
+}
+
+.coterie-priority-item:hover {
+  background: #ffffff;
+  border-color: rgba(246, 195, 67, 0.8);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.coterie-priority-item-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.coterie-priority-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--honey-2);
+  color: var(--honey-ink);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.coterie-priority-text {
+  min-width: 0;
+}
+
+.coterie-priority-text b {
+  display: block;
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.35;
+  margin-bottom: 2px;
+}
+
+.coterie-priority-text small {
+  color: var(--dim);
+  font-size: 12px;
+  line-height: 1.4;
+  display: block;
+}
+
+.coterie-btn-action {
+  background: var(--night);
+  color: var(--night-ink);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.coterie-btn-action:hover {
+  background: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+.coterie-priority-empty {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 20px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  margin: auto 0;
+}
+
+.coterie-priority-empty-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #166534;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.coterie-priority-empty-text h4 {
+  font: 600 14px/1.2 var(--font-display);
+  color: #14532d;
+  margin: 0 0 4px;
+}
+
+.coterie-priority-empty-text p {
+  font-size: 12.5px;
+  color: #166534;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 5. Profile Readiness Widget (Advanced Card) */
+.coterie-profile-card {
+  background: #ffffff;
+  border: 1px solid rgba(29, 29, 27, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 8px 24px -8px rgba(45, 35, 10, 0.06);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.coterie-readiness-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+
+.coterie-ring-progress {
+  width: 66px;
+  height: 66px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.coterie-ring-progress svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.coterie-ring-progress circle {
+  fill: none;
+  stroke-width: 5.5;
+}
+
+.coterie-ring-bg {
+  stroke: #f1ede4;
+}
+
+.coterie-ring-fill {
+  stroke: var(--honey);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s var(--ease);
+}
+
+.coterie-ring-number {
+  position: absolute;
+  font: 700 15px/1 var(--font-display);
+  color: var(--ink);
+}
+
+.coterie-readiness-copy h3 {
+  font: 600 16px/1.2 var(--font-display);
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+
+.coterie-readiness-copy p {
+  font-size: 12.5px;
+  color: var(--dim);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.coterie-readiness-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.coterie-check-chip {
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.coterie-check-chip.done {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.coterie-check-chip.pending {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.coterie-verif-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.coterie-verif-badge-pill.approved {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.coterie-verif-badge-pill.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* 6. Charts Section (Executive High-End SaaS Finish) */
+.coterie-charts-section {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+  .coterie-charts-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.coterie-chart-card {
+  background: #ffffff;
+  border: 1px solid rgba(29, 29, 27, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 8px 24px -8px rgba(45, 35, 10, 0.06);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.coterie-chart-card:hover {
+  box-shadow: 0 14px 32px -8px rgba(45, 35, 10, 0.1);
+  border-color: rgba(29, 29, 27, 0.14);
+}
+
+.coterie-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.06);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.coterie-chart-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coterie-chart-header-left h3 {
+  font: 600 16px/1.2 var(--font-display);
+  color: var(--ink);
+  margin: 0;
+}
+
+.coterie-timeframe-pills {
+  display: flex;
+  background: #f4f2ec;
+  padding: 3px;
+  border-radius: 999px;
+  gap: 2px;
+}
+
+.coterie-timeframe-btn {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+
+.coterie-timeframe-btn.active {
+  background: #ffffff;
+  color: var(--ink);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Metric summary strip inside performance chart */
+.coterie-chart-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.coterie-summary-stat-box {
+  background: #faf8f3;
+  border: 1px solid rgba(29, 29, 27, 0.05);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.coterie-summary-stat-box small {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--dim);
+  margin-bottom: 2px;
+}
+
+.coterie-summary-stat-box strong {
+  font: 700 18px/1 var(--font-display);
+  color: var(--ink);
+}
+
+/* Bar Canvas */
+.coterie-bar-canvas-wrap {
+  position: relative;
+  height: 140px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.coterie-grid-guide-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed rgba(29, 29, 27, 0.08);
+}
+
+.coterie-bar-chart-body {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  height: 100%;
+  align-items: flex-end;
+  position: relative;
+  z-index: 2;
+  border-bottom: 1px solid rgba(29, 29, 27, 0.1);
+  padding-bottom: 26px;
+}
+
+.coterie-bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.coterie-bar-pair {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.coterie-bar-single {
+  width: 16px;
+  border-radius: 8px 8px 0 0;
+  min-height: 8px;
+  transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative;
+  cursor: pointer;
+}
+
+.coterie-bar-single.posted {
+  background: linear-gradient(180deg, #3d3b37, #252523);
+  box-shadow: 0 2px 6px rgba(37, 37, 35, 0.2);
+}
+
+.coterie-bar-single.received {
+  background: linear-gradient(180deg, #f9ce5d, #f6c343);
+  box-shadow: 0 2px 8px rgba(246, 195, 67, 0.25);
+}
+
+.coterie-bar-single.ghost {
+  background: rgba(29, 29, 27, 0.07);
+}
+
+.coterie-bar-label {
+  position: absolute;
+  bottom: -22px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.coterie-chart-legend {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--dim);
+  margin-top: 8px;
+  align-items: center;
+}
+
+.coterie-chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.coterie-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.coterie-legend-dot.posted { background: var(--night); }
+.coterie-legend-dot.received { background: var(--honey); }
+
+.coterie-chart-tip-box {
+  background: #fefbeb;
+  border: 1px solid #fef08a;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #713f12;
+  margin-top: 14px;
+  line-height: 1.4;
+}
+
+/* Funnel Pipeline Redesign */
+.coterie-funnel-stages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.coterie-funnel-stage-row {
+  background: #faf8f3;
+  border: 1px solid rgba(29, 29, 27, 0.05);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: grid;
+  grid-template-columns: 34px 105px 1fr 38px;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.coterie-funnel-stage-row:hover {
+  background: #ffffff;
+  border-color: rgba(29, 29, 27, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.coterie-funnel-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.coterie-funnel-icon.slate { background: #e2e8f0; color: #475569; }
+.coterie-funnel-icon.amber { background: #fef3c7; color: #b45309; }
+.coterie-funnel-icon.emerald { background: #dcfce7; color: #15803d; }
+.coterie-funnel-icon.rose { background: #ffe4e6; color: #be123c; }
+
+.coterie-funnel-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.coterie-funnel-meta b {
+  font-size: 12.5px;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.coterie-funnel-meta small {
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.coterie-funnel-track {
+  height: 8px;
+  background: #ede9e0;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.coterie-funnel-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.coterie-funnel-fill.slate { background: #64748b; }
+.coterie-funnel-fill.amber { background: #f59e0b; }
+.coterie-funnel-fill.emerald { background: #10b981; }
+.coterie-funnel-fill.rose { background: #f43f5e; }
+
+.coterie-funnel-count {
+  font: 700 13px/1 var(--font-display);
+  color: var(--ink);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Acceptance Hero Block */
+.coterie-acceptance-hero {
+  background: #faf8f3;
+  border: 1px solid rgba(29, 29, 27, 0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.coterie-acceptance-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.coterie-acceptance-rate-num {
+  font: 700 24px/1 var(--font-display);
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid rgba(29, 29, 27, 0.08);
+  padding: 6px 12px;
+  border-radius: 10px;
+}
+
+.coterie-acceptance-hero-text b {
+  display: block;
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.coterie-acceptance-hero-text small {
+  display: block;
+  font-size: 11.5px;
+  color: var(--dim);
+}
+
+/* 7. Recommended Opportunities & Marketplace Grid */
+.coterie-opps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 22px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .coterie-opps-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.coterie-market-card {
+  background: #ffffff;
+  border: 1px solid rgba(29, 29, 27, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-sizing: border-box;
+  position: relative;
+  overflow: visible;
+  min-height: 320px;
+}
+
+.coterie-market-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(246, 195, 67, 0.7);
+  box-shadow: 0 16px 36px -8px rgba(60, 48, 20, 0.12), 0 0 0 1px rgba(246, 195, 67, 0.35);
+}
+
+.coterie-market-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.coterie-market-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.coterie-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.coterie-tag-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.coterie-tag-pill.buyer {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.coterie-tag-pill.seller {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.coterie-market-top-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coterie-fee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #92400e;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 750;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid #fcd34d;
+  box-shadow: 0 1px 3px rgba(246, 195, 67, 0.2);
+}
+
+.coterie-star-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #e5e5e5 !important;
+  background: #ffffff !important;
+  color: #a1a1aa !important;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  padding: 0 !important;
+}
+
+.coterie-star-btn:hover {
+  background: #fef3c7 !important;
+  border-color: #fde68a !important;
+  color: #d97706 !important;
+  transform: scale(1.1);
+}
+
+.coterie-star-btn.is-saved {
+  background: #fef3c7 !important;
+  border-color: #fde68a !important;
+  color: #f59e0b !important;
+}
+
+.coterie-market-heading-group {
+  margin-bottom: 14px;
+}
+
+.coterie-market-card-title {
+  font-family: "Outfit", system-ui, sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  color: #1d1d1b !important;
+  margin: 0 0 6px !important;
+}
+
+.coterie-market-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.coterie-market-loc {
+  color: #52525b;
+  font-size: 12.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+.coterie-market-time {
+  color: #71717a;
+  font-size: 11.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.coterie-market-specs-bento {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  background: #faf8f3;
+  border: 1px solid #f2ede3;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.coterie-spec-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.coterie-spec-cell small {
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.05em;
+  color: #8c887f;
+  text-transform: uppercase;
+}
+
+.coterie-spec-cell b {
+  font-size: 13.5px;
+  font-weight: 650;
+  color: #252523;
+  line-height: 1.3;
+}
+
+.coterie-spec-budget {
+  color: #1d4ed8 !important;
+}
+
+.coterie-spec-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 650;
+  color: #166534;
+}
+
+.coterie-market-description {
+  font-size: 12.5px;
+  color: #71717a;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-style: italic;
+  padding-left: 10px;
+  border-left: 2px solid #f6c343;
+}
+
+.coterie-market-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f0ece3;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.coterie-creator-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.coterie-avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f6c343, #d97706);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25);
+}
+
+.coterie-creator-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.coterie-creator-name-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.coterie-creator-name-row b {
+  font-size: 13px;
+  color: #252523;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.coterie-verified-icon {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.coterie-creator-text small {
+  font-size: 11px;
+  color: #71717a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.coterie-market-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Scoped Bulletproof Button Rules for Coterie Portal */
+.coterie-portal .coterie-btn-sm-outline,
+.coterie-portal button.coterie-btn-sm-outline {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  background: #ffffff !important;
+  border: 1px solid #d4d4d8 !important;
+  color: #252523 !important;
+  padding: 8px 15px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 650 !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.coterie-portal .coterie-btn-sm-outline:hover,
+.coterie-portal button.coterie-btn-sm-outline:hover {
+  background: #faf8f3 !important;
+  border-color: #252523 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.coterie-portal .coterie-btn-sm-primary,
+.coterie-portal button.coterie-btn-sm-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  background: #1d1d1b !important;
+  color: #ffffff !important;
+  padding: 8px 18px !important;
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  border: 1px solid #1d1d1b !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.coterie-portal .coterie-btn-sm-primary:hover,
+.coterie-portal button.coterie-btn-sm-primary:hover {
+  background: #f6c343 !important;
+  color: #1d1d1b !important;
+  border-color: #f6c343 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 18px rgba(246, 195, 67, 0.35) !important;
+}
+
+.coterie-portal .coterie-btn-primary,
+.coterie-portal button.coterie-btn-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  background: #1d1d1b !important;
+  color: #ffffff !important;
+  padding: 10px 22px !important;
+  border-radius: 999px !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  border: 1px solid #1d1d1b !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.coterie-portal .coterie-btn-primary:hover,
+.coterie-portal button.coterie-btn-primary:hover {
+  background: #f6c343 !important;
+  color: #1d1d1b !important;
+  border-color: #f6c343 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(246, 195, 67, 0.35) !important;
+}
+
+.coterie-portal .coterie-btn-secondary,
+.coterie-portal button.coterie-btn-secondary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(29, 29, 27, 0.15) !important;
+  color: var(--ink) !important;
+  padding: 8px 18px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+}
+
+.coterie-portal .coterie-btn-secondary:hover,
+.coterie-portal button.coterie-btn-secondary:hover {
+  background: #faf8f3 !important;
+  border-color: rgba(29, 29, 27, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 8. Recent Work Feed */
+.coterie-recent-card {
+  background: var(--card);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow), 0 0 0 1px var(--hair) inset;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+}
+
+.coterie-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.coterie-recent-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #ffffff60;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.coterie-recent-item:hover {
+  background: #ffffff;
+}
+
+.coterie-recent-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.coterie-recent-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--honey);
+  flex-shrink: 0;
+}
+
+.coterie-recent-copy b {
+  font-size: 13.5px;
+  color: var(--ink);
+  display: block;
+}
+
+.coterie-recent-copy small {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.coterie-recent-item-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 9. Sub-tabs bar in Views - Executive Segmented Pill Group */
+.coterie-subtabs-bar {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(220, 215, 203, 0.85) !important;
+  border-radius: 999px !important;
+  padding: 5px 6px !important;
+  margin-top: 12px !important;
+  margin-bottom: 22px !important;
+  box-shadow: 0 2px 12px rgba(35, 30, 20, 0.04) !important;
+  overflow-x: auto !important;
+  max-width: 100% !important;
+}
+
+.coterie-subtab-btn {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 8px 18px !important;
+  border-radius: 999px !important;
+  font-family: "Outfit", system-ui, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #635f56 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.coterie-subtab-btn:hover {
+  color: #1e1e1c !important;
+  background: #f7f4ed !important;
+}
+
+.coterie-subtab-btn.active {
+  background: #1d1d1b !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(29, 29, 27, 0.18) !important;
+}
+
+.coterie-subtab-count {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  padding: 2px 8px !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+.coterie-subtab-btn:not(.active) .coterie-subtab-count {
+  background: #ede8dc !important;
+  color: #555147 !important;
+}
+
+/* 10. Notifications Drawer & Popups */
+.coterie-popover-tray {
+  position: absolute;
+  top: 58px;
+  right: 0;
+  width: 360px;
+  max-width: 90vw;
+  background: var(--card-2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.16), 0 0 0 1px var(--hair) inset;
+  border-radius: 20px;
+  padding: 18px;
+  z-index: 100;
+  backdrop-filter: blur(14px);
+  animation: coterie-fade-up 0.25s var(--ease);
+}
+
+.coterie-popover-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.coterie-popover-header h4 {
+  font: 500 15px/1 var(--font-display);
+}
+
+.coterie-notif-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.coterie-notif-item {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #ffffffa0;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.coterie-notif-item:hover {
+  background: #fff;
+}
+
+.coterie-notif-item.unread {
+  background: #fef9c3;
+}
+
+.coterie-notif-unread-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--honey-ink);
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   My Referrals Executive Cards (Coterie Bento Design)
+   ========================================================================== */
+.coterie-my-referrals-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.coterie-my-referral-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(29, 29, 27, 0.08) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+  padding: 24px 28px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  position: relative !important;
+}
+
+.coterie-my-referral-card:hover {
+  border-color: rgba(246, 195, 67, 0.8) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 14px 34px -8px rgba(60, 48, 20, 0.12) !important;
+}
+
+.coterie-my-referral-top {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+}
+
+.coterie-my-referral-header-left {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+}
+
+.coterie-my-referral-status-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+}
+
+.coterie-status-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 12px !important;
+  border-radius: 999px !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+}
+
+.coterie-status-pill-dot {
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background: currentColor !important;
+}
+
+.coterie-status-pill.status-draft {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  border: 1px solid #fde68a !important;
+}
+
+.coterie-status-pill.status-published,
+.coterie-status-pill.status-open,
+.coterie-status-pill.status-active {
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.coterie-status-pill.status-paused {
+  background: #f4f4f5 !important;
+  color: #52525b !important;
+  border: 1px solid #e4e4e7 !important;
+}
+
+.coterie-status-pill.status-closed {
+  background: #f1f5f9 !important;
+  color: #64748b !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.coterie-my-referral-time {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 12px !important;
+  color: #71717a !important;
+}
+
+.coterie-my-referral-title {
+  font-family: "Outfit", system-ui, sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  color: #1d1d1b !important;
+  line-height: 1.3 !important;
+  margin: 6px 0 2px !important;
+}
+
+.coterie-my-referral-loc {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  font-size: 13px !important;
+  color: #52525b !important;
+  margin: 0 !important;
+}
+
+.coterie-my-referral-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  flex-shrink: 0 !important;
+}
+
+.coterie-my-referral-specs {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 14px !important;
+  background: #faf8f3 !important;
+  border: 1px solid #f2ede3 !important;
+  border-radius: 16px !important;
+  padding: 16px 20px !important;
+  margin-top: 4px !important;
+}
+
+.coterie-my-referral-specs .coterie-spec-cell {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  min-width: 0 !important;
+}
+
+.coterie-my-referral-specs .coterie-spec-cell small {
+  display: block !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  color: #8c887f !important;
+  text-transform: uppercase !important;
+}
+
+.coterie-my-referral-specs .coterie-spec-cell b {
+  display: block !important;
+  font-size: 14px !important;
+  font-weight: 650 !important;
+  color: #252523 !important;
+  line-height: 1.35 !important;
+  overflow-wrap: break-word !important;
+}
+
+.coterie-my-referral-specs .coterie-spec-budget {
+  color: #1d4ed8 !important;
+  font-weight: 700 !important;
+}
+
+@media (max-width: 960px) {
+  .coterie-my-referral-specs {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .coterie-my-referral-specs {
+    grid-template-columns: 1fr !important;
+  }
+  .coterie-my-referral-card {
+    padding: 18px 20px !important;
+  }
+}
+
+.coterie-applicants-drawer {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #f0ede6;
+}
+
+.coterie-applicants-drawer-title {
+  font-family: "Outfit", system-ui, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #252523 !important;
+  margin: 0 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+
+.coterie-applicant-card {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 14px 18px !important;
+  border: 1px solid #ede8de !important;
+  border-radius: 14px !important;
+  background: #faf9f6 !important;
+  gap: 14px !important;
+  flex-wrap: wrap !important;
+  transition: all 0.2s ease !important;
+}
+
+.coterie-applicant-card:hover {
+  background: #ffffff !important;
+  border-color: #e2dbcd !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ==========================================================================
+   AGREEMENTS REAL-TIME FLOW & BENTO CARD REDESIGN
+   ========================================================================== */
+
+.coterie-agreements-flow {
+  width: 100%;
+}
+
+.coterie-agreements-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.coterie-agreement-kpi {
+  background: #ffffff;
+  border: 1px solid rgba(220, 215, 203, 0.75);
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  box-shadow: 0 2px 10px rgba(35, 30, 20, 0.03);
+}
+
+.coterie-agreement-kpi:hover {
+  border-color: #dfc88a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(45, 35, 15, 0.08);
+}
+
+.coterie-agreement-kpi.is-selected {
+  border-color: #1d1d1b;
+  box-shadow: 0 0 0 1.5px #1d1d1b, 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.coterie-agreement-kpi.kpi-urgent {
+  background: #fffdf8;
+  border-color: #f7d488;
+}
+
+.coterie-agreement-kpi.kpi-completed {
+  background: #fbfdfb;
+  border-color: #c7eed9;
+}
+
+.coterie-kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.coterie-kpi-icon.icon-neutral {
+  background: #f6f3eb;
+  color: #5a574f;
+}
+
+.coterie-kpi-icon.icon-urgent {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.coterie-kpi-icon.icon-success {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.coterie-kpi-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.coterie-kpi-num {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #1e1e1c;
+  line-height: 1.1;
+}
+
+.coterie-kpi-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: #767268;
+  margin-top: 2px;
+}
+
+.coterie-kpi-tag {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f2ede4;
+  color: #6e6a61;
+  white-space: nowrap;
+}
+
+.coterie-kpi-tag.tag-urgent {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  animation: coteriePulse 1.8s infinite;
+}
+
+.coterie-kpi-tag.tag-success {
+  background: #d1fae5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+@keyframes coteriePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(0.98); }
+}
+
+/* Agreements List & Card */
+.coterie-agreements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.coterie-card,
+.coterie-agreement-card,
+.coterie-application-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(220, 215, 203, 0.8) !important;
+  border-radius: 20px !important;
+  padding: 26px 28px !important;
+  box-shadow: 0 4px 22px rgba(35, 30, 20, 0.04) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+}
+
+.coterie-card:hover,
+.coterie-agreement-card:hover,
+.coterie-application-card:hover {
+  border-color: #dfc88a !important;
+  box-shadow: 0 14px 40px rgba(45, 35, 15, 0.08) !important;
+  transform: translateY(-2px) !important;
+}
+
+.coterie-agreement-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.coterie-agreement-heading-block {
+  flex: 1;
+  min-width: 280px;
+}
+
+.coterie-agreement-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.coterie-agreement-id-chip {
+  background: #f6f3eb;
+  border: 1px solid #e8e2d4;
+  border-radius: 7px;
+  padding: 4px 9px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #524f47;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.coterie-agreement-id-chip:hover {
+  background: #eee8dc;
+  color: #1e1e1c;
+  border-color: #ddd5c4;
+}
+
+.coterie-copied-hint {
+  font-size: 10px;
+  color: #059669;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+.coterie-pill-executed {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.coterie-pill-urgent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+  animation: coteriePulse 1.8s infinite;
+}
+
+.coterie-pill-waiting {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.coterie-contract-type-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #faf8f3;
+  color: #827e74;
+  border: 1px solid #ece6da;
+}
+
+.coterie-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.coterie-pill-dot.dot-green {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+.coterie-pill-dot.dot-amber {
+  background: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
+}
+
+.coterie-pill-dot.dot-blue {
+  background: #3b82f6;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.5);
+}
+
+.coterie-agreement-title {
+  font-family: "Outfit", system-ui, sans-serif !important;
+  font-size: 21px !important;
+  font-weight: 700 !important;
+  color: #1f1f1d !important;
+  margin: 4px 0 8px !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.coterie-agreement-partner-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.coterie-partner-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ebdcc2;
+  color: #5c4728;
+  font-size: 11.5px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.coterie-partner-info-text {
+  font-size: 13.5px;
+  color: #4e4b44;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.coterie-partner-subrole {
+  font-size: 12px;
+  color: #858177;
+}
+
+.coterie-agreement-quick-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* REAL-TIME CONTRACT LIFECYCLE FLOW TRACKER */
+.coterie-agreement-flow-container {
+  background: #faf8f3 !important;
+  border: 1px solid #ece5d6 !important;
+  border-radius: 16px !important;
+  padding: 18px 22px !important;
+  margin: 18px 0 !important;
+}
+
+.coterie-flow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee8db;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.coterie-flow-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #685f4e;
+}
+
+.coterie-flow-status-text {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #3d3b36;
+}
+
+.coterie-flow-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  position: relative;
+  gap: 12px;
+}
+
+.coterie-flow-track-bg {
+  position: absolute;
+  top: 18px;
+  left: 8%;
+  right: 8%;
+  height: 3px;
+  background: #e5ded0;
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.coterie-flow-track-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #e5ad23, #10b981);
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.coterie-flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.coterie-node-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0 4px #faf8f3;
+}
+
+.coterie-flow-node.is-done .coterie-node-circle {
+  background: #10b981;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px #faf8f3, 0 3px 10px rgba(16, 185, 129, 0.3);
+}
+
+.coterie-flow-node.is-active-action .coterie-node-circle {
+  background: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px #faf8f3, 0 3px 12px rgba(245, 158, 11, 0.4);
+  animation: coteriePulse 1.8s infinite;
+}
+
+.coterie-flow-node.is-pending .coterie-node-circle {
+  background: #e7dfd1;
+  color: #787265;
+}
+
+.coterie-flow-node.is-upcoming .coterie-node-circle {
+  background: #eee8dc;
+  color: #a39c8e;
+}
+
+.coterie-node-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+}
+
+.coterie-node-step {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #9c9586;
+  text-transform: uppercase;
+}
+
+.coterie-node-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #222220;
+  line-height: 1.25;
+}
+
+.coterie-node-desc {
+  font-size: 11px;
+  color: #6f6a5f;
+  margin-top: 1px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.coterie-node-time {
+  font-size: 10.5px;
+  color: #8e887a;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.coterie-node-status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-top: 5px;
+}
+
+.coterie-node-status-badge.badge-signed {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.coterie-node-status-badge.badge-action {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.coterie-node-status-badge.badge-wait {
+  background: #f0ebe0;
+  color: #7e796e;
+}
+
+/* Agreement 4-Column Specs */
+.coterie-agreement-specs {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 14px !important;
+  background: #faf9f6 !important;
+  border: 1px solid #f0ebe1 !important;
+  border-radius: 14px !important;
+  padding: 15px 18px !important;
+  margin-top: 16px !important;
+}
+
+.coterie-agreement-specs .coterie-spec-cell {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  min-width: 0 !important;
+}
+
+.coterie-agreement-specs .coterie-spec-cell small {
+  display: block !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  color: #8c887f !important;
+  text-transform: uppercase !important;
+}
+
+.coterie-agreement-specs .coterie-spec-cell b {
+  display: block !important;
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  color: #222220 !important;
+  line-height: 1.35 !important;
+  overflow-wrap: break-word !important;
+}
+
+.coterie-agreement-specs .coterie-spec-highlight {
+  color: #b45309 !important;
+  font-size: 15px !important;
+  font-weight: 750 !important;
+}
+
+.coterie-agreement-specs .coterie-spec-note {
+  display: block !important;
+  font-size: 11px !important;
+  color: #8c887f !important;
+  margin-top: 2px !important;
+}
+
+/* Agreement Foot */
+.coterie-agreement-foot {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-wrap: wrap !important;
+  margin-top: 20px !important;
+  padding-top: 16px !important;
+  border-top: 1px solid #f2ede4 !important;
+}
+
+.coterie-audit-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #5a574e;
+  font-weight: 500;
+  background: #fbf9f5;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #ede7db;
+}
+
+.coterie-foot-action-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coterie-btn-sign-urgent {
+  background: linear-gradient(135deg, #1d1d1b 0%, #302e2a 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid #1d1d1b !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(29, 29, 27, 0.18) !important;
+  padding: 10px 18px !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.coterie-btn-sign-urgent:hover {
+  background: linear-gradient(135deg, #2b2b28 0%, #3d3b36 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(29, 29, 27, 0.28) !important;
+}
+
+/* Empty State */
+.coterie-agreement-empty-box {
+  background: #ffffff;
+  border: 1px solid rgba(220, 215, 203, 0.7);
+  border-radius: 20px;
+  text-align: center;
+  padding: 56px 24px;
+  box-shadow: 0 4px 20px rgba(35, 30, 20, 0.03);
+}
+
+.coterie-empty-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #faf7f0;
+  color: #c49a3c;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px;
+  border: 1px solid #ede6d8;
+}
+
+.coterie-agreement-empty-box h3 {
+  font-family: "Outfit", system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e1e1c;
+  margin: 0 0 8px;
+}
+
+.coterie-agreement-empty-box p {
+  font-size: 14px;
+  color: #726e64;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Responsive Overrides */
+@media (max-width: 960px) {
+  .coterie-agreements-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .coterie-flow-stepper {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .coterie-flow-track-bg {
+    display: none;
+  }
+  .coterie-agreement-specs {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .coterie-agreement-card {
+    padding: 18px 20px !important;
+  }
+  .coterie-flow-stepper {
+    grid-template-columns: 1fr;
+  }
+  .coterie-agreement-specs {
+    grid-template-columns: 1fr !important;
+  }
+  .coterie-agreement-foot {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .coterie-foot-action-wrap {
+    width: 100%;
+  }
+  .coterie-foot-action-wrap button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+
+

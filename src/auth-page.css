@@ -1,0 +1,164 @@
+.authPage {
+  min-height: 100svh;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: #102343;
+  background: radial-gradient(circle at 10% 12%, #edf6ff 0, transparent 31%),
+    radial-gradient(circle at 93% 82%, #e1efff 0, transparent 33%),
+    linear-gradient(120deg, #f8fbff 0%, #f1f7ff 52%, #f8fbff 100%);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+}
+.authPage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(#a9c7ef 0.7px, transparent 0.7px);
+  background-size: 27px 27px;
+  opacity: .13;
+  mask-image: linear-gradient(100deg, #000, transparent 65%);
+}
+.authPageGlow { position: absolute; z-index: -1; border-radius: 50%; pointer-events: none; filter: blur(4px); }
+.authPageGlowOne { width: 560px; height: 560px; right: -260px; top: -245px; background: radial-gradient(circle, #c9e3ff91, transparent 69%); animation: authGlow 13s ease-in-out infinite alternate; }
+.authPageGlowTwo { width: 650px; height: 650px; left: -390px; bottom: -330px; background: radial-gradient(circle, #d4dfff96, transparent 69%); animation: authGlow 15s ease-in-out infinite alternate-reverse; }
+.authPageHeader, .authPageFooter { width: min(1320px, calc(100% - 96px)); margin-inline: auto; display: flex; align-items: center; justify-content: space-between; }
+.authPageHeader { min-height: 104px; gap: 24px; }
+.authPageHeader > a:first-child { text-decoration: none; }
+.authPageHeader .brand { font-size: 21px; }
+.authPageHeader .brandMark { width: 42px; height: 42px; }
+.authBack { min-height: 40px; display: inline-flex; align-items: center; gap: 10px; padding: 0 15px; border: 1px solid #dce8f8; border-radius: 99px; background: #ffffffbc; color: #4c6283; text-decoration: none; font-size: 12px; font-weight: 660; box-shadow: 0 4px 16px #294f7909; transition: transform .25s, border-color .25s, box-shadow .25s; }
+.authBack svg { transform: rotate(180deg); color: #2774ec; }
+.authBack:hover { transform: translateX(-3px); border-color: #aacbf5; box-shadow: 0 9px 25px #2769d31a; }
+.authPageMain { flex: 1; width: min(1220px, calc(100% - 96px)); margin: auto; padding: 26px 0 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(410px, 488px); align-items: center; gap: clamp(52px, 7vw, 118px); }
+.authStory { max-width: 620px; animation: authRise .7s cubic-bezier(.2,.8,.2,1) both; }
+.authStoryEyebrow { display: flex; align-items: center; gap: 10px; color: #3174dd; font-size: 10px; font-weight: 780; letter-spacing: 1.7px; }
+.authStoryEyebrow span { width: 9px; height: 9px; border-radius: 50%; background: #3891f9; box-shadow: 0 0 0 5px #dcecff; }
+.authStory h1 { margin: 28px 0 20px; font-size: clamp(56px, 5.7vw, 86px); line-height: 1.025; letter-spacing: -.063em; font-weight: 740; }
+.authStory h1 em { font-style: normal; color: transparent; background: linear-gradient(100deg, #2da8f5, #2469ee 59%, #6769e7); background-clip: text; -webkit-background-clip: text; }
+.authStoryLead { max-width: 510px; margin: 0; color: #617591; font-size: 16px; line-height: 1.72; }
+.authStoryCards { display: grid; gap: 10px; max-width: 490px; margin-top: 36px; }
+.authStoryCard { min-height: 72px; display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 14px; padding: 12px 16px; border: 1px solid #dfebfa; border-radius: 15px; background: #ffffffb5; box-shadow: 0 10px 30px #2c5c9c0c; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s, border-color .28s; animation: authRise .7s cubic-bezier(.2,.8,.2,1) both; }
+.authStoryCard:nth-child(2) { animation-delay: .09s; }
+.authStoryCard:nth-child(3) { animation-delay: .18s; }
+.authStoryCard:hover { transform: translateX(7px); border-color: #a9cffb; box-shadow: 0 16px 36px #2b6cce19; }
+.authStoryIcon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; color: #2476e8; background: #e7f3ff; }
+.authStoryIcon.violet { color: #6959d8; background: #eeedff; }
+.authStoryIcon.mint { color: #138e78; background: #e4f7f2; }
+.authStoryCard strong, .authStoryCard small { display: block; }
+.authStoryCard strong { color: #1c3456; font-size: 13px; font-weight: 740; }
+.authStoryCard small { margin-top: 5px; color: #71839b; font-size: 11px; }
+.authStoryCard > svg { color: #8db2dd; transition: transform .25s; }
+.authStoryCard:hover > svg { transform: translateX(4px); }
+.authStoryFoot { display: flex; align-items: center; gap: 9px; margin-top: 25px; color: #7b8fa8; font-size: 11px; }
+.authStoryFootMark { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 8px; color: #178978; background: #e4f6f0; }
+.authPagePanel { position: relative; width: 100%; padding: 27px 40px 31px; overflow: hidden; border: 1px solid #d9e7f9; border-radius: 26px; background: #ffffffed; box-shadow: 0 32px 90px #2a5d9e1b, 0 7px 24px #2b5e9b0a; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); animation: authPanelIn .75s cubic-bezier(.2,.8,.2,1) .1s both; }
+.authPanelAccent { position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(90deg, #2cb3f7, #246cef 50%, #7568e8); }
+.authPanelTop { display: flex; justify-content: space-between; color: #8ba1be; font-size: 9px; font-weight: 760; letter-spacing: 1.25px; }
+.authPanelTop > span:first-child { display: flex; align-items: center; gap: 8px; color: #4783d5; }
+.authPanelStatus { width: 7px; height: 7px; border-radius: 50%; background: #33b998; box-shadow: 0 0 0 4px #e5f7f0; }
+.authPagePanel .authCard { width: 100%; max-width: none; padding: 0; margin: 27px 0 0; }
+.authPagePanel .cardBrand { padding-right: 0; }
+.authPagePanel .cardBrand .brand { font-size: 16px; }
+.authPagePanel .cardBrand .brandMark { width: 32px; height: 32px; }
+.authPagePanel .cardIntro { margin: 28px 0 25px; }
+.authPagePanel .cardIntro h1 { margin-top: 12px; font-size: 33px; letter-spacing: -1.25px; }
+.authPagePanel .cardIntro p { font-size: 12px; }
+.authPagePanel .tabs { margin-bottom: 21px; padding: 5px; border: 1px solid #e8eef7; border-radius: 12px; background: #f2f6fc; }
+.authPagePanel .tabs button { min-height: 39px; border-radius: 9px; transition: background .2s, color .2s, box-shadow .2s; }
+.authPagePanel .tabs button:hover { color: #176bf0; }
+.authPagePanel .inputWrap { height: 48px; border-radius: 10px; background: #fbfdff; transition: border-color .2s, box-shadow .2s, background .2s; }
+.authPagePanel .inputWrap:focus-within { background: #fff; }
+.authPagePanel .inputWrap input { font-size: 12px; }
+.authPagePanel .authCard form label { font-size: 11px; margin: 15px 0; }
+.authPagePanel .submit, .authPagePanel .googleButton { height: 49px; margin-top: 5px; border-radius: 10px; font-size: 12px; transition: transform .25s, box-shadow .25s, filter .25s; }
+.authPagePanel .submit:hover, .authPagePanel .googleButton:hover { transform: translateY(-2px); box-shadow: 0 11px 24px #3979e340; filter: saturate(1.12); }
+.authPagePanel .switch { font-size: 11px; margin: 21px 0 0; }
+.authPagePanel .switch button { font-size: inherit; }
+.authPagePanel .terms { border-top: 1px solid #edf2f8; padding-top: 18px; margin-top: 21px; line-height: 1.5; }
+.authPagePanel .rm-onboarding-shell { min-height: 0; margin-top: 25px; background: transparent; font-family: inherit; }
+.authPagePanel .rm-split-auth-container { display: block; min-height: 0; }
+.authPagePanel .rm-split-hero { display: none; }
+.authPagePanel .rm-split-form-pane { display: block; padding: 0; background: transparent; }
+.authPagePanel .rm-auth-form-card { max-width: none; gap: 17px; animation: authRise .42s cubic-bezier(.2,.8,.2,1) both; }
+.authPagePanel .rm-form-intro h2 { color: #102343; letter-spacing: -1.2px; }
+.authPagePanel .rm-form-intro p { color: #71839b; }
+.authPagePanel .rm-terms-check { display: flex; align-items: flex-start; gap: 9px; color: #657b96; font-size: 10px; line-height: 1.55; cursor: pointer; }
+.authPagePanel .rm-terms-check input { width: 15px; height: 15px; flex: none; margin: 1px 0 0; accent-color: #2878eb; }
+.authPagePanel .rm-terms-check b { color: #2b70d4; }
+.authPagePanel .rm-field-row, .authPagePanel .rm-password-row { border-radius: 10px; background: #fbfdff; }
+.authPagePanel .rm-field-row:focus-within, .authPagePanel .rm-password-row:focus-within { border-color: #75a4f2; box-shadow: 0 0 0 3px #3677e915; background: #fff; }
+.authPagePanel .rm-btn-primary { border-radius: 10px; background: linear-gradient(102deg,#48aaf1,#3167e5); box-shadow: 0 5px 13px #3979e32a; transition: transform .25s, box-shadow .25s; }
+.authPagePanel .rm-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 11px 24px #3979e340; }
+.authPagePanel .rm-onboarding-full-page { min-height: 0; margin-top: 24px; padding: 0; background: transparent; }
+.authPagePanel .rm-onboarding-form-container { width: 100%; max-width: none; padding: 0; }
+.authPagePanel .rm-onboarding-card { box-shadow: none; }
+.authPageFooter { min-height: 58px; border-top: 1px solid #dfeaf9; color: #8a9cb3; font-size: 10px; }
+@keyframes authRise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes authPanelIn { from { opacity: 0; transform: translateY(25px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes authGlow { to { transform: translate(30px, 28px); } }
+@media (max-width: 1040px) { .authPageMain { grid-template-columns: minmax(0, 1fr) minmax(370px, 440px); gap: 34px; } .authStory h1 { font-size: clamp(49px, 5.8vw, 69px); } .authPagePanel { padding: 25px 30px 27px; } }
+@media (max-width: 780px) { .authPageHeader, .authPageFooter, .authPageMain { width: min(560px, calc(100% - 36px)); } .authPageHeader { min-height: 76px; } .authPageHeader .brand { font-size: 18px; } .authPageHeader .brandMark { width: 35px; height: 35px; } .authPageMain { display: flex; flex-direction: column; align-items: stretch; gap: 28px; padding: 20px 0 37px; } .authStory { max-width: none; } .authStory h1 { margin: 19px 0 11px; font-size: clamp(43px, 9vw, 65px); } .authStory h1 br:nth-of-type(1) { display: none; } .authStoryLead { font-size: 13px; line-height: 1.6; } .authStoryCards { grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 20px; max-width: none; } .authStoryCard { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; min-height: 116px; padding: 10px; } .authStoryCard strong { font-size: 10px; } .authStoryCard small, .authStoryCard > svg, .authStoryFoot { display: none; } .authStoryIcon { width: 32px; height: 32px; border-radius: 9px; } .authStoryIcon svg { width: 17px; } .authPagePanel { max-width: 560px; padding: 25px 30px 28px; } }
+@media (max-width: 480px) { .authPageHeader, .authPageFooter, .authPageMain { width: calc(100% - 28px); } .authPageHeader .brand { font-size: 16px; } .authPageHeader .brandMark { width: 32px; height: 32px; } .authBack { padding: 0 10px; font-size: 10px; } .authStoryEyebrow { font-size: 8px; } .authStory h1 { font-size: clamp(42px, 10.5vw, 54px); } .authStoryCards { margin-top: 17px; } .authPagePanel { border-radius: 20px; padding: 23px 20px 24px; } .authPagePanel .cardIntro h1 { font-size: 28px; } .authPagePanel .cardBrand .brand { font-size: 13px; } .authPagePanel .cardBrand .brandMark { width: 27px; height: 27px; } .authPagePanel .secure { font-size: 9px; } .authPageFooter { font-size: 9px; gap: 12px; } }
+@media (prefers-reduced-motion: reduce) { .authPageGlow, .authStory, .authStoryCard, .authPagePanel { animation: none; } .authStoryCard, .authBack, .authPagePanel .submit, .authPagePanel .googleButton { transition: none; } }
+.verifyEmailPage { min-height: 100svh; position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; color: #102343; background: radial-gradient(circle at 8% 15%, #e9f4ff 0, transparent 31%), radial-gradient(circle at 92% 80%, #e4edff 0, transparent 34%), #f7faff; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif; }
+.verifyEmailGlow { position: absolute; z-index: -1; width: 540px; height: 540px; top: 10%; left: 50%; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(circle, #cfe5ff80, transparent 68%); animation: authGlow 12s ease-in-out infinite alternate; }
+.verifyEmailHeader, .verifyEmailFooter { width: min(1160px, calc(100% - 48px)); margin-inline: auto; display: flex; align-items: center; justify-content: space-between; }
+.verifyEmailHeader { min-height: 88px; }
+.verifyEmailHeader .brand { text-decoration: none; font-size: 19px; }
+.verifyEmailHeader .brandMark { width: 38px; height: 38px; }
+.verifyEmailHeader > button { border: 1px solid #dce8f7; border-radius: 99px; padding: 10px 16px; background: #ffffffbf; color: #647895; font-size: 11px; font-weight: 700; }
+.verifyEmailCard { width: min(470px, calc(100% - 32px)); margin: auto; padding: 39px 42px 30px; border: 1px solid #dce8f7; border-radius: 25px; background: #ffffffed; box-shadow: 0 28px 80px #2b5b9419, 0 5px 18px #315f970b; text-align: center; animation: authPanelIn .55s cubic-bezier(.2,.8,.2,1) both; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+.verifyEmailIcon { display: grid; place-items: center; width: 62px; height: 62px; margin: 0 auto 17px; border: 1px solid #d8eafe; border-radius: 19px; background: linear-gradient(145deg, #eef8ff, #e4edff); color: #2b7dea; box-shadow: 0 10px 25px #3886e31b; }
+.verifyEmailEyebrow { color: #3478d7; font-size: 9px; font-weight: 800; letter-spacing: 1.45px; }
+.verifyEmailCard h1 { margin: 11px 0 8px; color: #132a4a; font-size: 31px; letter-spacing: -1.2px; }
+.verifyEmailLead { margin: 0; color: #7487a1; font-size: 12px; }
+.verifyEmailAddress { display: inline-flex; justify-content: center; margin: 13px auto 0; padding: 9px 14px; border: 1px solid #e1ecfa; border-radius: 99px; background: #f6faff; color: #2b507d; font-size: 13px; font-weight: 750; letter-spacing: .2px; }
+.verifyEmailHint { margin: 17px 0 22px; color: #71839b; font-size: 11px; line-height: 1.7; }
+.verifyEmailPrimary, .verifyEmailSecondary, .verifyEmailConfirm { min-height: 45px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px; border-radius: 11px; font-size: 11px; font-weight: 760; transition: transform .2s, box-shadow .2s, border-color .2s; }
+.verifyEmailPrimary { border: 0; background: linear-gradient(105deg, #389df3, #2768ed); color: #fff; box-shadow: 0 9px 21px #3079e42e; }
+.verifyEmailResend { min-height: 44px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 10px; border: 1px solid #d6e4f7; border-radius: 11px; background: #fff; color: #315f9c; font-size: 11px; font-weight: 700; transition: background .2s,border-color .2s,transform .2s; }
+.verifyOtpLabel { display: block; margin: 0 0 7px; color: #617690; text-align: left; font-size: 11px; font-weight: 700; }
+.verifyOtpInput { width: 100%; height: 54px; margin-bottom: 13px; border: 1px solid #d6e4f7; border-radius: 12px; background: #f8fbff; color: #183454; text-align: center; font-size: 25px; font-weight: 750; letter-spacing: .38em; outline: none; transition: border-color .2s,box-shadow .2s,background .2s; }
+.verifyOtpInput:focus { border-color: #4a93f4; background: #fff; box-shadow: 0 0 0 4px #3789f219; }
+.verifyOtpInput::placeholder { color: #b2c1d4; }
+.verifyEmailResend:hover:not(:disabled) { transform: translateY(-1px); border-color: #a9cafa; background: #f5f9ff; }
+.verifyEmailResend:disabled { opacity: .62; cursor: not-allowed; }
+.verifyEmailPrimary:hover, .verifyEmailConfirm:hover { transform: translateY(-2px); box-shadow: 0 13px 26px #3079e43b; }
+.verifyEmailSecondary { margin-top: 9px; border: 1px solid #dce8f7; background: #fff; color: #3d69a4; }
+.verifyEmailSecondary:disabled { color: #99a9bc; cursor: not-allowed; }
+.verifyEmailDivider { display: flex; align-items: center; gap: 10px; margin: 23px 0 12px; color: #9babc0; font-size: 8px; font-weight: 800; letter-spacing: 1px; }
+.verifyEmailDivider span { height: 1px; flex: 1; background: #e8eff8; }
+.verifyEmailConfirm { justify-content: space-between; padding: 0 14px; border: 1px solid #cfe1f8; background: #edf5ff; color: #2469ca; }
+.verifyEmailConfirm svg:last-child { margin-left: auto; }
+.verifyEmailNotice { margin-top: 13px; padding: 10px 12px; border-radius: 10px; font-size: 10px; line-height: 1.55; text-align: left; }
+.verifyEmailNotice.error { color: #a34040; background: #fff0ef; }
+.verifyEmailNotice.success { color: #187557; background: #eaf8f2; }
+.verifyEmailFoot { display: flex; align-items: flex-start; justify-content: center; gap: 7px; margin-top: 22px; color: #899bb2; font-size: 9px; line-height: 1.55; }
+.verifyEmailFoot svg { flex: none; color: #178a71; }
+.verifyEmailFooter { min-height: 55px; border-top: 1px solid #e1ebf8; color: #8a9bb0; font-size: 9px; }
+@media (max-width: 520px) { .verifyEmailHeader, .verifyEmailFooter { width: calc(100% - 30px); } .verifyEmailHeader { min-height: 72px; } .verifyEmailHeader .brand { font-size: 16px; } .verifyEmailHeader .brandMark { width: 32px; height: 32px; } .verifyEmailCard { padding: 31px 22px 25px; border-radius: 21px; } .verifyEmailCard h1 { font-size: 28px; } .verifyEmailFooter { font-size: 8px; gap: 12px; } }
+@media (prefers-reduced-motion: reduce) { .verifyEmailGlow, .verifyEmailCard { animation: none; } .verifyEmailPrimary, .verifyEmailSecondary, .verifyEmailConfirm { transition: none; } }
+.verifyAddressToggle{display:block;margin:10px auto 0;border:0;background:transparent;color:#3573ce;font-size:11px;text-decoration:underline;text-underline-offset:3px}
+.verifyDeliveryHelp{margin-top:16px;text-align:left;color:#597395;font-size:12px;line-height:1.7;border:1px solid #e2eaf6;padding:11px 14px;border-radius:10px;background:#f8fbff}
+/* Email verification: give the centered card the same crisp, layered blue finish as registration. */
+.verifyEmailCard{position:relative;overflow:hidden;width:min(530px,calc(100% - 32px));padding:clamp(34px,4vw,48px) clamp(25px,5vw,56px) 34px;border-color:#d7e6f8;border-radius:22px;background:linear-gradient(145deg,#fffffffa,#f9fcffed);box-shadow:0 32px 90px #174e921c,0 7px 22px #275c9910, inset 0 1px #fff}
+.verifyEmailCard:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#4fb2ff,#1870f4 55%,#8ecfff)}
+.verifyEmailIcon{position:relative;width:68px;height:68px;border-radius:20px;background:linear-gradient(145deg,#f6fbff,#e1efff);box-shadow:0 12px 28px #3784df22,inset 0 1px #fff}
+.verifyEmailCard h1{font-weight:650;letter-spacing:-1.35px}
+.verifyEmailAddress{max-width:100%;overflow-wrap:anywhere}
+.verifyEmailPrimary,.verifyEmailResend{min-height:49px;border-radius:11px}
+.verifyEmailPrimary{box-shadow:0 12px 24px #216fe42b}
+.verifyEmailFoot{padding-top:14px;border-top:1px solid #e8eff8}
+.verifyJourney{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:8px;margin:22px 0 18px;padding:13px 14px;border:1px solid #e1ebf7;border-radius:12px;background:linear-gradient(105deg,#f8fbff,#f1f7ff);text-align:left}
+.verifyJourney>div{display:flex;align-items:center;gap:6px;color:#7e91aa;font-size:10px;font-weight:600;white-space:nowrap}
+.verifyJourney>div i{width:22px;height:22px;display:grid;place-items:center;border:1px solid #d7e2f0;border-radius:50%;background:#fff;color:#8294ab;font-size:10px;font-style:normal}
+.verifyJourney>div.current{color:#1765d3}.verifyJourney>div.current i{border-color:#287bed;background:linear-gradient(145deg,#3795ff,#1b65e8);color:white;box-shadow:0 4px 10px #2677e52e}
+.verifyJourney>b{height:1px;min-width:8px;background:linear-gradient(90deg,#8bbaf7,#d8e5f5)}
+.verifyEmailCard .verifyEmailPrimary{margin-top:0}
+@media(max-width:520px){.verifyEmailCard{width:min(500px,calc(100% - 28px));padding:30px 21px 24px;border-radius:18px}.verifyEmailIcon{width:58px;height:58px;border-radius:17px}}
+@media(max-width:390px){.verifyJourney{gap:5px;padding:11px 9px}.verifyJourney>div{gap:4px;font-size:9px}.verifyJourney>div i{width:20px;height:20px}.verifyJourney>b{min-width:5px}}
+.verifyDeliveryHelp summary{cursor:pointer;font-weight:600}.verifyDeliveryHelp p{margin:8px 0 0}.verifyEmailAddress{max-width:100%;overflow-wrap:anywhere}.verifyEmailNotice code{display:inline-block;margin-top:6px;font-size:11px}.verifyEmailPrimary:disabled{opacity:.65;cursor:not-allowed}

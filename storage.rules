@@ -1,0 +1,58 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function agreement(agreementId) {
+      return firestore.get(/databases/(default)/documents/agreements/$(agreementId)).data;
+    }
+    function isParticipant(agreementId) {
+      let record = agreement(agreementId);
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && record.status == 'ACTIVE'
+        && (record.referringProfessionalId == request.auth.uid || record.receivingProfessionalId == request.auth.uid);
+    }
+    match /executed-agreements/{agreementId}/{fileName} {
+      allow get: if isParticipant(agreementId);
+      allow list, create, update, delete: if false;
+    }
+    match /profile-photos/{uid}/{fileName} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list: if false;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.auth.token.email_verified == true
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/jpeg|image/png|image/webp');
+      allow delete: if request.auth != null && request.auth.uid == uid && request.auth.token.email_verified == true;
+    }
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.platformRole == 'ADMIN' || request.auth.token.platformRole == 'SUPER_ADMIN' ||
+        request.auth.token.role == 'ADMIN' || request.auth.token.role == 'SUPER_ADMIN' ||
+        request.auth.token.admin == true
+      );
+    }
+    match /verification-documents/{uid}/{fileName} {
+      allow get: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow list: if false;
+      function canReplaceSubmittedDocument() {
+        return request.auth != null && request.auth.uid == uid
+          && firestore.get(/databases/(default)/documents/users/$(uid)).data.verificationStatus in ['requires_changes', 'rejected'];
+      }
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.auth.token.email_verified == true
+        && resource == null
+        && request.resource.size <= 8 * 1024 * 1024
+        && request.resource.contentType.matches('application/pdf|image/jpeg|image/png');
+      allow update: if canReplaceSubmittedDocument()
+        && request.auth.token.email_verified == true
+        && request.resource.size <= 8 * 1024 * 1024
+        && request.resource.contentType.matches('application/pdf|image/jpeg|image/png');
+      allow delete: if canReplaceSubmittedDocument() && request.auth.token.email_verified == true;
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
