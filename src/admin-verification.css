@@ -554,4 +554,110 @@
   }
 }
 
+/* Inline Approval & Quick Actions */
+.verificationActionBtns {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.verificationApproveBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #059669;
+  border: 1px solid #047857;
+  color: #ffffff;
+  font-size: 8.5px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 2px 6px rgba(5, 150, 105, 0.2);
+  white-space: nowrap;
+}
+
+.verificationApproveBtn:hover:not(:disabled) {
+  background: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.35);
+}
+
+.verificationApproveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.verificationRejectBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  font-size: 8.5px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.verificationRejectBtn:hover:not(:disabled) {
+  background: #fef2f2;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+
+.verificationRejectBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.verificationApprovedPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 99px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #059669;
+  font-size: 8px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.verificationDrawerHeadActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.verificationDrawerHeadActions .verificationApproveBtn,
+.verificationDrawerHeadActions .verificationRejectBtn {
+  font-size: 11px;
+  padding: 8px 14px;
+  border-radius: 9px;
+}
+
+.verificationSpinner {
+  animation: verificationSpin 0.9s linear infinite;
+}
+
+@keyframes verificationSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
 

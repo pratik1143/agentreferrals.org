@@ -535,6 +535,68 @@ export const reviewProfessionalVerificationItem = onCall(callable, async request
   return result;
 });
 
+export const approveProfessionalVerification = onCall(callable, async request => {
+  const uid = text(request.data?.userId, 150);
+  if (!uid) fail('invalid-argument', 'A professional account ID is required.');
+  const actor = await authorize(request, 'VERIFICATION_APPROVE');
+  const userRef = db.collection('users').doc(uid);
+  const submissionRef = db.collection('verification_submissions').doc(uid);
+  const notificationRef = db.collection('notifications').doc();
+  const eventRef = submissionRef.collection('events').doc();
+
+  await db.runTransaction(async tx => {
+    const userSnap = await tx.get(userRef);
+    if (!userSnap.exists) fail('not-found', 'Professional user not found.');
+
+    tx.update(userRef, {
+      verificationStatus: 'approved',
+      professionalVerificationStatus: 'approved',
+      accountStatus: 'ACTIVE',
+      verificationReviewedBy: actor.uid,
+      verificationReviewedAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp()
+    });
+
+    const submissionSnap = await tx.get(submissionRef);
+    if (submissionSnap.exists) {
+      tx.update(submissionRef, {
+        status: 'APPROVED',
+        reviewedBy: actor.uid,
+        reviewedAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp()
+      });
+      tx.create(eventRef, {
+        eventType: 'SUBMISSION_APPROVED',
+        actorId: actor.uid,
+        actorRole: actor.role,
+        userId: uid,
+        timestamp: FieldValue.serverTimestamp()
+      });
+    }
+
+    tx.set(notificationRef, {
+      userId: uid,
+      category: 'Verification',
+      title: 'Professional verification approved',
+      message: 'Your credentials have been verified and approved. You now have full access to marketplace opportunities and contracts.',
+      unread: true,
+      createdAt: FieldValue.serverTimestamp()
+    });
+
+    tx.create(db.collection('audit_logs').doc(), {
+      actorUid: actor.uid,
+      actorRole: actor.role,
+      actorEmail: actor.email,
+      action: 'PROFESSIONAL_VERIFICATION_APPROVED',
+      collection: 'users',
+      targetId: uid,
+      createdAt: FieldValue.serverTimestamp()
+    });
+  });
+
+  return { ok: true, status: 'approved' };
+});
+
 export const rejectProfessionalVerificationSubmission = onCall(callable, async request => {
   const uid = text(request.data?.userId, 150);
   const reason = text(request.data?.reason, 1000);

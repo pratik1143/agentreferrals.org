@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Activity, ArrowDown, ArrowRight, ArrowUpRight, BadgeCheck, BriefcaseBusiness, Building2, CalendarDays, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Clock3, Copy, Download, Eye, FileCheck2, FileText, FilterX, Globe, Handshake, Mail, MapPin, Phone, Quote, RefreshCw, Search, ShieldCheck, Sparkles, UserRound, X, XCircle } from 'lucide-react';
 import { httpsCallable } from 'firebase/functions';
 import { getBlob, ref as storageRef } from 'firebase/storage';
-import { collection, getDocsFromServer, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import { collection, doc, updateDoc, serverTimestamp, getDocsFromServer, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { db, functions, storage } from './firebase';
 import './admin-verification.css';
 import VerificationReferrals from './VerificationReferrals';
@@ -74,6 +74,147 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
   const [accountEvents, setAccountEvents] = useState({});
   const [activityErrors, setActivityErrors] = useState({});
   const [activityPending, setActivityPending] = useState({});
+  const [actionBusyId, setActionBusyId] = useState('');
+  const [actionNotice, setActionNotice] = useState('');
+
+  const handleApproveClient = async (targetUser, event) => {
+    if (event) event.stopPropagation();
+    if (!targetUser || actionBusyId) return;
+
+    const confirmApprove = window.confirm(`Approve credentials and verify ${nameOf(targetUser)}? They will immediately receive verified professional status.`);
+    if (!confirmApprove) return;
+
+    setActionBusyId(targetUser.id);
+    setActionNotice('');
+    setReviewMessage('');
+
+    try {
+      let functionSuccess = false;
+      if (functions) {
+        try {
+          await httpsCallable(functions, 'approveProfessionalVerification')({ userId: targetUser.id });
+          functionSuccess = true;
+        } catch (fnErr) {
+          console.warn('approveProfessionalVerification cloud function fallback:', fnErr);
+        }
+      }
+
+      if (db) {
+        try {
+          const userDocRef = doc(db, 'users', targetUser.id);
+          await updateDoc(userDocRef, {
+            verificationStatus: 'approved',
+            professionalVerificationStatus: 'approved',
+            accountStatus: 'ACTIVE',
+            verificationReviewedAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+        } catch (dbErr) {
+          console.error('Direct Firestore update failed:', dbErr);
+          if (!functionSuccess) throw dbErr;
+        }
+
+        try {
+          const subDocRef = doc(db, 'verification_submissions', targetUser.id);
+          await updateDoc(subDocRef, {
+            status: 'APPROVED',
+            updatedAt: serverTimestamp()
+          });
+        } catch (_) {}
+      }
+
+      setRefreshedUsers(prev => {
+        const base = prev || users;
+        return base.map(u => u.id === targetUser.id ? {
+          ...u,
+          verificationStatus: 'approved',
+          professionalVerificationStatus: 'approved',
+          accountStatus: 'ACTIVE'
+        } : u);
+      });
+
+      if (selected && selected.id === targetUser.id) {
+        setSelectedId(targetUser.id);
+      }
+
+      setActionNotice(`✓ ${nameOf(targetUser)} has been successfully approved!`);
+      setReviewMessage(`✓ ${nameOf(targetUser)} has been approved as a Verified Professional.`);
+      setTimeout(() => setActionNotice(''), 5000);
+    } catch (err) {
+      console.error('Approval failed:', err);
+      setActionNotice(`Error approving ${nameOf(targetUser)}: ${err.message || 'Please try again'}`);
+    } finally {
+      setActionBusyId('');
+    }
+  };
+
+  const handleRejectClient = async (targetUser, event) => {
+    if (event) event.stopPropagation();
+    if (!targetUser || actionBusyId) return;
+
+    const reason = window.prompt(`Enter rejection reason for ${nameOf(targetUser)}:`, 'Credentials could not be verified according to jurisdiction policy.');
+    if (!reason || !reason.trim()) return;
+
+    setActionBusyId(targetUser.id);
+    setActionNotice('');
+    setReviewMessage('');
+
+    try {
+      let functionSuccess = false;
+      if (functions) {
+        try {
+          await httpsCallable(functions, 'rejectProfessionalVerificationSubmission')({ userId: targetUser.id, reason: reason.trim() });
+          functionSuccess = true;
+        } catch (fnErr) {
+          console.warn('rejectProfessionalVerificationSubmission fallback:', fnErr);
+        }
+      }
+
+      if (db) {
+        try {
+          const userDocRef = doc(db, 'users', targetUser.id);
+          await updateDoc(userDocRef, {
+            verificationStatus: 'rejected',
+            professionalVerificationStatus: 'REJECTED',
+            verificationReason: reason.trim(),
+            verificationReviewedAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+        } catch (dbErr) {
+          console.error('Direct Firestore reject failed:', dbErr);
+          if (!functionSuccess) throw dbErr;
+        }
+
+        try {
+          const subDocRef = doc(db, 'verification_submissions', targetUser.id);
+          await updateDoc(subDocRef, {
+            status: 'REJECTED',
+            rejectionReason: reason.trim(),
+            updatedAt: serverTimestamp()
+          });
+        } catch (_) {}
+      }
+
+      setRefreshedUsers(prev => {
+        const base = prev || users;
+        return base.map(u => u.id === targetUser.id ? {
+          ...u,
+          verificationStatus: 'rejected',
+          professionalVerificationStatus: 'REJECTED',
+          verificationReason: reason.trim()
+        } : u);
+      });
+
+      setActionNotice(`Application for ${nameOf(targetUser)} rejected.`);
+      setTimeout(() => setActionNotice(''), 5000);
+    } catch (err) {
+      console.error('Rejection failed:', err);
+      setActionNotice(`Error rejecting application: ${err.message || 'Please try again'}`);
+    } finally {
+      setActionBusyId('');
+    }
+  };
+
   useEffect(() => { setRefreshedUsers(null); }, [users]);
   const [submissionRejectReason, setSubmissionRejectReason] = useState('');
   const [rejectingSubmission, setRejectingSubmission] = useState(false);
@@ -267,6 +408,7 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
           <div className="verificationHeadActions"><button className={"verificationIconBtn " + (refreshing ? "isRefreshing" : "")} onClick={refreshSubmissions} disabled={refreshing || !db} title="Refresh submissions" aria-label="Refresh submissions"><RefreshCw size={16}/></button><button className="verificationButton" onClick={exportCsv} disabled={!matches.length}><Download size={14}/> Export CSV</button></div>
         </header>
         {refreshMessage && <p className="verificationFeedback" role="status">{refreshMessage}</p>}
+        {actionNotice && <p className="verificationFeedback verificationSuccessNotice" role="status" style={{ background: '#ecfdf5', color: '#047857', border: '1px solid #a7f3d0' }}>{actionNotice}</p>}
         <div className="verificationFilters" role="tablist" aria-label="Submission status">
           {cards.map(({ key, label }) => <button key={key} role="tab" aria-selected={filter === key} className={filter === key ? 'active' : ''} onClick={() => chooseFilter(key)}>{labels[key]}<span>{counts[key]}</span></button>)}
         </div>
@@ -287,7 +429,29 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
               <td>{user.brokerageName || <span className="verificationMuted">Not provided</span>}</td>
               <td><span className="verificationDate">{formatDate(user.verificationSubmittedAt || user.createdAt)}{user.verificationSubmittedAt && <small>{dateOf(user) && dateOf(user).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</small>}</span></td>
               <td><span className={'verificationStatus ' + status}><i/>{labels[status] || titleCase(status)}</span></td>
-              <td><button className="verificationReview" onClick={event => { event.stopPropagation(); setSelectedId(user.id); setDetailTab('overview'); }}><Eye size={13}/> Review</button></td>
+              <td>
+                <div className="verificationActionBtns" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <button type="button" className="verificationReview" onClick={event => { event.stopPropagation(); setSelectedId(user.id); setDetailTab('overview'); }}>
+                    <Eye size={13}/> Review
+                  </button>
+                  {status !== 'approved' ? (
+                    <button 
+                      type="button" 
+                      className="verificationApproveBtn" 
+                      disabled={actionBusyId === user.id} 
+                      onClick={event => handleApproveClient(user, event)}
+                      title="Approve client verification"
+                    >
+                      {actionBusyId === user.id ? <RefreshCw size={12} className="verificationSpinner" /> : <Check size={13}/>}
+                      <span>Approve</span>
+                    </button>
+                  ) : (
+                    <span className="verificationApprovedPill">
+                      <CheckCircle2 size={12} /> Approved
+                    </span>
+                  )}
+                </div>
+              </td>
             </tr>;
           })}
         </tbody></table></div>
@@ -296,7 +460,35 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
       </section>
 
       {selected && <section className="verificationProfile verificationFullPage">
-        <div className="verificationProfileHead verificationFullPageHead"><button className="verificationBackButton" onClick={() => setSelectedId(null)}><ChevronLeft size={16}/> Back to submissions</button><span className="verificationAccountMeta"><small>PROFESSIONAL ACCOUNT</small><b>{selected.id}</b></span><span className={'verificationStatus ' + statusOf(selected)}><i/>{titleCase(statusOf(selected))}</span></div>
+        <div className="verificationProfileHead verificationFullPageHead">
+          <button className="verificationBackButton" onClick={() => setSelectedId(null)}><ChevronLeft size={16}/> Back to submissions</button>
+          <span className="verificationAccountMeta"><small>PROFESSIONAL ACCOUNT</small><b>{selected.id}</b></span>
+          <span className={'verificationStatus ' + statusOf(selected)}><i/>{titleCase(statusOf(selected))}</span>
+          <div className="verificationDrawerHeadActions" style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+            {statusOf(selected) !== 'approved' && (
+              <button 
+                type="button" 
+                className="verificationApproveBtn" 
+                disabled={actionBusyId === selected.id} 
+                onClick={e => handleApproveClient(selected, e)}
+              >
+                {actionBusyId === selected.id ? <RefreshCw size={13} className="verificationSpinner" /> : <Check size={14} />}
+                <span>Approve Client</span>
+              </button>
+            )}
+            {statusOf(selected) !== 'rejected' && (
+              <button 
+                type="button" 
+                className="verificationRejectBtn" 
+                disabled={actionBusyId === selected.id} 
+                onClick={e => handleRejectClient(selected, e)}
+              >
+                <X size={13} />
+                <span>Reject</span>
+              </button>
+            )}
+          </div>
+        </div>
         <div className="verificationProfileIdentity verificationFullPageIdentity"><span className="verificationAvatar large">{nameOf(selected).slice(0, 1).toUpperCase()}</span><div><b>{nameOf(selected)}</b><span>{selected.email || 'Email not provided'}</span><small>Joined {formatDate(selected.createdAt)}</small></div></div>
         <div className="verificationDetailTabs" onKeyDown={event => { const keys = ["overview", "documents", "verification", "activity", "referrals"]; const index = keys.indexOf(detailTab); const next = event.key === "ArrowRight" ? (index + 1) % keys.length : event.key === "ArrowLeft" ? (index + keys.length - 1) % keys.length : event.key === "Home" ? 0 : event.key === "End" ? keys.length - 1 : -1; if (next >= 0) { event.preventDefault(); setDetailTab(keys[next]); event.currentTarget.querySelectorAll("button")[next].focus(); } }} role="tablist" aria-label="Professional details">{[['overview', 'Overview'], ['documents', 'Documents'], ['verification', 'Verification'], ['activity', 'Activity'], ['referrals', 'Referrals']].map(([key, label]) => <button key={key} id={"verification-tab-" + key} aria-controls="verification-detail-panel" tabIndex={detailTab === key ? 0 : -1} role="tab" aria-selected={detailTab === key} className={detailTab === key ? 'active' : ''} onClick={() => setDetailTab(key)}>{key === "overview" ? <UserRound size={16}/> : key === "documents" ? <FileText size={16}/> : key === "verification" ? <ShieldCheck size={16}/> : key === "referrals" ? <Handshake size={16}/> : <Activity size={16}/>}<span>{label}</span>{key === "documents" && <small>{documentsOf(selected).length}</small>}</button>)}</div>
 

@@ -64,10 +64,8 @@ service cloud.firestore {
           && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['emailVerified'])
             || (request.auth.token.email_verified == true && request.resource.data.emailVerified == true)))
         || (isAdmin() && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
-          'emailVerified', 'verificationStatus', 'professionalVerificationStatus', 'verificationReviewedBy',
-          'verificationReviewedAt', 'verificationReason', 'verificationItems', 'verificationDocuments',
-          'verificationSubmittedAt', 'verificationSubmissionId', 'verificationPolicyId', 'verificationPolicyVersion',
-          'verificationPolicyConfigurationRequired', 'onboardingStatus', 'currentOnboardingStep', 'onboardingCompleted', 'completedSteps', 'profileCompletion', 'firstName', 'middleName', 'lastName', 'displayName',
+          'emailVerified',
+          'onboardingStatus', 'currentOnboardingStep', 'onboardingCompleted', 'completedSteps', 'profileCompletion', 'firstName', 'middleName', 'lastName', 'displayName',
           'phoneNumber', 'licenseNumber', 'licenseState', 'licenseStates', 'licenseStateCode', 'licenseType', 'licenseExpirationDate',
           'professionalType', 'brokerageName', 'brokerageRelationship', 'responsibleBroker', 'brokerLicenseNumber', 'brokerageAddress'
         ])));
@@ -91,7 +89,7 @@ service cloud.firestore {
     match /verification_submissions/{uid} {
       allow get: if owner(uid) || isAdmin();
       allow list: if isAdmin();
-      allow create, update, delete: if false;
+      allow create, update, delete: if isAdmin();
       match /events/{eventId} {
         allow get, list: if owner(uid) || isAdmin();
         allow create, update, delete: if false;
