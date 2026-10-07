@@ -12,7 +12,17 @@ initializeApp();
 const db = getFirestore();
 const auth = getAuth();
 const storage = getStorage();
-const callable = { region: 'us-central1', enforceAppCheck: false, maxInstances: 10 };
+const callable = {
+  region: 'us-central1',
+  enforceAppCheck: false,
+  maxInstances: 10,
+  cors: [
+    'https://agentreferrals-org.vercel.app',
+    'https://agentreferrals.org',
+    'https://www.agentreferrals.org',
+    /^http:\/\/localhost(?::\d+)?$/,
+  ],
+};
 const text = (value, max = 500) => typeof value === 'string' ? value.trim().slice(0, max) : '';
 const fail = (code, message) => { throw new HttpsError(code, message); };
 const serialize = value => {
@@ -67,12 +77,14 @@ export const submitReferralApplication = onCall(callable, async request => {
   const referralRef = db.collection('referrals').doc(referralId);
   const applicationId = createHash('sha256').update(`${uid}:${referralId}`).digest('hex');
   const applicationRef = db.collection('applications').doc(applicationId);
-  const [applicationSnap, referralSnap, priorApplications] = await Promise.all([
+  // The deterministic application ID is the canonical duplicate check. Avoid
+  // a compound collection query here: it can require a production composite
+  // index and turn an otherwise valid application into an opaque `internal`
+  // callable error when that index has not been deployed.
+  const [applicationSnap, referralSnap] = await Promise.all([
     applicationRef.get(), referralRef.get(),
-    db.collection('applications').where('applicantProfessionalId', '==', uid).where('referralId', '==', referralId).limit(1).get(),
   ]);
   if (applicationSnap.exists) return { ok: true, alreadyApplied: true, applicationId };
-  if (!priorApplications.empty) return { ok: true, alreadyApplied: true, applicationId: priorApplications.docs[0].id };
   if (!referralSnap.exists) fail('not-found', 'This referral is no longer available. Refresh the marketplace.');
 
   const referral = referralSnap.data() || {};

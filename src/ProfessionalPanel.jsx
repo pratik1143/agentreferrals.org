@@ -738,7 +738,15 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
       if (!result.data?.alreadyApplied) setNotice('Application submitted. The referral owner has been notified.');
     } catch (err) {
       console.error('Error submitting application:', err);
-      setApplyError(err?.message || 'We could not submit your application. Your details are still here; please try again.');
+      const code = String(err?.code || '').replace(/^functions\//, '');
+      const reference = err?.details?.errorReference;
+      const message = code === 'unauthenticated' ? 'Your session expired. Sign in again, then resubmit your application.'
+        : code === 'permission-denied' ? 'Only email-verified, approved professionals can apply to referral opportunities.'
+        : code === 'failed-precondition' || code === 'invalid-argument' ? err.message
+        : code === 'unavailable' || code === 'deadline-exceeded' ? 'The application service did not respond. Your details are still here; try again in a moment.'
+        : code === 'internal' ? `We could not save this application. Your details are still here; try again.${reference ? ` Support reference: ${reference}` : ''}`
+        : err?.message || 'We could not submit your application. Your details are still here; please try again.';
+      setApplyError(message);
     } finally {
       setIsSubmitting(false);
     }
