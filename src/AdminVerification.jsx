@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Activity, ArrowDown, ArrowRight, ArrowUpRight, BadgeCheck, BriefcaseBusiness, Building2, CalendarDays, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, CircleAlert, Clock3, Copy, Download, Eye, FileCheck2, FileText, FilterX, Globe, Handshake, Mail, MapPin, Phone, Quote, RefreshCw, Search, ShieldCheck, Sparkles, UserRound, X, XCircle } from 'lucide-react';
 import { httpsCallable } from 'firebase/functions';
 import { getBlob, ref as storageRef } from 'firebase/storage';
-import { collection, doc, updateDoc, serverTimestamp, getDocsFromServer, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
+import { collection, getDocsFromServer, limit, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 import { db, functions, storage } from './firebase';
 import './admin-verification.css';
 import VerificationReferrals from './VerificationReferrals';
@@ -89,34 +89,9 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
     setReviewMessage('');
 
     try {
-      if (functions) {
-        try {
-          await httpsCallable(functions, 'approveProfessionalVerification')({ userId: targetUser.id });
-        } catch (fnErr) {
-          console.warn('approveProfessionalVerification cloud function note (continuing with direct Firestore verification):', fnErr);
-        }
-      }
-
-      if (db) {
-        const userDocRef = doc(db, 'users', targetUser.id);
-        await updateDoc(userDocRef, {
-          verificationStatus: 'approved',
-          professionalVerificationStatus: 'approved',
-          accountStatus: 'ACTIVE',
-          verificationReviewedAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-
-        try {
-          const subDocRef = doc(db, 'verification_submissions', targetUser.id);
-          await updateDoc(subDocRef, {
-            status: 'APPROVED',
-            updatedAt: serverTimestamp()
-          });
-        } catch (subErr) {
-          console.warn('Submission record update note:', subErr);
-        }
-      }
+      if (!functions) throw new Error('The secure verification service is unavailable. Reload the portal and try again.');
+      const result = await httpsCallable(functions, 'approveProfessionalVerification')({ userId: targetUser.id });
+      if (result.data?.ok !== true) throw new Error('The server did not confirm this approval. Refresh the directory and try again.');
 
       setRefreshedUsers(prev => {
         const base = prev || users;
@@ -132,12 +107,19 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
         setSelectedId(targetUser.id);
       }
 
-      setActionNotice(`✓ ${nameOf(targetUser)} has been successfully approved!`);
-      setReviewMessage(`✓ ${nameOf(targetUser)} has been approved as a Verified Professional.`);
+      const alreadyApproved = result.data?.alreadyApproved === true;
+      setActionNotice(alreadyApproved ? `${nameOf(targetUser)} was already approved. The directory has been refreshed.` : `✓ ${nameOf(targetUser)} has been successfully approved!`);
+      setReviewMessage(alreadyApproved ? 'This professional was already approved.' : `✓ ${nameOf(targetUser)} has been approved as a Verified Professional.`);
       setTimeout(() => setActionNotice(''), 5000);
     } catch (err) {
       console.error('Approval failed:', err);
-      setActionNotice(`Could not approve ${nameOf(targetUser)}: ${err.message || 'Please try again.'}`);
+      const code = String(err?.code || '').replace(/^functions\//, '');
+      const explanation = code === 'permission-denied' ? 'The server did not recognize this as an email-verified administrator. Sign out, sign in with your Super Admin account, then retry.'
+        : code === 'unauthenticated' ? 'Your session expired. Sign in again and retry.'
+        : code === 'internal' || code === 'unavailable' ? 'The secure approval service could not complete the request. No approval was saved. Check the Cloud Function deployment and retry.'
+        : code === 'failed-precondition' || code === 'not-found' ? err.message
+        : err.message || 'Please try again.';
+      setActionNotice(`Could not approve ${nameOf(targetUser)}: ${explanation}`);
     } finally {
       setActionBusyId('');
     }
@@ -155,35 +137,9 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
     setReviewMessage('');
 
     try {
-      if (functions) {
-        try {
-          await httpsCallable(functions, 'rejectProfessionalVerificationSubmission')({ userId: targetUser.id, reason: reason.trim() });
-        } catch (fnErr) {
-          console.warn('rejectProfessionalVerificationSubmission cloud function note (continuing with direct Firestore update):', fnErr);
-        }
-      }
-
-      if (db) {
-        const userDocRef = doc(db, 'users', targetUser.id);
-        await updateDoc(userDocRef, {
-          verificationStatus: 'rejected',
-          professionalVerificationStatus: 'REJECTED',
-          verificationReason: reason.trim(),
-          verificationReviewedAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-
-        try {
-          const subDocRef = doc(db, 'verification_submissions', targetUser.id);
-          await updateDoc(subDocRef, {
-            status: 'REJECTED',
-            rejectionReason: reason.trim(),
-            updatedAt: serverTimestamp()
-          });
-        } catch (subErr) {
-          console.warn('Submission record note:', subErr);
-        }
-      }
+      if (!functions) throw new Error('The secure verification service is unavailable. Reload the portal and try again.');
+      const result = await httpsCallable(functions, 'rejectProfessionalVerificationSubmission')({ userId: targetUser.id, reason: reason.trim() });
+      if (result.data?.ok !== true) throw new Error('The server did not confirm this rejection. Refresh the directory and try again.');
 
       setRefreshedUsers(prev => {
         const base = prev || users;
@@ -199,7 +155,12 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
       setTimeout(() => setActionNotice(''), 5000);
     } catch (err) {
       console.error('Rejection failed:', err);
-      setActionNotice(`Error rejecting application: ${err.message || 'Please try again'}`);
+      const code = String(err?.code || '').replace(/^functions\//, '');
+      const explanation = code === 'permission-denied' ? 'The server did not recognize this as an email-verified administrator. Sign out, sign in with your Super Admin account, then retry.'
+        : code === 'unauthenticated' ? 'Your session expired. Sign in again and retry.'
+        : code === 'internal' || code === 'unavailable' ? 'The secure review service could not complete the request. No decision was saved. Check the Cloud Function deployment and retry.'
+        : err.message || 'Please try again.';
+      setActionNotice(`Could not reject application: ${explanation}`);
     } finally {
       setActionBusyId('');
     }
