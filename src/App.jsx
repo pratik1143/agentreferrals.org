@@ -18,6 +18,7 @@ import LegalDocument from './LegalDocument';
 import PublicAgentCard from './PublicAgentCard';
 import HomeReferralHero from './HomeReferralHero';
 import PublicInfoPages from './PublicInfoPages';
+import './coming-soon.css';
 
 const providers = { email: 'Email', google: 'Google', phone: 'Phone' };
 const translateAuthError = (error) => ({
@@ -147,6 +148,29 @@ function AuthPage({mode='signin', onStartAuth, onCancel}){
     <footer className="authPageFooter"><span>© 2026 AgentReferrals.org</span><span>Secure access for trusted connections</span></footer>
   </div>;
 }
+
+function ComingSoonDialog({ onClose }) {
+  useEffect(() => {
+    const closeOnEscape = event => { if (event.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [onClose]);
+  return <div className="comingSoonBackdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) onClose(); }}>
+    <section className="comingSoonDialog" role="dialog" aria-modal="true" aria-labelledby="comingSoonTitle">
+      <button className="comingSoonClose" type="button" onClick={onClose} aria-label="Close coming soon message"><X size={19}/></button>
+      <div className="comingSoonMark"><Sparkles size={21}/></div>
+      <span className="comingSoonEyebrow">AGENTREFERRALS · MEMBER ACCESS</span>
+      <h2 id="comingSoonTitle">Coming soon</h2>
+      <p>Login and network sign-up are getting ready. You can explore the public pages while we prepare member access.</p>
+      <button type="button" className="comingSoonContinue" onClick={onClose}>Continue exploring <ArrowRight size={16}/></button>
+      <small><ShieldCheck size={14}/> Your account access will be announced here.</small>
+    </section>
+  </div>;
+}
+
+function ComingSoonPage() {
+  return <main className="comingSoonPage"><a className="brand" href="/" aria-label="AgentReferrals home"><img className="brandMark" src="/agentreferrals-mark.svg" alt=""/><span>Agent<span className="blue">Referrals</span></span></a><section className="comingSoonDialog comingSoonStandalone"><div className="comingSoonMark"><Sparkles size={21}/></div><span className="comingSoonEyebrow">AGENTREFERRALS · MEMBER ACCESS</span><h1>Coming soon</h1><p>Login and network sign-up are getting ready. Please check back soon, or explore the public pages in the meantime.</p><a className="comingSoonContinue" href="/">Back to AgentReferrals <ArrowRight size={16}/></a><small><ShieldCheck size={14}/> Member access is temporarily unavailable.</small></section></main>;
+}
 function PublicHome({ onStartAuth }){
   const [menuOpen,setMenuOpen]=useState(false);const [openFaq,setOpenFaq]=useState(0);const progressRef=useRef(null);
   const [introStage,setIntroStage]=useState('done');
@@ -193,6 +217,7 @@ export default function App() {
   const [profile, setProfile] = useState(null);
   const [role, setRole] = useState(null);
   const [connectionError, setConnectionError] = useState('');
+  const [comingSoonOpen, setComingSoonOpen] = useState(false);
 
   useEffect(() => {
     const invitedBy = new URLSearchParams(window.location.search).get('ref');
@@ -317,8 +342,11 @@ export default function App() {
   };
 
   const openAuth = (mode) => {
-    setAuthMode(mode);
-    if (mode) window.history.pushState({}, '', mode === 'signin' ? '/login' : mode === 'reset' ? '/reset-password' : '/register');
+    if (mode === 'signin' || mode === 'signup' || mode === 'reset') {
+      setComingSoonOpen(true);
+      return;
+    }
+    setAuthMode(null);
   };
 
   // Preview user portal check for visual inspection & testing
@@ -371,7 +399,7 @@ export default function App() {
   if (legalPath === '/privacy' || legalPath === '/privacy-policy') return <LegalDocument type="privacy" />;
 
   const publicInfoPath = ['/how-it-works', '/marketplace', '/why-agentreferrals', '/faq', '/about'].includes(legalPath) ? legalPath : null;
-  if (publicInfoPath) return <PublicInfoPages page={publicInfoPath} onStartAuth={openAuth} />;
+  if (publicInfoPath) return <><PublicInfoPages page={publicInfoPath} onStartAuth={openAuth}/>{comingSoonOpen && <ComingSoonDialog onClose={() => setComingSoonOpen(false)}/>}</>;
 
   if (typeof window !== 'undefined' && window.location.search.includes('preview=loader')) {
     return (
@@ -386,6 +414,10 @@ export default function App() {
   if (user === undefined) {
     return <PlatformLoader title="AgentReferrals" subtitle="Connecting to secure workspace…" />;
   }
+
+  // Public sign-in, sign-up and password reset are temporarily unavailable.
+  // The separate /admin entry remains available for administrator access.
+  if (!user && authMode && !window.location.pathname.startsWith('/admin')) return <ComingSoonPage/>;
 
   // If unauthenticated and in Auth flow (Sign in, Sign up / Onboarding, Password reset)
   if (!user && authMode) {
@@ -488,11 +520,7 @@ export default function App() {
     }} />;
   }
 
-  return (
-    <PublicHome
-      onStartAuth={(mode) => openAuth(mode || 'signup')}
-    />
-  );
+  return <><PublicHome onStartAuth={(mode) => openAuth(mode || 'signup')}/>{comingSoonOpen && <ComingSoonDialog onClose={() => setComingSoonOpen(false)}/>}</>;
 }
 
 

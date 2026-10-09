@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { ArrowRight, BadgeCheck, Building2, Check, ChevronDown, Compass, Handshake, LockKeyhole, MapPin, Menu, Search, ShieldCheck, Sparkles, UsersRound, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowRight, BadgeCheck, Building2, ChevronDown, Compass, Handshake, LockKeyhole, MapPin, Menu, Search, ShieldCheck, Sparkles, UsersRound, X, Zap } from 'lucide-react';
 import './public-info-pages.css';
 
 const pages = [
@@ -24,10 +24,14 @@ function MarketingHeader({ active, onStartAuth }) {
 }
 
 function MarketingFooter({ onStartAuth }) {
-  return <footer className="infoFooter"><div className="infoFooterTop"><a className="infoBrand" href="/"><img src="/agentreferrals-mark.svg" alt=""/><span>Agent<b>Referrals</b></span></a><p>Better connections. Better business.</p><div className="infoFooterLinks">{pages.map(page => <a key={page.path} href={page.path}>{page.label}</a>)}<button onClick={() => onStartAuth('signin')}>Log in</button></div></div><div className="infoFooterBottom"><span>© 2026 AgentReferrals.org</span><span>Built for trusted real-estate introductions</span></div></footer>;
+  return <>
+    <section className="infoFinalCta"><div className="infoFinalOrb infoFinalOrbLeft"/><div className="infoFinalOrb infoFinalOrbRight"/><div className="infoFinalInner"><span className="infoFinalIcon"><Sparkles size={17}/></span><span className="infoFinalEyebrow"><i/> YOUR NEXT CONNECTION STARTS HERE</span><h2>Let’s make the<br/><em>introduction.</em></h2><p>Join professionals building better business through better relationships.</p><button className="infoFinalButton" onClick={() => onStartAuth('signup')}>Join the network <ArrowRight size={17}/></button><small><LockKeyhole size={13}/> Secure sign-in with email, Google, or phone</small></div></section>
+    <footer className="infoFooter"><div className="infoFooterTop"><div className="infoFooterBrand"><a className="infoBrand" href="/"><img src="/agentreferrals-logo.svg" alt="AgentReferrals"/><span className="sr-only">AgentReferrals home</span></a><p>Better connections.<br/>Better business.</p></div><div className="infoFooterGroup"><b>Explore</b><a href="/how-it-works">How it works</a><a href="/marketplace">Marketplace</a><a href="/why-agentreferrals">Why AgentReferrals</a></div><div className="infoFooterGroup"><b>Resources</b><a href="/faq">Frequently asked questions</a><a href="/about">About us</a><a href="/privacy">Privacy questions</a></div><div className="infoFooterGroup"><b>Get started</b><button onClick={() => onStartAuth('signin')}>Log in</button><button onClick={() => onStartAuth('signup')}>Join the network</button></div></div><div className="infoFooterBottom"><span>© 2026 AgentReferrals.org. All rights reserved.</span><span>Built for trusted introductions <i>✦</i></span><a href="/privacy">Privacy questions</a></div></footer>
+  </>;
 }
 
 function PageFrame({ page, onStartAuth, children }) {
+  const progressRef = useRef(null);
   useEffect(() => {
     const items = [...document.querySelectorAll('.infoReveal')];
     if (!('IntersectionObserver' in window)) { items.forEach(item => item.classList.add('is-visible')); return; }
@@ -37,7 +41,22 @@ function PageFrame({ page, onStartAuth, children }) {
     items.forEach(item => observer.observe(item));
     return () => observer.disconnect();
   }, [page]);
-  return <div className="infoSite"><div className="infoProgress" aria-hidden="true"/><MarketingHeader active={page} onStartAuth={onStartAuth}/>{children}<MarketingFooter onStartAuth={onStartAuth}/></div>;
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+        if (progressRef.current) progressRef.current.style.transform = `scaleX(${progress})`;
+      });
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+    return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); cancelAnimationFrame(frame); };
+  }, []);
+  return <div className="infoSite"><div className="infoProgress" aria-hidden="true"><span ref={progressRef}/></div><MarketingHeader active={page} onStartAuth={onStartAuth}/>{children}<MarketingFooter onStartAuth={onStartAuth}/></div>;
 }
 
 function PageHero({ eyebrow, title, accent, text, icon: Icon = Sparkles, actions }) {
@@ -69,13 +88,17 @@ const sampleListings = [
 function Marketplace({ onStartAuth }) {
   const [filter, setFilter] = useState('All opportunities');
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { const timer = window.setTimeout(() => setLoading(false), 520); return () => window.clearTimeout(timer); }, []);
   const filtered = sampleListings.filter(item => (filter === 'All opportunities' || item.type === filter) && `${item.city} ${item.title} ${item.tag}`.toLowerCase().includes(search.toLowerCase()));
   const apply = () => onStartAuth('signin');
   return <PageFrame page="/marketplace" onStartAuth={onStartAuth}>
-    <PageHero eyebrow="A PREVIEW OF THE NETWORK" title="The right connection can " accent="change everything." text="Explore sample real-estate referral opportunities. Sign in to view member opportunities and apply through the secure professional workflow." actions={<span className="previewNotice"><ShieldCheck size={15}/> Sample listings · Preview only</span>}/>
-    <main className="infoContent marketContent"><div className="marketHeading infoReveal"><div><span className="infoEyebrow">MARKETPLACE PREVIEW</span><h2>Find your next <em>connection.</em></h2><p>Illustrative listings show how opportunities appear in the AgentReferrals marketplace.</p></div><div className="marketCount"><Building2 size={19}/><span><b>{filtered.length}</b><small>sample opportunities</small></span></div></div>
+    <section className="marketHero"><div className="marketHeroGlow"/><div className="marketHeroCopy infoReveal"><span className="infoEyebrow"><span className="marketEyebrowDot"/> REAL ESTATE REFERRAL MARKETPLACE</span><h1>Good people,<br/><em>right where</em><br/>you need them.</h1><p>Explore a preview of the opportunities that connect real-estate professionals across markets. Find the right local partner and keep the introduction moving.</p><div className="marketHeroActions"><a className="infoPrimary" href="#sample-opportunities">Explore opportunities <ArrowRight size={16}/></a><button className="marketHeroSecondary" onClick={apply}>Log in <ArrowRight size={15}/></button></div><span className="marketPrivacy"><ShieldCheck size={15}/> Sample previews only · Client details stay private</span></div>
+      <div className="marketNetworkVisual infoReveal" aria-label="Illustration of professionals connecting across three example markets"><div className="networkMapGrid"/><div className="marketMapLabel"><i/> NETWORK CONNECTIONS <span>3 SAMPLE MARKETS</span></div><svg className="marketRouteLines" viewBox="0 0 600 410" aria-hidden="true"><path d="M184 207 C250 148 323 175 365 224 S436 276 474 210"/><path d="M184 207 C208 250 246 278 284 294"/><circle cx="184" cy="207" r="4"/><circle cx="365" cy="224" r="4"/><circle cx="474" cy="210" r="4"/><circle cx="284" cy="294" r="4"/></svg><div className="marketMapNode nodeAustin"><b>JR</b><span>Austin, TX</span></div><div className="marketMapNode nodeDenver"><b>MP</b><span>Denver, CO</span></div><div className="marketMapNode nodeNashville"><b>AL</b><span>Nashville, TN</span></div><div className="marketFloatingCard"><i><Building2 size={17}/></i><span><b>Real-estate referrals</b><small>Trusted local connections</small></span><MapPin size={17}/></div><div className="marketVisualCaption"><Zap size={12}/> CONNECT · INTRODUCE · GROW</div></div>
+    </section>
+    <main className="infoContent marketContent" id="sample-opportunities"><div className="marketHeading infoReveal"><div><span className="infoEyebrow">MARKETPLACE PREVIEW</span><h2>Find your next <em>connection.</em></h2><p>These clearly marked examples show how opportunities appear in the AgentReferrals marketplace.</p></div><div className="marketCount"><Building2 size={19}/><span><b>{String(filtered.length).padStart(2, '0')}</b><small>sample opportunities</small></span></div></div>
       <div className="marketToolbar infoReveal"><div className="marketFilters" role="group" aria-label="Filter sample listings">{['All opportunities', 'Buyer', 'Seller'].map(value => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{value === 'All opportunities' ? 'All opportunities' : `${value} referrals`}</button>)}</div><label className="marketSearch"><Search size={17}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sample markets" aria-label="Search sample opportunities"/></label></div>
-      {filtered.length ? <div className="sampleGrid">{filtered.map((item, index) => <button className="sampleCard infoReveal" style={{ '--delay': `${index * 55}ms` }} key={`${item.type}-${item.city}-${item.title}`} onClick={apply}><div className="sampleCardTop"><span className="sampleType"><i/>{item.type} referral</span><span className="samplePreview">Sample</span></div><div className="sampleLocation"><MapPin size={15}/>{item.city}</div><h3>{item.title}</h3><div className="sampleMeta"><span>{item.tag}</span><span>{item.range}</span></div><div className="sampleCardFoot"><span className="sampleAvatar">{item.initials}</span><span><b>Verified network professional</b><small>{item.fee} · example</small></span><span className="sampleArrow"><ArrowRight size={17}/></span></div></button>)}</div> : <div className="marketEmpty">No sample opportunities match that search.</div>}
+      {loading ? <div className="marketSkeletonGrid" role="status" aria-label="Loading sample referral previews"><span className="marketLoadingLabel"><span className="marketSpinner"/> Preparing sample opportunities</span>{[0,1,2].map(index => <div className="marketSkeleton" key={index} style={{ '--delay': `${index * 100}ms` }}><i/><b/><span/><span/><footer/></div>)}</div> : filtered.length ? <div className="sampleGrid">{filtered.map((item, index) => <button type="button" className="sampleCard infoReveal is-visible" style={{ '--delay': `${index * 55}ms` }} key={`${item.type}-${item.city}-${item.title}`} onClick={apply} aria-label={`Log in to view sample ${item.type.toLowerCase()} referral: ${item.title}`}><div className="sampleCardTop"><span className="sampleType"><i/>{item.type} referral</span><span className="samplePreview">Sample</span></div><div className="sampleLocation"><MapPin size={15}/>{item.city}</div><h3>{item.title}</h3><div className="sampleMeta"><span>{item.tag}</span><span>{item.range}</span></div><div className="sampleCardFoot"><span className="sampleAvatar">{item.initials}</span><span><b>Example network professional</b><small>{item.fee} · illustration</small></span><span className="sampleArrow"><ArrowRight size={17}/></span></div></button>)}</div> : <div className="marketEmpty">No sample opportunities match that search.</div>}
       <div className="marketGate infoReveal"><div className="gateIcon"><LockKeyhole size={20}/></div><div><b>Ready to explore the member marketplace?</b><p>Sign in to access available opportunities and send a referral application.</p></div><button className="infoPrimary" onClick={apply}>Log in to continue <ArrowRight size={16}/></button></div>
     </main>
   </PageFrame>;

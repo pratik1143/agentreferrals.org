@@ -1,0 +1,159 @@
+.comingSoonBackdrop {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(7, 24, 55, .48);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: comingSoonFade .2s ease-out both;
+}
+
+.comingSoonDialog {
+  position: relative;
+  width: min(100%, 450px);
+  padding: 38px 36px 30px;
+  overflow: hidden;
+  color: #10284d;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, .9);
+  border-radius: 28px;
+  background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(241,247,255,.96));
+  box-shadow: 0 32px 100px rgba(5, 28, 71, .28), inset 0 1px rgba(255,255,255,.95);
+  animation: comingSoonRise .32s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.comingSoonDialog::before {
+  position: absolute;
+  z-index: 0;
+  top: -110px;
+  left: 50%;
+  width: 300px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(45,137,255,.16), transparent 70%);
+  content: "";
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.comingSoonDialog > * { position: relative; }
+
+.comingSoonClose {
+  position: absolute !important;
+  z-index: 1;
+  top: 15px;
+  right: 15px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: #5d7394;
+  border: 1px solid #dce8f8;
+  border-radius: 50%;
+  background: rgba(255,255,255,.78);
+  cursor: pointer;
+  transition: color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.comingSoonClose:hover { color: #1768e8; border-color: #9dc4ff; transform: rotate(6deg); }
+
+.comingSoonMark {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  margin: 0 auto 18px;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #44a5ff, #1762e8);
+  box-shadow: 0 10px 24px rgba(31,111,231,.25), inset 0 1px rgba(255,255,255,.45);
+}
+
+.comingSoonEyebrow {
+  display: block;
+  margin-bottom: 10px;
+  color: #327fe6;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.comingSoonDialog h1,
+.comingSoonDialog h2 {
+  margin: 0;
+  color: #10284d;
+  font-size: clamp(30px, 6vw, 38px);
+  font-weight: 750;
+  letter-spacing: -.045em;
+}
+
+.comingSoonDialog p {
+  max-width: 350px;
+  margin: 12px auto 22px;
+  color: #627897;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.comingSoonContinue {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 20px;
+  color: #fff;
+  border: 0;
+  border-radius: 15px;
+  background: linear-gradient(110deg, #3198ff, #1765eb);
+  box-shadow: 0 10px 24px rgba(30,105,227,.22);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.comingSoonContinue:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(30,105,227,.29); }
+
+.comingSoonDialog small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 19px;
+  color: #7890ae;
+  font-size: 11px;
+}
+
+.comingSoonPage {
+  display: grid;
+  min-height: 100vh;
+  align-content: start;
+  justify-items: center;
+  gap: clamp(70px, 14vh, 140px);
+  padding: 28px 20px;
+  background: radial-gradient(ellipse at 50% 35%, #e5f1ff 0, #f4f8ff 44%, #fff 100%);
+}
+
+.comingSoonPage > .brand { justify-self: start; }
+.comingSoonStandalone { width: min(100%, 500px); padding: 44px 40px 34px; }
+
+@keyframes comingSoonFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes comingSoonRise { from { opacity: 0; transform: translateY(12px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+@media (max-width: 520px) {
+  .comingSoonDialog { padding: 34px 22px 26px; border-radius: 23px; }
+  .comingSoonClose { top: 11px; right: 11px; }
+  .comingSoonStandalone { padding-top: 38px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comingSoonBackdrop, .comingSoonDialog { animation: none; }
+  .comingSoonClose, .comingSoonContinue { transition: none; }
+}
