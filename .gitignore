@@ -8,3 +8,4 @@ firebase-debug.log
 .npm-cache/
 .cora/
 work/
+artifacts/

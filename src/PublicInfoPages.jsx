@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, BadgeCheck, Building2, ChevronDown, Compass, Handshake, LockKeyhole, MapPin, Menu, Search, ShieldCheck, Sparkles, UsersRound, X, Zap } from 'lucide-react';
 import './public-info-pages.css';
+import MarketplaceExperience from './PublicMarketplace';
 
 const pages = [
   { path: '/how-it-works', label: 'How it works' },
@@ -76,32 +77,8 @@ function HowItWorks({ onStartAuth }) {
   </PageFrame>;
 }
 
-const sampleListings = [
-  { type: 'Buyer', city: 'Austin, TX', title: 'Relocation buyer seeking a central Austin home', range: '$450k–$650k', fee: '25% example fee', tag: 'Relocation', initials: 'AT' },
-  { type: 'Seller', city: 'Denver, CO', title: 'Seller preparing a family home for market', range: '$600k–$800k', fee: '20% example fee', tag: 'Move-up', initials: 'DC' },
-  { type: 'Buyer', city: 'Nashville, TN', title: 'First-time buyer exploring the Nashville area', range: '$300k–$425k', fee: '25% example fee', tag: 'First-time buyer', initials: 'NT' },
-  { type: 'Seller', city: 'Round Rock, TX', title: 'Owner planning a summer listing in Round Rock', range: '$375k–$525k', fee: '20% example fee', tag: 'Residential', initials: 'RR' },
-  { type: 'Buyer', city: 'Denver, CO', title: 'Buyer looking for a low-maintenance townhouse', range: '$350k–$500k', fee: '25% example fee', tag: 'Townhouse', initials: 'DC' },
-  { type: 'Seller', city: 'Austin, TX', title: 'Condo owner exploring a sale this season', range: '$275k–$390k', fee: '20% example fee', tag: 'Condo', initials: 'AT' },
-];
-
 function Marketplace({ onStartAuth }) {
-  const [filter, setFilter] = useState('All opportunities');
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
-  useEffect(() => { const timer = window.setTimeout(() => setLoading(false), 520); return () => window.clearTimeout(timer); }, []);
-  const filtered = sampleListings.filter(item => (filter === 'All opportunities' || item.type === filter) && `${item.city} ${item.title} ${item.tag}`.toLowerCase().includes(search.toLowerCase()));
-  const apply = () => onStartAuth('signin');
-  return <PageFrame page="/marketplace" onStartAuth={onStartAuth}>
-    <section className="marketHero"><div className="marketHeroGlow"/><div className="marketHeroCopy infoReveal"><span className="infoEyebrow"><span className="marketEyebrowDot"/> REAL ESTATE REFERRAL MARKETPLACE</span><h1>Good people,<br/><em>right where</em><br/>you need them.</h1><p>Explore a preview of the opportunities that connect real-estate professionals across markets. Find the right local partner and keep the introduction moving.</p><div className="marketHeroActions"><a className="infoPrimary" href="#sample-opportunities">Explore opportunities <ArrowRight size={16}/></a><button className="marketHeroSecondary" onClick={apply}>Log in <ArrowRight size={15}/></button></div><span className="marketPrivacy"><ShieldCheck size={15}/> Sample previews only · Client details stay private</span></div>
-      <div className="marketNetworkVisual infoReveal" aria-label="Illustration of professionals connecting across three example markets"><div className="networkMapGrid"/><div className="marketMapLabel"><i/> NETWORK CONNECTIONS <span>3 SAMPLE MARKETS</span></div><svg className="marketRouteLines" viewBox="0 0 600 410" aria-hidden="true"><path d="M184 207 C250 148 323 175 365 224 S436 276 474 210"/><path d="M184 207 C208 250 246 278 284 294"/><circle cx="184" cy="207" r="4"/><circle cx="365" cy="224" r="4"/><circle cx="474" cy="210" r="4"/><circle cx="284" cy="294" r="4"/></svg><div className="marketMapNode nodeAustin"><b>JR</b><span>Austin, TX</span></div><div className="marketMapNode nodeDenver"><b>MP</b><span>Denver, CO</span></div><div className="marketMapNode nodeNashville"><b>AL</b><span>Nashville, TN</span></div><div className="marketFloatingCard"><i><Building2 size={17}/></i><span><b>Real-estate referrals</b><small>Trusted local connections</small></span><MapPin size={17}/></div><div className="marketVisualCaption"><Zap size={12}/> CONNECT · INTRODUCE · GROW</div></div>
-    </section>
-    <main className="infoContent marketContent" id="sample-opportunities"><div className="marketHeading infoReveal"><div><span className="infoEyebrow">MARKETPLACE PREVIEW</span><h2>Find your next <em>connection.</em></h2><p>These clearly marked examples show how opportunities appear in the AgentReferrals marketplace.</p></div><div className="marketCount"><Building2 size={19}/><span><b>{String(filtered.length).padStart(2, '0')}</b><small>sample opportunities</small></span></div></div>
-      <div className="marketToolbar infoReveal"><div className="marketFilters" role="group" aria-label="Filter sample listings">{['All opportunities', 'Buyer', 'Seller'].map(value => <button key={value} className={filter === value ? 'active' : ''} onClick={() => setFilter(value)}>{value === 'All opportunities' ? 'All opportunities' : `${value} referrals`}</button>)}</div><label className="marketSearch"><Search size={17}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sample markets" aria-label="Search sample opportunities"/></label></div>
-      {loading ? <div className="marketSkeletonGrid" role="status" aria-label="Loading sample referral previews"><span className="marketLoadingLabel"><span className="marketSpinner"/> Preparing sample opportunities</span>{[0,1,2].map(index => <div className="marketSkeleton" key={index} style={{ '--delay': `${index * 100}ms` }}><i/><b/><span/><span/><footer/></div>)}</div> : filtered.length ? <div className="sampleGrid">{filtered.map((item, index) => <button type="button" className="sampleCard infoReveal is-visible" style={{ '--delay': `${index * 55}ms` }} key={`${item.type}-${item.city}-${item.title}`} onClick={apply} aria-label={`Log in to view sample ${item.type.toLowerCase()} referral: ${item.title}`}><div className="sampleCardTop"><span className="sampleType"><i/>{item.type} referral</span><span className="samplePreview">Sample</span></div><div className="sampleLocation"><MapPin size={15}/>{item.city}</div><h3>{item.title}</h3><div className="sampleMeta"><span>{item.tag}</span><span>{item.range}</span></div><div className="sampleCardFoot"><span className="sampleAvatar">{item.initials}</span><span><b>Example network professional</b><small>{item.fee} · illustration</small></span><span className="sampleArrow"><ArrowRight size={17}/></span></div></button>)}</div> : <div className="marketEmpty">No sample opportunities match that search.</div>}
-      <div className="marketGate infoReveal"><div className="gateIcon"><LockKeyhole size={20}/></div><div><b>Ready to explore the member marketplace?</b><p>Sign in to access available opportunities and send a referral application.</p></div><button className="infoPrimary" onClick={apply}>Log in to continue <ArrowRight size={16}/></button></div>
-    </main>
-  </PageFrame>;
+  return <PageFrame page="/marketplace" onStartAuth={onStartAuth}><MarketplaceExperience onStartAuth={onStartAuth}/></PageFrame>;
 }
 
 function WhyPage({ onStartAuth }) {
