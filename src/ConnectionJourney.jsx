@@ -50,15 +50,15 @@ export default function ConnectionJourney() {
         <div className="journeyHalo" aria-hidden="true"/>
         <svg className="journeyRoutes" viewBox="0 0 1000 390" fill="none" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <linearGradient id="journeyGradient" x1="100" y1="190" x2="890" y2="190" gradientUnits="userSpaceOnUse"><stop stopColor="#fde68a"/><stop offset=".5" stopColor="#f6c343"/><stop offset="1" stopColor="#d97706"/></linearGradient>
+            <linearGradient id="journeyGradient" x1="100" y1="190" x2="890" y2="190" gradientUnits="userSpaceOnUse"><stop stopColor="#b4dbff"/><stop offset=".5" stopColor="#328cf3"/><stop offset="1" stopColor="#185bd3"/></linearGradient>
             <filter id="journeyGlow" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
           <path d={route} className="journeyRouteBase"/>
           <path d={branch} className="journeyRouteBase journeyRouteBranch"/>
           <path d={route} pathLength="100" className="journeyRouteActive"/>
           <path d={branch} pathLength="100" className="journeyRouteActive journeyRouteSecond"/>
-          <circle className="journeySignal" r="5" fill="#fef3c7" filter="url(#journeyGlow)"><animateMotion dur="4s" repeatCount="indefinite" path={route}/></circle>
-          <circle className="journeySignal journeySignalSecond" r="4" fill="#f6c343" filter="url(#journeyGlow)"><animateMotion dur="3.3s" repeatCount="indefinite" path={branch}/></circle>
+          <circle className="journeySignal" r="5" fill="#e1f0ff" filter="url(#journeyGlow)"><animateMotion dur="4s" repeatCount="indefinite" path={route}/></circle>
+          <circle className="journeySignal journeySignalSecond" r="4" fill="#328cf3" filter="url(#journeyGlow)"><animateMotion dur="3.3s" repeatCount="indefinite" path={branch}/></circle>
         </svg>
         <div className="journeyNode journeyNodeStart"><span className="journeyNodeIcon"><UserRound size={25}/></span><span className="journeyNodeText"><small>01 / THE RELATIONSHIP</small><b>A professional<br/>knows the client.</b></span></div>
         <div className="journeyNode journeyNodeCenter"><span className="journeyNodeIcon"><Handshake size={26}/></span><span className="journeyNodeText"><small>02 / THE HANDOFF</small><b>A trusted<br/>introduction.</b></span></div>

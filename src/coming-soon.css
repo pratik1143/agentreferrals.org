@@ -98,6 +98,8 @@
   font-size: 14px;
   line-height: 1.7;
 }
+.comingSoonDialog p.comingSoonPricing{padding:12px 14px;border:1px solid #d4e5fa;border-radius:11px;background:#eaf3ff80;font-size:11px;text-align:left;line-height:1.8}
+.comingSoonDialog h1,.comingSoonDialog h2{font-size:31px;line-height:1.14}
 
 .comingSoonContinue {
   display: inline-flex;

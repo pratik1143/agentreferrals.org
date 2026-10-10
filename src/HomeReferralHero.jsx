@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Check, ChevronRight, Handshake, MapPin, MoveUpRight, Pause, Play, RotateCcw, ShieldCheck, Signature, Users } from 'lucide-react';
 import './home-referral-hero.css';
+import { LAUNCH_CTA, PUBLIC_PRICING_NOTE } from './public-offer';
 
 const origin = { name: 'Austin', coordinates: [30.2672, -97.7431] };
 const markets = {
@@ -8,9 +9,9 @@ const markets = {
   nashville: { name: 'Nashville', state: 'TN', coordinates: [36.1627, -86.7816], initials: 'NA' },
 };
 const steps = [
-  { label: 'Introduce', title: 'Their next chapter. Your introduction.', description: city => `Your client is moving to ${city}. Share a referral with the right local professionals.`, benefit: 'Keep the client relationship', Icon: Users },
-  { label: 'Connect', title: 'Local knowledge. A trusted handoff.', description: city => `Review interested agents in ${city} and choose the right fit for your client.`, benefit: 'Give clients local expertise', Icon: Handshake },
-  { label: 'Grow', title: 'A connection with shared value.', description: () => 'Agree your referral fee and sign digitally. Payment follows your agreement when the transaction closes.', benefit: 'Create a referral opportunity', Icon: Signature },
+  { label: 'Introduce', title: 'Your client moves. You refer.', description: city => `In this sample, your client is moving to ${city}. Share the opportunity with professionals who serve that market.`, benefit: 'Create a referral fee opportunity', Icon: Users },
+  { label: 'Connect', title: 'Their local expertise. Your handoff.', description: city => `Review interested agents in ${city} and choose the right fit. Receiving agents can find referrals in their own market.`, benefit: 'Find local buyer and seller referrals', Icon: Handshake },
+  { label: 'Grow', title: 'Clear terms. A shared opportunity.', description: () => 'Agree the fee, payment conditions and timing, then complete the required signatures. The professionals and brokerages handle payment under those terms.', benefit: 'Agree terms before the handoff', Icon: Signature },
 ];
 
 function curvedRoute(from, to) {
@@ -155,15 +156,16 @@ export default function HomeReferralHero({ onJoin }) {
   return <section ref={heroRef} className="referralHero" id="marketplace" data-stage={stage} data-playing={playing && visible && documentVisible}>
     <div className="referralHero-inner">
       <div className="referralHero-copy">
-        <div className="referralHero-eyebrow"><span/> THE REAL ESTATE REFERRAL NETWORK</div>
-        <h1>Your clients move.<br/><span>Your business<br className="referralHero-break"/> grows.</span></h1>
-        <p>Connect clients with trusted agents in another city. Keep the relationship. Agree your referral fee. Turn a great introduction into your next opportunity.</p>
-        <div className="referralHero-actions"><button className="referralHero-primary" onClick={onJoin}>Join the network <ArrowRight size={18}/></button><button className="referralHero-watch" onClick={showJourney}><span><Play size={12} fill="currentColor"/></span>See a referral in action</button></div>
+        <div className="referralHero-eyebrow"><span/> REAL ESTATE REFERRALS · PUBLIC PREVIEW</div>
+        <h1>Earn referral fees.<br/><span>Find referrals<br/>in your market.</span></h1>
+        <p>Turn clients you can’t serve into referral fee opportunities. Discover buyer and seller referrals where you work. Agree the terms with the right professional before the handoff.</p>
+        <div className="referralHero-actions"><button className="referralHero-primary" onClick={onJoin}>{LAUNCH_CTA} <ArrowRight size={18}/></button><button className="referralHero-watch" onClick={showJourney}><span><Play size={12} fill="currentColor"/></span>Watch the sample walkthrough</button></div>
+        <div className="referralHero-launchNote"><b>MEMBER ACCESS IS COMING SOON</b><p>Today: explore sample referrals and the walkthrough. Accounts, posting and applications are not open yet.</p><small>{PUBLIC_PRICING_NOTE}</small></div>
         <div className="referralHero-assurance"><ShieldCheck size={16}/><span>For verified professionals. Private by design.</span></div>
-        <div className="referralHero-benefits"><div><Users size={17}/><span>Trusted<br/><b>local expertise</b></span></div><div><Signature size={17}/><span>Clear<br/><b>referral agreements</b></span></div><div><MoveUpRight size={17}/><span>Opportunity<br/><b>beyond your market</b></span></div></div>
+        <div className="referralHero-benefits"><div><MoveUpRight size={17}/><span>Refer clients<br/><b>Earn referral fees</b></span></div><div><Users size={17}/><span>Receive referrals<br/><b>Grow locally</b></span></div><div><Signature size={17}/><span>Agree the terms<br/><b>Before the handoff</b></span></div></div>
       </div>
       <div className="referralJourney" ref={cardRef}>
-        <header className="referralJourney-header"><span className="referralJourney-brand"><img src="/agentreferrals-mark.svg" alt=""/><span>One introduction.<br/><b>New possibilities.</b></span></span><span className="referralJourney-demo"><span/> HOW REFERRALS CONNECT</span></header>
+        <header className="referralJourney-header"><span className="referralJourney-brand"><img src="/agentreferrals-mark.svg" alt=""/><span>One introduction.<br/><b>Two ways to grow.</b></span></span><span className="referralJourney-demo"><span/> SAMPLE MEMBER WORKFLOW</span></header>
         <div className="referralJourney-marketbar"><span><MapPin size={14}/><b>Austin, TX</b><ArrowRight size={15}/></span><div aria-label="Example destination">{Object.entries(markets).map(([key, market]) => <button key={key} aria-pressed={destination === key} onClick={() => { setDestination(key); setStage(0); setPlaying(false); }}>{market.name}<small>, {market.state}</small></button>)}</div></div>
         <JourneyMap destination={destination} reducedMotion={reducedMotion} onReady={() => setMapReady(true)} onInteract={() => setPlaying(false)}/>
         <div className="referralJourney-story">
