@@ -126,7 +126,7 @@ function AuthPage({mode='signin', onStartAuth, onCancel}){
   return <div className="authPage">
     <div className="authPageGlow authPageGlowOne" aria-hidden="true"/>
     <div className="authPageGlow authPageGlowTwo" aria-hidden="true"/>
-    <header className="authPageHeader"><a href="/" aria-label="AgentReferrals.org home"><Brand/></a><a className="authBack" href="/"><ArrowRight size={16}/> Back to website</a></header>
+    <header className="authPageHeader"><a href="/" aria-label="AgentReferrals.org home" onClick={(e)=>{if(onCancel){e.preventDefault();onCancel();}}}><Brand/></a><a className="authBack" href="/" onClick={(e)=>{if(onCancel){e.preventDefault();onCancel();}}}><ArrowRight size={16}/> Back to website</a></header>
     <main className="authPageMain">
       <section className="authStory" aria-labelledby="authStoryTitle">
         <div className="authStoryEyebrow"><span/> A BETTER WAY TO CONNECT</div>
@@ -223,6 +223,33 @@ export default function App() {
   const [role, setRole] = useState(null);
   const [connectionError, setConnectionError] = useState('');
   const [comingSoonOpen, setComingSoonOpen] = useState(false);
+  const [devLoginOpen, setDevLoginOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const isCtrlOrCmdA = (e.ctrlKey || e.metaKey) && (e.key?.toLowerCase() === 'a' || e.code === 'KeyA');
+      if (isCtrlOrCmdA) {
+        const target = e.target;
+        const isEditing = target && (
+          ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+          target.isContentEditable
+        );
+        if (isEditing) return;
+
+        e.preventDefault();
+        setComingSoonOpen(false);
+        setDevLoginOpen(prev => !prev);
+        return;
+      }
+
+      if (e.key === 'Escape' && devLoginOpen) {
+        setDevLoginOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [devLoginOpen]);
 
   useEffect(() => {
     const invitedBy = new URLSearchParams(window.location.search).get('ref');
@@ -398,6 +425,28 @@ export default function App() {
     );
   }
 
+  // Initial Auth Check Loading
+  if (user === undefined) {
+    return <PlatformLoader title="AgentReferrals" subtitle="Connecting to secure workspace…" />;
+  }
+
+  // Developer / Admin login shortcut (Ctrl + A)
+  if (!user && devLoginOpen) {
+    return (
+      <AuthPage
+        mode={authMode === 'signup' ? 'signup' : 'signin'}
+        onStartAuth={(m) => {
+          if (m === 'signup' || m === 'signin') setAuthMode(m);
+          else openAuth(m);
+        }}
+        onCancel={() => {
+          setDevLoginOpen(false);
+          setAuthMode(null);
+        }}
+      />
+    );
+  }
+
   // Preview loader check for testing & visual inspection
   const legalPath = typeof window !== 'undefined' ? window.location.pathname.replace(/\/$/, '') : '';
   if (legalPath === '/terms' || legalPath === '/terms-of-service') return <LegalDocument type="terms" />;
@@ -413,11 +462,6 @@ export default function App() {
         subtitle="Resolving account permissions and workspace…"
       />
     );
-  }
-
-  // Initial Auth Check Loading
-  if (user === undefined) {
-    return <PlatformLoader title="AgentReferrals" subtitle="Connecting to secure workspace…" />;
   }
 
   // Public sign-in, sign-up and password reset are temporarily unavailable.
