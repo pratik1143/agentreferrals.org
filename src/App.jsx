@@ -71,7 +71,7 @@ function AuthCard({initialMode='signin', onSwitchToOnboard}){
     {method==='email'&&<form onSubmit={submit}>{mode==='signup'&&<label>Full name<div className="inputWrap"><UserRound size={17}/><input autoComplete="name" value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. Jordan Parker" required/></div></label>}<label>Email address<div className="inputWrap"><Mail size={17}/><input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@company.com" required/></div></label>{!reset&&<label>Password<div className="inputWrap"><LockKeyhole size={17}/><input type={show?'text':'password'} autoComplete={mode==='signup'?'new-password':'current-password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="At least 6 characters" minLength="6" required/><button type="button" className="eye" onClick={()=>setShow(!show)} aria-label="Toggle password visibility">{show?<EyeOff size={17}/>:<Eye size={17}/>}</button></div></label>}{mode==='signin'&&<button type="button" className="forgot" onClick={()=>{setMode('reset');setError('');setInfo('')}}>Forgot password?</button>}<button className="submit" disabled={busy}>{busy?'Please wait…':reset?'Send reset link':mode==='signup'?'Create account':'Sign in'} <ArrowRight size={16}/></button></form>}
     {method==='phone'&&<form onSubmit={submit}><label>Phone number<div className="inputWrap"><Phone size={17}/><input type="tel" autoComplete="tel" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="+1 512 555 0123" required disabled={!!confirmation}/></div><span className="fieldHint">Use your country code. We’ll text you a one-time code.</span></label>{confirmation&&<label>Verification code<div className="inputWrap"><Fingerprint size={17}/><input inputMode="numeric" autoComplete="one-time-code" value={code} onChange={e=>setCode(e.target.value)} placeholder="6-digit code" required/></div></label>}<div id="phone-recaptcha"/><button className="submit" disabled={busy}>{busy?'Please wait…':confirmation?'Verify and continue':'Text me a code'} <ArrowRight size={16}/></button></form>}
     {error&&<div role="alert" className="message error"><X size={15}/>{error}</div>}{showResetShortcut&&<button type="button" className="forgot authResetHint" onClick={()=>{setMode('reset');setError('');setInfo('');setShowResetShortcut(false)}}>Send a password reset link to this email</button>}{info&&<div role="status" className="message success"><CheckCircle2 size={15}/>{info}</div>}
-    {method==='email'&&<div className="switch">{reset?<button onClick={()=>{setMode('signin');setInfo('');setError('')}}>← Back to sign in</button>:<>{mode==='signup'?'Already have an account?':'New to AgentReferrals.org?'} <button onClick={()=>{if(mode==='signup'){setMode('signin');setInfo('');setError('')}else{if(onSwitchToOnboard)onSwitchToOnboard();else setMode('signup');setInfo('');setError('')}}}>{mode==='signup'?'Sign in':'Create an account'}</button></>}</div>}
+    {method==='email'&&<div className="authSwitch">{reset?<button onClick={()=>{setMode('signin');setInfo('');setError('')}}>← Back to sign in</button>:<>{mode==='signup'?'Already have an account?':'New to AgentReferrals.org?'} <button onClick={()=>{if(mode==='signup'){setMode('signin');setInfo('');setError('')}else{if(onSwitchToOnboard)onSwitchToOnboard();else setMode('signup');setInfo('');setError('')}}}>{mode==='signup'?'Sign in':'Create an account'}</button></>}</div>}
     <div className="terms">Your account details remain private. Opportunity access is reserved for approved professionals.</div>
   </div>
 }
@@ -250,6 +250,28 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [devLoginOpen]);
+
+  // Testing shortcut for phones: tap the logo 3 times (within 2.5 seconds) to open sign-in.
+  useEffect(() => {
+    if (user) return undefined;
+    const handleLogoTap = (event) => {
+      if (!event.target?.closest?.('.brand, .brandMark')) return;
+      const now = Date.now();
+      let taps = 0; let last = 0;
+      try { ({ n: taps = 0, t: last = 0 } = JSON.parse(sessionStorage.getItem('ar_logo_taps') || '{}')); } catch { /* storage unavailable */ }
+      taps = (now - last < 2500 ? taps : 0) + 1;
+      try { sessionStorage.setItem('ar_logo_taps', JSON.stringify({ n: taps, t: now })); } catch { /* storage unavailable */ }
+      if (taps >= 3) {
+        event.preventDefault();
+        try { sessionStorage.removeItem('ar_logo_taps'); } catch { /* storage unavailable */ }
+        setDevLoginOpen(true);
+      } else if (window.location.pathname === '/') {
+        event.preventDefault();
+      }
+    };
+    document.addEventListener('click', handleLogoTap, true);
+    return () => document.removeEventListener('click', handleLogoTap, true);
+  }, [user]);
 
   useEffect(() => {
     const invitedBy = new URLSearchParams(window.location.search).get('ref');

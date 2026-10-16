@@ -162,3 +162,9 @@
 @media(max-width:520px){.verifyEmailCard{width:min(500px,calc(100% - 28px));padding:30px 21px 24px;border-radius:18px}.verifyEmailIcon{width:58px;height:58px;border-radius:17px}}
 @media(max-width:390px){.verifyJourney{gap:5px;padding:11px 9px}.verifyJourney>div{gap:4px;font-size:9px}.verifyJourney>div i{width:20px;height:20px}.verifyJourney>b{min-width:5px}}
 .verifyDeliveryHelp summary{cursor:pointer;font-weight:600}.verifyDeliveryHelp p{margin:8px 0 0}.verifyEmailAddress{max-width:100%;overflow-wrap:anywhere}.verifyEmailNotice code{display:inline-block;margin-top:6px;font-size:11px}.verifyEmailPrimary:disabled{opacity:.65;cursor:not-allowed}
+
+/* Sign-in / create-account switch row (own class so admin toggle styles can't leak in) */
+.authSwitch { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 6px; width: 100%; margin: 22px 0 0; text-align: center; color: #71839b; font-size: 12.5px; line-height: 1.4; }
+.authSwitch button { display: inline; width: auto; height: auto; min-width: 0; padding: 0; margin: 0; border: 0; background: none; color: #2e6ddf; font: inherit; font-weight: 750; white-space: nowrap; cursor: pointer; transition: color .18s, text-decoration-color .18s; text-decoration: underline transparent; text-underline-offset: 3px; }
+.authSwitch button:hover { color: #1b57c0; text-decoration-color: currentColor; }
+.authPagePanel .terms { text-align: center; }
