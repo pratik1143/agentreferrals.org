@@ -97,3 +97,160 @@
   .coterie-portal .coterie-market-specs-bento { grid-template-columns: 1fr !important; }
   .coterie-portal .coterie-kpi-value { font-size: 26px !important; }
 }
+
+/* ==========================================================================
+   Phone redesign — simple, engaging marketplace (bottom nav + compact cards)
+   Laptop/tablet layout is untouched: these helpers are hidden by default.
+   ========================================================================== */
+.coterie-portal .tab__icon,
+.coterie-portal .tab__short,
+.coterie-portal .coterie-m-summary,
+.coterie-portal .coterie-new-flag,
+.coterie-portal .coterie-m-star { display: none; }
+
+@media (max-width: 760px) {
+  .coterie-portal .app { padding: 10px 14px calc(96px + env(safe-area-inset-bottom)) !important; }
+
+  /* Top bar: brand + bell/avatar only */
+  .coterie-portal .top {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-areas: "brand tools" !important;
+    margin-bottom: 10px !important;
+  }
+
+  /* Bottom navigation */
+  .coterie-portal .tabs {
+    position: fixed !important;
+    left: 0; right: 0; bottom: 0;
+    z-index: 60;
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0 !important;
+    width: 100% !important; max-width: 100% !important;
+    margin: 0 !important;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom)) !important;
+    border-radius: 20px 20px 0 0 !important;
+    background: #fff !important;
+    box-shadow: 0 -1px 0 #e6ebf2, 0 -8px 24px rgba(15, 30, 60, .08) !important;
+    overflow: visible !important;
+    scroll-snap-type: none;
+  }
+  .coterie-portal .tabs__pill { display: none !important; }
+  .coterie-portal .tab {
+    display: flex !important; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; min-width: 0; padding: 7px 2px 5px !important;
+    background: transparent !important; color: #8a97a8 !important;
+    border-radius: 14px !important; font-size: 10.5px !important; font-weight: 600 !important;
+    line-height: 1.1; -webkit-tap-highlight-color: transparent;
+  }
+  .coterie-portal .tab .tab__icon { display: block; width: 22px; height: 22px; stroke-width: 1.9; }
+  .coterie-portal .tab .tab__label { display: none; }
+  .coterie-portal .tab .tab__short { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .coterie-portal .tab.is-active { color: #1259e0 !important; background: #eef4ff !important; }
+  .coterie-portal .tab.is-active .tab__icon { stroke-width: 2.3; }
+
+  /* Page title row */
+  .coterie-portal .coterie-marketplace-flow .coterie-welcome-header { margin-bottom: 12px !important; gap: 0 !important; }
+  .coterie-portal .coterie-marketplace-flow .coterie-welcome-header h1 { font-size: 26px !important; font-weight: 750 !important; letter-spacing: -.02em; margin: 2px 0 2px !important; }
+  .coterie-portal .coterie-marketplace-flow .coterie-welcome-header p,
+  .coterie-portal .coterie-marketplace-flow .coterie-welcome-header .pp-eyebrow-chip,
+  .coterie-portal .coterie-marketplace-flow .coterie-welcome-header > button { display: none !important; }
+
+  /* Search + chips, no wrapper card */
+  .coterie-portal .coterie-marketplace-flow > .coterie-card {
+    background: transparent !important; box-shadow: none !important; border: 0 !important; padding: 0 !important; margin-bottom: 14px !important;
+  }
+  .coterie-portal .coterie-marketplace-flow > .coterie-card > div { gap: 10px !important; }
+  .coterie-portal .coterie-marketplace-flow > .coterie-card > div > div:first-child {
+    background: #fff !important; min-height: 46px; padding: 0 16px !important;
+    box-shadow: 0 0 0 1px #e1e8f1 inset !important;
+  }
+  .coterie-portal .coterie-marketplace-flow > .coterie-card > div > div:first-child input { font-size: 16px !important; }
+  .coterie-portal .coterie-marketplace-flow > .coterie-card > div > div:last-child {
+    display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; width: 100%;
+    overflow-x: auto; scrollbar-width: none; padding-bottom: 2px;
+  }
+  .coterie-portal .coterie-marketplace-flow > .coterie-card > div > div:last-child::-webkit-scrollbar { display: none; }
+  .coterie-portal .coterie-marketplace-flow .coterie-subtabs-bar {
+    display: flex !important; flex: none; gap: 8px; background: transparent !important; box-shadow: none !important; padding: 0 !important; width: auto !important;
+  }
+  .coterie-portal .coterie-marketplace-flow .coterie-subtabs-bar > button {
+    flex: none; min-height: 38px; padding: 0 16px !important; border-radius: 999px !important;
+    background: #fff !important; color: #44546a !important; box-shadow: 0 0 0 1px #dbe3ee inset !important; font-size: 13.5px !important; font-weight: 600 !important;
+  }
+  .coterie-portal .coterie-marketplace-flow .coterie-subtabs-bar > button.active {
+    background: #1259e0 !important; color: #fff !important; box-shadow: none !important;
+  }
+  .coterie-portal .coterie-marketplace-flow select {
+    flex: none; width: auto !important; height: 38px !important; padding: 0 14px !important; border-radius: 999px !important;
+    background: #fff !important; box-shadow: 0 0 0 1px #dbe3ee inset !important; font-size: 13.5px !important; font-weight: 600;
+  }
+
+  /* Cards: ReferralMate-style compact list */
+  .coterie-portal .coterie-marketplace-flow .coterie-opps-grid { gap: 22px !important; margin-top: 8px; }
+  .coterie-portal article.coterie-market-card {
+    position: relative; overflow: visible !important; border-radius: 18px !important;
+    display: block !important; min-height: 0 !important; transform: none !important;
+    background: #fff !important; box-shadow: 0 1px 2px rgba(15,30,60,.06), 0 6px 18px rgba(15,30,60,.06) !important;
+    border: 1px solid #edf1f6 !important; padding: 0 !important;
+  }
+  .coterie-portal article.coterie-market-card .coterie-new-flag {
+    display: inline-flex; position: absolute; left: -2px; top: -14px;
+    height: 24px; padding: 0 12px; align-items: center;
+    border-radius: 10px 10px 0 0; background: #e8f0ff; color: #1259e0;
+    font-size: 12px; font-weight: 800; letter-spacing: .04em;
+  }
+  .coterie-portal article.coterie-market-card .coterie-market-card-body { padding: 14px 16px 6px !important; display: block; }
+
+  /* top row = type pill on the right, location headline on the left */
+  .coterie-portal article.coterie-market-card .coterie-market-top {
+    position: absolute; top: 14px; right: 14px; margin: 0 !important; gap: 0 !important; width: auto;
+  }
+  .coterie-portal article.coterie-market-card .coterie-market-top-right { display: none !important; }
+  .coterie-portal article.coterie-market-card .coterie-tag-pill {
+    font-size: 11px !important; padding: 4px 11px !important; letter-spacing: 0 !important; font-weight: 700 !important;
+    text-transform: capitalize; border-radius: 999px !important;
+  }
+  .coterie-portal article.coterie-market-card .coterie-tag-pill-dot,
+  .coterie-portal article.coterie-market-card .coterie-pill-suffix { display: none; }
+  .coterie-portal article.coterie-market-card .coterie-market-heading-group { padding-right: 96px; margin: 0 0 4px; }
+  .coterie-portal article.coterie-market-card .coterie-market-card-title { display: none !important; }
+  .coterie-portal article.coterie-market-card .coterie-market-meta-row { margin: 0 !important; display: block !important; }
+  .coterie-portal article.coterie-market-card .coterie-market-loc {
+    display: flex; align-items: center; gap: 6px; font-size: 17px !important; font-weight: 750 !important; color: #14202e !important; line-height: 1.25;
+  }
+  .coterie-portal article.coterie-market-card .coterie-market-loc svg { width: 17px; height: 17px; flex: none; color: #e5484d !important; }
+  .coterie-portal article.coterie-market-card .coterie-market-time { display: none !important; }
+
+  .coterie-portal article.coterie-market-card .coterie-m-summary { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
+  .coterie-portal article.coterie-market-card .coterie-m-price { font-size: 19px; font-weight: 750; color: #14202e; letter-spacing: -.01em; }
+  .coterie-portal article.coterie-market-card .coterie-m-fee { font-size: 14.5px; font-weight: 600; color: #1a8a5a; }
+  .coterie-portal article.coterie-market-card .coterie-m-desc {
+    font-size: 14px; line-height: 1.4; color: #6b7a8d; margin-top: 2px;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .coterie-portal article.coterie-market-card .coterie-m-meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #8392a5; margin-top: 4px; }
+  .coterie-portal article.coterie-market-card .coterie-market-specs-bento,
+  .coterie-portal article.coterie-market-card .coterie-market-description,
+  .coterie-portal article.coterie-market-card .coterie-creator-info { display: none !important; }
+
+  /* action row: save • Details • Apply */
+  .coterie-portal article.coterie-market-card .coterie-market-foot {
+    display: block !important; padding: 8px 16px 14px !important; margin: 0 !important; border: 0 !important; background: transparent !important;
+  }
+  .coterie-portal article.coterie-market-card .coterie-market-btns {
+    display: grid !important; grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr); gap: 8px !important; width: 100%;
+  }
+  .coterie-portal article.coterie-market-card .coterie-market-btns > button {
+    min-height: 42px; border-radius: 12px !important; font-size: 14px !important; font-weight: 700 !important; width: 100%; justify-content: center;
+  }
+  .coterie-portal article.coterie-market-card .coterie-m-star {
+    display: inline-flex; align-items: center; justify-content: center; padding: 0; background: #f3f6fa; color: #7d8b9d; border: 0;
+  }
+  .coterie-portal article.coterie-market-card .coterie-m-star.is-saved { background: #fff4d6; color: #e0a100; }
+}
+@media (max-width: 380px) {
+  .coterie-portal .tab { font-size: 9.5px !important; }
+  .coterie-portal article.coterie-market-card .coterie-market-heading-group { padding-right: 84px; }
+  .coterie-portal article.coterie-market-card .coterie-market-loc { font-size: 16px !important; }
+}

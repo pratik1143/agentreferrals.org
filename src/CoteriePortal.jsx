@@ -5,7 +5,7 @@ import {
   Sparkles, ExternalLink, RefreshCw, X, Filter, Briefcase,
   Building2, Phone, Mail, Award, Check, ChevronDown, Bell,
   User, Settings, HelpCircle, LogOut, FileText, Handshake,
-  BadgeCheck, Eye, Copy, Lock, Download
+  BadgeCheck, Eye, Copy, Lock, Download, Home, Compass, LayoutGrid
 } from 'lucide-react';
 import './coterie.css';
 
@@ -48,6 +48,12 @@ const formatTimeAgo = (ts) => {
   if (diffHours < 24) return `${diffHours}h ago`;
   const diffDays = Math.floor(diffHours / 24);
   return diffDays < 7 ? `${diffDays}d ago` : date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+};
+
+const isNewReferral = (ts) => {
+  if (!ts) return false;
+  const d = ts?.toDate ? ts.toDate() : ts instanceof Date ? ts : new Date(ts);
+  return !isNaN(d.getTime()) && Date.now() - d.getTime() < 48 * 3600000;
 };
 
 const formatAgreementDate = (ts) => {
@@ -129,11 +135,11 @@ export default function CoteriePortal({
 
   // Pill animation logic
   const TABS = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'marketplace', label: 'Marketplace' },
-    { id: 'my-referrals', label: 'My Referrals' },
-    { id: 'my-applications', label: 'My Applications' },
-    { id: 'agreements', label: 'Agreements' }
+    { id: 'dashboard', label: 'Dashboard', short: 'Home', Icon: Home },
+    { id: 'marketplace', label: 'Marketplace', short: 'Referrals', Icon: Compass },
+    { id: 'my-referrals', label: 'My Referrals', short: 'My Posts', Icon: LayoutGrid },
+    { id: 'my-applications', label: 'My Applications', short: 'Applied', Icon: FileText },
+    { id: 'agreements', label: 'Agreements', short: 'Agreements', Icon: FileSignature }
   ];
 
   const updatePill = (viewName) => {
@@ -1013,12 +1019,13 @@ export default function CoteriePortal({
 
             return (
               <article className="coterie-market-card" key={r.id}>
+                {isNewReferral(r.createdAt) && <span className="coterie-new-flag" aria-label="New referral">NEW</span>}
                 <div className="coterie-market-card-body">
                   {/* Top Bar with Client Type Pill & Fee / Save */}
                   <div className="coterie-market-top">
                     <span className={`coterie-tag-pill ${clientTypeLower}`}>
                       <span className="coterie-tag-pill-dot" />
-                      {(r.clientType || 'Buyer').toUpperCase()} REFERRAL
+                      {(r.clientType || 'Buyer').toUpperCase()}<span className="coterie-pill-suffix"> REFERRAL</span>
                     </span>
                     <div className="coterie-market-top-right">
                       <span className="coterie-fee-badge">
@@ -1053,6 +1060,18 @@ export default function CoteriePortal({
                         </span>
                       )}
                     </div>
+                  </div>
+
+                  {/* Phone-only compact summary (hidden on laptop) */}
+                  <div className="coterie-m-summary">
+                    <b className="coterie-m-price">
+                      {r.minValue || r.maxValue
+                        ? `${r.minValue ? formatMoney(r.minValue) : '—'}${r.maxValue ? ` - ${formatMoney(r.maxValue)}` : ''}`
+                        : 'Budget not specified'}
+                    </b>
+                    <span className="coterie-m-fee">{r.feePercent != null ? `${r.feePercent}% Referral Fee` : 'Referral fee not specified'}</span>
+                    {r.description && <span className="coterie-m-desc">{r.description}</span>}
+                    <span className="coterie-m-meta"><User size={14} /> {toTitleCase(r.clientType || 'Buyer')}{timeAgo ? ` · ${timeAgo}` : ''}</span>
                   </div>
 
                   {/* 2x2 Bento Specifications Grid */}
@@ -1105,6 +1124,15 @@ export default function CoteriePortal({
                   </div>
 
                   <div className="coterie-market-btns">
+                    <button
+                      type="button"
+                      className={`coterie-m-star ${isSaved ? 'is-saved' : ''}`}
+                      onClick={() => onSaveReferral(r)}
+                      aria-label={isSaved ? 'Remove from Saved' : 'Save Referral'}
+                      aria-pressed={isSaved}
+                    >
+                      <Star size={18} fill={isSaved ? 'currentColor' : 'none'} />
+                    </button>
                     <button
                       type="button"
                       className="coterie-btn-sm-outline"
@@ -1984,7 +2012,9 @@ export default function CoteriePortal({
                   className={`tab ${activeView === tab.id ? 'is-active' : ''}`}
                   onClick={() => handleViewChange(tab.id)}
                 >
-                  {tab.label}
+                  <tab.Icon size={21} className="tab__icon" aria-hidden="true" />
+                  <span className="tab__label">{tab.label}</span>
+                  <span className="tab__short">{tab.short}</span>
                 </button>
               ))}
             </nav>
