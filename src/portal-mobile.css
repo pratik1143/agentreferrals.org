@@ -1,0 +1,99 @@
+/* ==========================================================================
+   Professional portal — phone & small-tablet layout
+   Loaded last so it can safely tighten the desktop-first coterie styles.
+   ========================================================================== */
+@media (max-width: 760px) {
+  .coterie-portal .stage, .coterie-portal .app { max-width: 100vw; overflow-x: clip; }
+  .coterie-portal .app { padding: 12px 14px 48px !important; }
+
+  /* Header: brand + tools on one row, tabs scroll underneath */
+  .coterie-portal .top {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "brand tools" "tabs tabs";
+    align-items: center;
+    gap: 12px 10px !important;
+    margin-bottom: 18px !important;
+  }
+  .coterie-portal .brand { grid-area: brand; justify-self: start; padding: 7px 14px 7px 10px !important; max-width: 100%; }
+  .coterie-portal .brand span { font-size: 16px !important; white-space: nowrap; }
+  .coterie-portal .top__tools { grid-area: tools; margin: 0 !important; gap: 8px !important; flex-wrap: nowrap; }
+  .coterie-portal .top__tools .coterie-btn-honey {
+    width: 40px; height: 40px; padding: 0 !important; border-radius: 50% !important;
+    font-size: 0 !important; gap: 0 !important; justify-content: center; flex: none;
+  }
+  .coterie-portal .top__tools .coterie-btn-honey svg { width: 18px; height: 18px; margin: 0; }
+  .coterie-portal .round-btn { width: 40px; height: 40px; flex: none; }
+
+  .coterie-portal .tabs {
+    grid-area: tabs;
+    order: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    justify-content: flex-start !important;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    box-sizing: border-box;
+  }
+  .coterie-portal .tabs::-webkit-scrollbar { display: none; }
+  .coterie-portal .tab {
+    flex: 0 0 auto !important;
+    padding: 10px 16px !important;
+    scroll-snap-align: center;
+    white-space: nowrap;
+  }
+
+  /* Welcome block */
+  .coterie-portal .coterie-welcome-header { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; }
+  .coterie-portal .coterie-welcome-header h1 { font-size: clamp(26px, 8vw, 32px) !important; line-height: 1.12 !important; }
+  .coterie-portal .coterie-welcome-header p { font-size: 14px !important; }
+  .coterie-portal .coterie-welcome-actions { display: grid !important; grid-template-columns: 1fr; gap: 10px !important; width: 100%; }
+  .coterie-portal .coterie-welcome-actions > button,
+  .coterie-portal .coterie-welcome-header > button {
+    width: 100%; min-height: 50px; justify-content: center !important; text-align: center; gap: 8px; white-space: nowrap;
+  }
+
+  /* KPI cards: compact 2x2 */
+  .coterie-portal .coterie-kpis-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
+  .coterie-portal .coterie-kpi-card { min-height: 0 !important; padding: 14px !important; border-radius: 18px !important; gap: 10px; }
+  .coterie-portal .coterie-kpi-label { font-size: 10.5px !important; line-height: 1.25; white-space: normal; }
+  .coterie-portal .coterie-kpi-icon-pill { width: 32px !important; height: 32px !important; flex: none; }
+  .coterie-portal .coterie-kpi-value { font-size: 30px !important; }
+  .coterie-portal .coterie-kpi-footer-text { display: none !important; }
+  .coterie-portal .coterie-kpi-footer { justify-content: flex-end; padding-top: 6px !important; }
+  .coterie-portal .coterie-kpi-top { gap: 8px; align-items: flex-start; }
+  .coterie-portal .coterie-badge-ok { font-size: 10px !important; padding: 3px 8px !important; }
+
+  /* Marketplace toolbar */
+  .coterie-portal .coterie-marketplace-flow .coterie-card { padding: 12px !important; border-radius: 18px; }
+  .coterie-portal [style*="min-width: 280px"] { min-width: 0 !important; width: 100%; flex: 1 1 100% !important; box-sizing: border-box; }
+  .coterie-portal .coterie-subtabs-bar { width: 100%; display: grid !important; grid-template-columns: repeat(3, 1fr); box-sizing: border-box; }
+  .coterie-portal .coterie-subtabs-bar > button { padding: 10px 6px !important; text-align: center; }
+  .coterie-portal .coterie-marketplace-flow select { width: 100%; height: 42px; box-sizing: border-box; }
+  .coterie-portal .coterie-marketplace-flow .coterie-card > div > div:last-child { width: 100%; display: grid !important; grid-template-columns: 1fr; gap: 10px !important; }
+
+  /* Referral cards */
+  .coterie-portal .coterie-opps-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 14px !important; }
+  .coterie-portal .coterie-market-card { min-width: 0; max-width: 100%; border-radius: 20px !important; padding: 0 !important; overflow: hidden; }
+  .coterie-portal .coterie-market-card-body { padding: 16px !important; }
+  .coterie-portal .coterie-market-top { flex-wrap: wrap; gap: 8px !important; align-items: center; }
+  .coterie-portal .coterie-market-top-right { margin-left: auto; gap: 6px !important; }
+  .coterie-portal .coterie-market-card-title { font-size: 20px !important; }
+  .coterie-portal .coterie-market-meta-row { flex-wrap: wrap; gap: 8px 12px; }
+  .coterie-portal .coterie-market-specs-bento { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px !important; padding: 12px !important; }
+  .coterie-portal .coterie-spec-cell { min-width: 0; }
+  .coterie-portal .coterie-spec-cell b, .coterie-portal .coterie-spec-cell span { overflow-wrap: anywhere; }
+  .coterie-portal .coterie-market-foot { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 12px !important; padding: 14px 16px 16px !important; margin: 0 !important; }
+  .coterie-portal .coterie-creator-info { min-width: 0; }
+  .coterie-portal .coterie-market-btns { display: grid !important; grid-template-columns: 1fr 1fr; gap: 10px !important; width: 100%; }
+  .coterie-portal .coterie-market-btns > button { width: 100%; min-height: 44px; justify-content: center; }
+}
+@media (max-width: 380px) {
+  .coterie-portal .brand span { font-size: 15px !important; }
+  .coterie-portal .coterie-market-specs-bento { grid-template-columns: 1fr !important; }
+  .coterie-portal .coterie-kpi-value { font-size: 26px !important; }
+}

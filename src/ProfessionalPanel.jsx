@@ -22,6 +22,7 @@ import './professional-reference.css';
 import './professional-dashboard.css';
 import './coterie.css';
 import './professional-workspace-polish.css';
+import './portal-mobile.css';
 import CoteriePortal from './CoteriePortal';
 
 const PIPELINE_STAGES = [
@@ -65,6 +66,19 @@ const formatPostedTime = value => {
   const days = Math.floor(hours / 24);
   return days < 7 ? `Posted ${days}d ago` : `Posted ${new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(date)}`;
 };
+
+function CommaListInput({ value, onChange, placeholder }) {
+  const [text, setText] = useState((value || []).join(', '));
+  const focused = useRef(false);
+  useEffect(() => { if (!focused.current) setText((value || []).join(', ')); }, [value]);
+  return <input
+    value={text}
+    placeholder={placeholder}
+    onFocus={() => { focused.current = true; }}
+    onBlur={() => { focused.current = false; setText((value || []).join(', ')); }}
+    onChange={e => { setText(e.target.value); onChange(e.target.value.split(/[,;]/).map(item => item.trim()).filter(Boolean).slice(0, 20)); }}
+  />;
+}
 
 export default function ProfessionalPanel({ user, profile, connectionError, onLogout }) {
   // Navigation
@@ -243,6 +257,7 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
   const [applyPitch, setApplyPitch] = useState('');
   const [applyBrokerName, setApplyBrokerName] = useState('');
   const [applyBrokerEmail, setApplyBrokerEmail] = useState('');
+  const [applyRemember, setApplyRemember] = useState(false);
   const [showManageReferralModal, setShowManageReferralModal] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [applyError, setApplyError] = useState('');
@@ -259,8 +274,9 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
     setApplyModalReferral(r);
     setApplyPitch('');
     setApplyError('');
-    setApplyBrokerName(dbProfile?.brokerName || dbProfile?.brokerageName || '');
-    setApplyBrokerEmail(dbProfile?.brokerEmail || user?.email || '');
+    setApplyBrokerName(dbProfile?.brokerName || dbProfile?.responsibleBroker || '');
+    setApplyBrokerEmail(dbProfile?.brokerEmail || '');
+    setApplyRemember(false);
   };
 
   // Post Referral Form state
@@ -292,7 +308,10 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
     bio: '',
     specialties: [],
     serviceAreas: [],
-    languages: []
+    languages: [],
+    defaultApplicationPitch: '',
+    brokerName: '',
+    brokerEmail: ''
   });
   const [newPasswordVal, setNewPasswordVal] = useState('');
   const [confirmPasswordVal, setConfirmPasswordVal] = useState('');
@@ -354,7 +373,10 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
           bio: data.bio || '',
           specialties: Array.isArray(data.specialties) ? data.specialties : [],
           serviceAreas: Array.isArray(data.serviceAreas) ? data.serviceAreas : [],
-          languages: Array.isArray(data.languages) ? data.languages : []
+          languages: Array.isArray(data.languages) ? data.languages : [],
+          defaultApplicationPitch: data.defaultApplicationPitch || '',
+          brokerName: data.brokerName || data.responsibleBroker || '',
+          brokerEmail: data.brokerEmail || ''
         });
       }
     }, (err) => console.warn('User profile listener notice:', err));
@@ -731,6 +753,9 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
       const result = await submit({ referralId: r.id, pitchNote: applyPitch.trim(), brokerName: applyBrokerName.trim(), brokerEmail: applyBrokerEmail.trim().toLowerCase() });
       if (result.data?.alreadyApplied) setNotice('You have already applied to this referral.');
 
+      if (applyRemember && db) {
+        try { await setDoc(doc(db, 'users', user.uid), { defaultApplicationPitch: applyPitch.trim(), brokerName: applyBrokerName.trim(), brokerEmail: applyBrokerEmail.trim().toLowerCase(), updatedAt: serverTimestamp() }, { merge: true }); } catch (saveErr) { console.warn('Could not save application defaults:', saveErr); }
+      }
       setApplyModalReferral(null);
       setApplyPitch('');
       setApplyError('');
@@ -858,6 +883,14 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
       try { const website = new URL(editProfileForm.website.trim()); if (!['http:', 'https:'].includes(website.protocol)) throw new Error(); }
       catch { setNotice('Enter a valid website URL beginning with https://.'); return; }
     }
+    if (editProfileForm.defaultApplicationPitch.trim().length > 5000) {
+      setNotice('Your saved application note must be 5,000 characters or fewer.');
+      return;
+    }
+    if (editProfileForm.brokerEmail.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editProfileForm.brokerEmail.trim())) {
+      setNotice('Enter a valid managing broker email address.');
+      return;
+    }
     if (editProfileForm.bio.trim().length > 2000) {
       setNotice('Your biography must be 2,000 characters or fewer.');
       return;
@@ -879,6 +912,9 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
         specialties: editProfileForm.specialties,
         serviceAreas: editProfileForm.serviceAreas,
         languages: editProfileForm.languages,
+        defaultApplicationPitch: editProfileForm.defaultApplicationPitch.trim(),
+        brokerName: editProfileForm.brokerName.trim(),
+        brokerEmail: editProfileForm.brokerEmail.trim().toLowerCase(),
         virtualCard: { ...(dbProfile?.virtualCard || {}), theme: virtualCardTheme, enabled: true },
         updatedAt: serverTimestamp()
       };
@@ -1919,13 +1955,36 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
               />
             </label>
             <label className="span-2">Specialties <small>Separate each specialty with a comma.</small>
-              <input value={editProfileForm.specialties.join(', ')} onChange={e => setEditProfileForm({ ...editProfileForm, specialties: e.target.value.split(',').map(value => value.trim()).filter(Boolean) })} placeholder="Luxury homes, first-time buyers, relocation" />
+              <CommaListInput value={editProfileForm.specialties} onChange={list => setEditProfileForm(form => ({ ...form, specialties: list }))} placeholder="Luxury homes, first-time buyers, relocation" />
             </label>
             <label className="span-2">Service Areas <small>Separate cities or regions with a comma.</small>
-              <input value={editProfileForm.serviceAreas.join(', ')} onChange={e => setEditProfileForm({ ...editProfileForm, serviceAreas: e.target.value.split(',').map(value => value.trim()).filter(Boolean) })} placeholder="Austin, Round Rock, Central Texas" />
+              <CommaListInput value={editProfileForm.serviceAreas} onChange={list => setEditProfileForm(form => ({ ...form, serviceAreas: list }))} placeholder="Austin, Round Rock, Central Texas" />
             </label>
             <label className="span-2">Languages <small>Languages you can work in, separated by commas.</small>
-              <input value={editProfileForm.languages.join(', ')} onChange={e => setEditProfileForm({ ...editProfileForm, languages: e.target.value.split(',').map(value => value.trim()).filter(Boolean) })} placeholder="English, Spanish" />
+              <CommaListInput value={editProfileForm.languages} onChange={list => setEditProfileForm(form => ({ ...form, languages: list }))} placeholder="English, Spanish" />
+            </label>
+          </div>
+        </div>
+
+        <div className="pp-card pp-profile-card">
+          <h2>Application defaults</h2>
+          <p className="pp-profile-help">Save your introduction and managing broker once. They appear ready to use whenever you apply to a referral.</p>
+          <div className="pp-form-fields-2col">
+            <label className="span-2">Saved application note
+              <textarea
+                rows={5}
+                maxLength={5000}
+                value={editProfileForm.defaultApplicationPitch}
+                onChange={e => setEditProfileForm({ ...editProfileForm, defaultApplicationPitch: e.target.value })}
+                placeholder="Describe your experience, local knowledge and how you would support a referral client…"
+              />
+              <small>{editProfileForm.defaultApplicationPitch.length}/5,000</small>
+            </label>
+            <label>Managing broker name
+              <input value={editProfileForm.brokerName} onChange={e => setEditProfileForm({ ...editProfileForm, brokerName: e.target.value })} placeholder="Broker’s full name" />
+            </label>
+            <label>Managing broker email
+              <input type="email" value={editProfileForm.brokerEmail} onChange={e => setEditProfileForm({ ...editProfileForm, brokerEmail: e.target.value })} placeholder="Used for e-signature" />
             </label>
           </div>
         </div>
@@ -2503,6 +2562,25 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
 
               <div className="pp-application-privacy-note"><span><ShieldCheck size={16} /></span><p>Your note and broker contact details will be shared with the professional who posted this referral.</p></div>
 
+              {/* Saved note shortcut */}
+              <div className="pp-saved-note-bar">
+                {dbProfile?.defaultApplicationPitch ? (
+                  <>
+                    <button type="button" className="pp-saved-note-btn" onClick={() => setApplyPitch(dbProfile.defaultApplicationPitch)}>
+                      <ClipboardCheck size={15} /> Use my saved note
+                    </button>
+                    <small>One click fills your saved introduction. You can still edit it.</small>
+                  </>
+                ) : (
+                  <>
+                    <button type="button" className="pp-saved-note-btn ghost" onClick={() => { setApplyModalReferral(null); navigateTo('profile'); }}>
+                      <ClipboardCheck size={15} /> Save a default note
+                    </button>
+                    <small>Write your introduction once in Profile, then reuse it here.</small>
+                  </>
+                )}
+              </div>
+
               {/* Pitch textarea */}
               <div className="pp-pitch-field-group">
                 <textarea
@@ -2548,6 +2626,11 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
                   </div>
                 </div>
               </div>
+
+              <label className="pp-remember-row">
+                <input type="checkbox" checked={applyRemember} onChange={e => setApplyRemember(e.target.checked)} />
+                <span>Save this note and broker details to my profile for next time</span>
+              </label>
 
               {/* Submit & Consent */}
               <div className="pp-app-submit-section">

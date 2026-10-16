@@ -28,6 +28,7 @@ export function CoterieSvgSprite() {
 // Keep the user portal palette overrides after its base stylesheet so baked-in
 // legacy warm colors cannot override the blue theme.
 import './coterie-blue-theme.css';
+import './portal-mobile.css';
 
 // Helpers
 const formatMoney = (val) => {
@@ -144,6 +145,8 @@ export default function CoteriePortal({
         width: el.offsetWidth,
         opacity: 1
       });
+      // On phones the tab bar scrolls sideways; keep the active tab in view.
+      try { el.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); } catch { /* older browsers */ }
     }
   };
 
