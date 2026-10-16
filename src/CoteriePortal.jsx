@@ -169,6 +169,12 @@ export default function CoteriePortal({
 
   const handleViewChange = (targetView) => {
     if (targetView === activeView || transitionPhase !== 'idle') return;
+    // Phones: switch instantly (no exit/enter animation, no smooth scroll) so navigation feels snappy.
+    if (typeof window !== 'undefined' && window.matchMedia?.('(max-width: 760px)').matches) {
+      setActiveView(targetView);
+      window.scrollTo(0, 0);
+      return;
+    }
     setTransitionPhase('exiting');
     updatePill(targetView);
     setTimeout(() => {
