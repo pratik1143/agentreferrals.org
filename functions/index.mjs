@@ -73,6 +73,7 @@ export const submitReferralApplication = onCall(callable, async request => {
     auth.getUser(uid), db.collection('users').doc(uid).get(),
   ]);
   if (account.disabled) fail('permission-denied', 'This account is disabled. Contact support if you think this is a mistake.');
+  if (['on_hold', 'suspended'].includes(String(profileSnap.data()?.accountStatus || '').toLowerCase())) fail('permission-denied', 'Your account is on hold while it is under review. Contact support for help.');
   if (!account.emailVerified) fail('failed-precondition', 'Verify your email before applying for referrals.');
   const profile = profileSnap.data() || {};
   if (!['PROFESSIONAL', 'professional'].includes(profile.role) || String(profile.verificationStatus || '').toLowerCase() !== 'approved') {
@@ -606,7 +607,7 @@ export const approveProfessionalVerification = onCall(callable, async request =>
       userId: uid,
       category: 'Verification',
       title: 'Professional verification approved',
-      message: 'Your credentials have been verified and approved. You now have full access to marketplace opportunities and contracts.',
+      message: submissionSnap.exists ? 'Your credentials have been verified and approved. You now have full access to marketplace opportunities and contracts.' : 'You have been approved by an administrator. Please open Settings → Profile and complete your license, brokerage and contact details, then save.',
       unread: true,
       createdAt: FieldValue.serverTimestamp()
     });
@@ -737,20 +738,22 @@ export const adminAction = onCall(callable, async request => {
   const permissions = {
     MODERATE_REFERRAL: 'REFERRALS_MODERATE', CANCEL_REFERRAL: 'REFERRALS_CANCEL',
     SUSPEND_USER: 'USERS_SUSPEND', REACTIVATE_USER: 'USERS_REACTIVATE',
+    WARN_USER: 'USERS_EDIT', HOLD_USER: 'USERS_SUSPEND', RELEASE_HOLD: 'USERS_REACTIVATE', RESTORE_REFERRAL: 'REFERRALS_MODERATE',
     MANAGE_ADMIN_ROLE: 'ADMINS_MANAGE', RESOLVE_SUPPORT: 'SUPPORT_MANAGE',
   };
   if (!permissions[action]) fail('invalid-argument', 'Unknown action.');
   const actor = await authorize(request, permissions[action]);
   if (action === 'MANAGE_ADMIN_ROLE') return changeAdminRole(actor, targetId, request.data?.role, reason);
   if (['SUSPEND_USER', 'REACTIVATE_USER'].includes(action)) return changeUserStatus(actor, action, targetId, reason);
+  if (['WARN_USER', 'HOLD_USER', 'RELEASE_HOLD'].includes(action)) return moderateUser(actor, action, targetId, reason);
   const collection = action.includes('REFERRAL') ? 'referrals' : 'support_requests';
   const ref = db.collection(collection).doc(targetId);
   const before = await ref.get();
   if (!before.exists) fail('not-found', 'Record not found.');
   const old = before.data();
   let patch;
-  if (action === 'MODERATE_REFERRAL' || action === 'CANCEL_REFERRAL') {
-    patch = { status: action === 'CANCEL_REFERRAL' ? 'cancelled' : 'under_review', moderatedBy: actor.uid,
+  if (action === 'MODERATE_REFERRAL' || action === 'CANCEL_REFERRAL' || action === 'RESTORE_REFERRAL') {
+    patch = { status: action === 'CANCEL_REFERRAL' ? 'cancelled' : action === 'RESTORE_REFERRAL' ? 'published' : 'under_review', moderatedBy: actor.uid,
       moderatedAt: FieldValue.serverTimestamp(), moderationReason: reason };
   } else {
     patch = { status: 'resolved', resolvedBy: actor.uid, resolvedAt: FieldValue.serverTimestamp(), resolution: reason };
@@ -777,6 +780,56 @@ async function changeUserStatus(actor, action, uid, reason) {
   await audit(actor, action === 'SUSPEND_USER' ? 'USER_SUSPENDED' : 'USER_REACTIVATED', 'users', uid, before,
     { ...before, accountStatus: disabled ? 'suspended' : 'active' }, reason);
   return { ok: true };
+}
+
+const LIVE_REFERRAL_STATUSES = ['open', 'published', 'Published', 'Active', 'active'];
+
+// Warn, hold or release a professional without disabling their sign-in.
+// A hold keeps the person able to log in and read, but pauses their live
+// referrals and blocks new marketplace activity until an admin releases it.
+async function moderateUser(actor, action, uid, reason) {
+  if (uid === actor.uid) fail('failed-precondition', 'You cannot moderate your own account.');
+  const target = await auth.getUser(uid);
+  const targetRole = target.customClaims?.platformRole;
+  if (targetRole === ROLES.SUPER_ADMIN) fail('permission-denied', 'Super Admin accounts cannot be moderated here.');
+  if (targetRole === ROLES.ADMIN && actor.role !== ROLES.SUPER_ADMIN) fail('permission-denied', 'Only Super Admin can moderate an admin account.');
+  const ref = db.collection('users').doc(uid);
+  const snap = await ref.get();
+  if (!snap.exists) fail('not-found', 'Professional profile not found.');
+  const before = snap.data();
+  const now = FieldValue.serverTimestamp();
+  let patch; let title; let message; let affected = 0;
+  if (action === 'WARN_USER') {
+    patch = { warningCount: FieldValue.increment(1), lastWarningAt: now, lastWarningReason: reason, updatedAt: now };
+    title = 'Account warning';
+    message = `An administrator flagged suspicious or non-compliant activity on your account: ${reason} Continued violations may lead to a hold or block.`;
+  } else if (action === 'HOLD_USER') {
+    if (String(before.accountStatus || '').toLowerCase() === 'suspended') fail('failed-precondition', 'This account is already blocked.');
+    patch = { accountStatus: 'on_hold', holdReason: reason, holdAt: now, holdBy: actor.uid, updatedAt: now };
+    title = 'Your account is on hold';
+    message = `Your account is on hold while we review it: ${reason} Your live referrals are paused and new posts and applications are disabled until the hold is released.`;
+    const posts = await db.collection('referrals').where('creatorProfessionalId', '==', uid).get();
+    const batch = db.batch();
+    posts.docs.forEach(doc => {
+      const status = doc.data().status;
+      if (LIVE_REFERRAL_STATUSES.includes(status)) { batch.update(doc.ref, { status: 'under_review', preHoldStatus: status, heldByAccountHold: true, updatedAt: now }); affected += 1; }
+    });
+    if (affected) await batch.commit();
+  } else {
+    if (String(before.accountStatus || '').toLowerCase() !== 'on_hold') fail('failed-precondition', 'This account is not on hold.');
+    patch = { accountStatus: 'ACTIVE', holdReason: FieldValue.delete(), holdAt: FieldValue.delete(), holdBy: FieldValue.delete(), updatedAt: now };
+    title = 'Account hold released';
+    message = 'Your account hold has been lifted. Your paused referrals are live again and you can use the marketplace normally.';
+    const posts = await db.collection('referrals').where('creatorProfessionalId', '==', uid).where('heldByAccountHold', '==', true).get();
+    const batch = db.batch();
+    posts.docs.forEach(doc => { batch.update(doc.ref, { status: doc.data().preHoldStatus || 'published', preHoldStatus: FieldValue.delete(), heldByAccountHold: FieldValue.delete(), updatedAt: now }); affected += 1; });
+    if (affected) await batch.commit();
+  }
+  await ref.set(patch, { merge: true });
+  await db.collection('notifications').add({ userId: uid, category: 'Account', title, message, unread: true, createdAt: now });
+  const auditAction = action === 'WARN_USER' ? 'USER_WARNED' : action === 'HOLD_USER' ? 'USER_HELD' : 'USER_HOLD_RELEASED';
+  await audit(actor, auditAction, 'users', uid, { accountStatus: before.accountStatus || null, warningCount: before.warningCount || 0 }, { action, affectedReferrals: affected }, reason);
+  return { ok: true, affectedReferrals: affected };
 }
 
 async function changeAdminRole(actor, uid, role, reason) {

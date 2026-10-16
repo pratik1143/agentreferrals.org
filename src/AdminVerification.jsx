@@ -6,6 +6,7 @@ import { collection, getDocsFromServer, limit, onSnapshot, orderBy, query, where
 import { db, functions, storage } from './firebase';
 import './admin-verification.css';
 import VerificationReferrals from './VerificationReferrals';
+import ProfessionalModeration from './ProfessionalModeration';
 
 const statusOf = user => {
   const value = String(user.professionalVerificationStatus || user.verificationStatus || '').toLowerCase();
@@ -82,7 +83,7 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
     if (event) event.stopPropagation();
     if (!targetUser || actionBusyId || statusOf(targetUser) === 'approved') return;
 
-    const confirmApprove = window.confirm(`Approve credentials and verify ${nameOf(targetUser)}? They will immediately receive verified professional status.`);
+    const confirmApprove = window.confirm(statusOf(targetUser) === 'not_submitted' ? `Approve ${nameOf(targetUser)} now? They get verified access immediately and can add their license and brokerage details later from Settings → Profile.` : `Approve credentials and verify ${nameOf(targetUser)}? They will immediately receive verified professional status.`);
     if (!confirmApprove) return;
 
     setActionBusyId(targetUser.id);
@@ -417,7 +418,7 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
                     <Eye size={13}/> Review
                   </button>
                   {status !== 'not_submitted' && (status !== 'approved' || isSuperAdmin) && <button type="button" className="verificationRemoveBtn" disabled={actionBusyId === user.id} onClick={event => handleRemoveVerification(user, event)} title="Remove verification"><XCircle size={13}/><span>Remove</span></button>}
-                  {status === 'not_submitted' ? (<span className="verificationPendingPill"><Clock3 size={12}/> Awaiting submission</span>) : status !== 'approved' ? (
+                  {status !== 'approved' ? (
                     <button 
                       type="button" 
                       className="verificationApproveBtn" 
@@ -448,7 +449,7 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
           <span className="verificationAccountMeta"><small>PROFESSIONAL ACCOUNT</small><b>{selected.id}</b></span>
           <span className={'verificationStatus ' + statusOf(selected)}><i/>{titleCase(statusOf(selected))}</span>
           <div className="verificationDrawerHeadActions" style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-            {!['approved', 'not_submitted'].includes(statusOf(selected)) && (
+            {statusOf(selected) !== 'approved' && (
               <button 
                 type="button" 
                 className="verificationApproveBtn" 
@@ -456,7 +457,7 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
                 onClick={e => handleApproveClient(selected, e)}
               >
                 {actionBusyId === selected.id ? <RefreshCw size={13} className="verificationSpinner" /> : <Check size={14} />}
-                <span>Approve Client</span>
+                <span>{statusOf(selected) === 'not_submitted' ? 'Approve now' : 'Approve Client'}</span>
               </button>
             )}
             {statusOf(selected) !== 'not_submitted' && (statusOf(selected) !== 'approved' || isSuperAdmin) && (
@@ -479,12 +480,13 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
           </div>
         </div>
         <div className="verificationProfileIdentity verificationFullPageIdentity"><span className="verificationAvatar large">{nameOf(selected).slice(0, 1).toUpperCase()}</span><div><b>{nameOf(selected)}</b><span>{selected.email || 'Email not provided'}</span><small>Joined {formatDate(selected.createdAt)}</small></div></div>
-        <div className="verificationDetailTabs" onKeyDown={event => { const keys = ["overview", "documents", "verification", "activity", "referrals"]; const index = keys.indexOf(detailTab); const next = event.key === "ArrowRight" ? (index + 1) % keys.length : event.key === "ArrowLeft" ? (index + keys.length - 1) % keys.length : event.key === "Home" ? 0 : event.key === "End" ? keys.length - 1 : -1; if (next >= 0) { event.preventDefault(); setDetailTab(keys[next]); event.currentTarget.querySelectorAll("button")[next].focus(); } }} role="tablist" aria-label="Professional details">{[['overview', 'Overview'], ['documents', 'Documents'], ['verification', 'Verification'], ['activity', 'Activity'], ['referrals', 'Referrals']].map(([key, label]) => <button key={key} id={"verification-tab-" + key} aria-controls="verification-detail-panel" tabIndex={detailTab === key ? 0 : -1} role="tab" aria-selected={detailTab === key} className={detailTab === key ? 'active' : ''} onClick={() => setDetailTab(key)}>{key === "overview" ? <UserRound size={16}/> : key === "documents" ? <FileText size={16}/> : key === "verification" ? <ShieldCheck size={16}/> : key === "referrals" ? <Handshake size={16}/> : <Activity size={16}/>}<span>{label}</span>{key === "documents" && <small>{documentsOf(selected).length}</small>}</button>)}</div>
+        <div className="verificationDetailTabs" onKeyDown={event => { const keys = ["overview", "documents", "verification", "activity", "referrals", "moderation"]; const index = keys.indexOf(detailTab); const next = event.key === "ArrowRight" ? (index + 1) % keys.length : event.key === "ArrowLeft" ? (index + keys.length - 1) % keys.length : event.key === "Home" ? 0 : event.key === "End" ? keys.length - 1 : -1; if (next >= 0) { event.preventDefault(); setDetailTab(keys[next]); event.currentTarget.querySelectorAll("button")[next].focus(); } }} role="tablist" aria-label="Professional details">{[['overview', 'Overview'], ['documents', 'Documents'], ['verification', 'Verification'], ['activity', 'Activity'], ['referrals', 'Referrals'], ['moderation', 'Moderation']].map(([key, label]) => <button key={key} id={"verification-tab-" + key} aria-controls="verification-detail-panel" tabIndex={detailTab === key ? 0 : -1} role="tab" aria-selected={detailTab === key} className={detailTab === key ? 'active' : ''} onClick={() => setDetailTab(key)}>{key === "overview" ? <UserRound size={16}/> : key === "documents" ? <FileText size={16}/> : key === "verification" ? <ShieldCheck size={16}/> : key === "referrals" ? <Handshake size={16}/> : <Activity size={16}/>}<span>{label}</span>{key === "documents" && <small>{documentsOf(selected).length}</small>}</button>)}</div>
 
         <div key={detailTab} id="verification-detail-panel" role="tabpanel" aria-labelledby={"verification-tab-" + detailTab} className={"verificationTabPanel verificationTabPanel--" + detailTab}>
         {documentMessage && <p className="verificationFeedback" role="status">{documentMessage}</p>}
         {documentBusy && <p className="verificationFeedback" role="status"><RefreshCw size={15} className="verificationSpinner"/>Downloading secure document…</p>}
         {detailTab === 'referrals' && <VerificationReferrals key={selected.id} userId={selected.id}/>}
+        {detailTab === 'moderation' && <ProfessionalModeration key={selected.id} user={selected} onUserPatch={patch => setRefreshedUsers(prev => (prev || users).map(u => u.id === selected.id ? { ...u, ...patch } : u))}/>}
         {detailTab === 'overview' && <div className="verificationProfileBody verificationProfileOverviewGrid">
           {/* Card 1: Account Information */}
           <section className="coterieOverviewCard">
@@ -785,7 +787,21 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
           <div className="verificationInfo"><ShieldCheck size={14}/><span><small>Overall status</small><b>{titleCase(statusOf(selected))}</b></span></div>
           <div className="verificationInfo"><MapPin size={14}/><span><small>Jurisdiction policy</small><b>{selected.verificationPolicyId || selected.licenseStateCode || 'Not configured'}{selected.verificationPolicyVersion ? ` · ${selected.verificationPolicyVersion}` : ''}</b></span></div>
           {selected.verificationPolicyConfigurationRequired && <div className="verificationReason"><small>Manual policy configuration required</small><p>Configure the exact jurisdiction requirements before approving this professional.</p></div>}
-          {!Object.keys(selected.verificationItems || {}).length && <div className="verificationDocumentEmpty"><ShieldCheck size={28}/><b>No review checklist available</b><span>This account has no item review records. A submitted verification checklist is required before individual credentials can be reviewed.</span></div>}
+          {!Object.keys(selected.verificationItems || {}).length && (statusOf(selected) === 'not_submitted'
+            ? <div className="verificationQuickApprove">
+                <span className="verificationQuickApproveIcon"><ShieldCheck size={26}/></span>
+                <div className="verificationQuickApproveCopy">
+                  <b>No credentials submitted yet</b>
+                  <p>You can approve {nameOf(selected)} right now. They will get verified access immediately, then add their license, brokerage and profile details from <strong>Settings → Profile</strong> and save.</p>
+                  <ul><li><Check size={13}/> Marketplace access unlocks instantly</li><li><Check size={13}/> They receive a notification to complete their profile</li><li><Check size={13}/> You can remove verification any time</li></ul>
+                </div>
+                <button type="button" className="verificationQuickApproveBtn" disabled={actionBusyId === selected.id} onClick={e => handleApproveClient(selected, e)}>
+                  {actionBusyId === selected.id ? <RefreshCw size={15} className="verificationSpinner"/> : <Check size={16}/>}<span>Approve {nameOf(selected)}</span>
+                </button>
+              </div>
+            : statusOf(selected) === 'approved'
+            ? <div className="verificationDocumentEmpty"><CheckCircle2 size={28}/><b>Approved without a document checklist</b><span>This professional was approved directly by an administrator, so there are no item reviews to show.</span></div>
+            : <div className="verificationDocumentEmpty"><ShieldCheck size={28}/><b>No review checklist available</b><span>This account has no item review records. A submitted verification checklist is required before individual credentials can be reviewed.</span></div>)}
           {Object.entries(selected.verificationItems || {}).map(([itemId, item]) => {
             const itemDocuments = documentsOf(selected).filter(file => file.documentType === itemId || (item.documentIds || []).includes(file.id));
             const canReview = ['pending', 'requires_changes'].includes(statusOf(selected));

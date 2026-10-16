@@ -1012,6 +1012,18 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
           ))}
         </section>
 
+        {['on_hold', 'suspended'].includes(String(dbProfile?.accountStatus || '').toLowerCase()) && (
+          <section className="pp-dashboard-verification" role="alert" style={{ borderColor: '#f6d9b6', background: 'linear-gradient(135deg,#fff6ea,#fff)' }}>
+            <span className="pp-dashboard-verification-icon" style={{ background: '#ffeedd', color: '#cf6a09' }}><ShieldAlert size={19} /></span>
+            <div><b>Your account is on hold</b><p>{dbProfile?.holdReason || 'Our team is reviewing recent activity.'} Posting and applying are paused until the review is complete.</p></div>
+          </section>
+        )}
+        {Number(dbProfile?.warningCount || 0) > 0 && String(dbProfile?.accountStatus || '').toLowerCase() !== 'on_hold' && (
+          <section className="pp-dashboard-verification" role="status" style={{ borderColor: '#f3dfae', background: 'linear-gradient(135deg,#fffbef,#fff)' }}>
+            <span className="pp-dashboard-verification-icon" style={{ background: '#fff4d8', color: '#b9780a' }}><ShieldAlert size={19} /></span>
+            <div><b>Account warning</b><p>{dbProfile?.lastWarningReason || 'An administrator flagged activity on your account.'} Please review the platform rules to avoid a hold.</p></div>
+          </section>
+        )}
         {dbProfile?.verificationStatus !== 'approved' && (
           <section className="pp-dashboard-verification">
             <span className="pp-dashboard-verification-icon"><ShieldCheck size={19} /></span>
