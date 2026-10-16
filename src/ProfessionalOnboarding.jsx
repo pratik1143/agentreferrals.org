@@ -21,7 +21,7 @@ const uploadPhotoFile = (fileRef,file,onProgress) => new Promise((resolve,reject
 const phoneCountryFor = value => {const digits=digitsOnly(value);return PHONE_COUNTRIES.find(country=>digits.startsWith(digitsOnly(country.code))&&digits.length>digitsOnly(country.code).length)||PHONE_COUNTRIES[0];};
 const validatePhone = (value,country) => {const all=digitsOnly(value),prefix=digitsOnly(country.code),national=all.startsWith(prefix)?all.slice(prefix.length):all;if(national.length<country.min||national.length>country.max)return `Enter a valid ${country.name} number (${country.min===country.max?country.min:`${country.min}–${country.max}`} digits after ${country.code}).`;if(/^(\d)\1+$/.test(national))return 'Enter a real phone number, not repeated digits.';if(country.code==='+1'&&!/^[2-9]\d{2}[2-9]\d{6}$/.test(national))return 'Enter a valid 10-digit North American number.';return '';};
 const INITIAL = { firstName:'', lastName:'', displayName:'', phoneNumber:'', professionalHeadline:'', country:'United States', state:'', licensedStates:[], city:'', zipCode:'', serviceAreas:[], brokerageAffiliated:true, brokerageName:'', brokerageAddress:'', brokerageCity:'', brokerageState:'', brokerageZipCode:'', brokerageWebsite:'', professionalRelationship:'Real Estate Agent', professionalRelationshipOther:'', propertyTypes:[], clientTypes:[], yearsExperience:'', languages:[], specialties:[], bio:'', professionalWebsite:'', photoStoragePath:'' };
-const readableError = error => ({
+const readableError = error => (map => map[error?.code] || map[String(error?.code||'').split('/').pop()] || (/^Firebase:/i.test(error?.message||'') ? '' : error?.message) || 'We couldn’t complete that. Check your connection and try again.')({
   'auth/email-already-in-use':'An account with this email already exists. Sign in instead.',
   'auth/invalid-email':'Enter a valid email address.',
   'auth/weak-password':'Choose a stronger password with at least 8 characters, including a number and a capital letter.',
@@ -38,7 +38,7 @@ const readableError = error => ({
   'canceled':'Photo upload was cancelled. Please try again.',
   'retry-limit-exceeded':'The photo could not upload after several attempts. Check your connection and retry.',
   'unknown':'Photo upload failed. Check your connection and Firebase Storage setup, then retry.',
-}[String(error?.code||'').split('/').pop()] || error?.message || 'We couldn’t save that yet. Check your connection and try again.');
+})
 const displayName = profile => profile.displayName?.trim() || [profile.firstName, profile.lastName].filter(Boolean).join(' ').trim();
 const splitList = value => String(value || '').split(',').map(item => item.trim()).filter(Boolean).slice(0, 12);
 const licensedFrom = profile => { const raw = Array.isArray(profile?.licensedStates) ? profile.licensedStates : Array.isArray(profile?.licenseStates) ? profile.licenseStates : splitList(profile?.licenseState || profile?.state || ''); return [...new Set(raw.map(item => String(item || '').trim()).filter(Boolean))]; };
