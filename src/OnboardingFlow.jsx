@@ -118,22 +118,22 @@ export default function OnboardingFlow({ onCancel, onComplete, initialEmail = ''
   const [showPassword, setShowPassword] = useState(false);
 
   // Step 3 state (Complete Profile)
-  const [brokerage, setBrokerage] = useState(initialProfile?.brokerageName || '');
+  const [brokerage, setBrokerage] = useState(initialProfile?.brokerageName && initialProfile.brokerageName !== 'Independent' ? initialProfile.brokerageName : '');
   const [selectedStates, setSelectedStates] = useState(initialProfile?.licenseStates || (initialProfile?.licenseState ? String(initialProfile.licenseState).split(',').map(value => value.trim()).filter(Boolean) : []));
   const [stateInput, setStateInput] = useState('');
-  const [city, setCity] = useState('');
+  const [city, setCity] = useState(initialProfile?.city || '');
   const [licenseNumber, setLicenseNumber] = useState(initialProfile?.licenseNumber || '');
   const [licenseType, setLicenseType] = useState(initialProfile?.licenseType || 'SALESPERSON');
-  const [professionalType, setProfessionalType] = useState(initialProfile?.professionalType || 'SALESPERSON');
+  const [professionalType, setProfessionalType] = useState(initialProfile?.professionalType || ({ 'Associate Broker': 'ASSOCIATE_BROKER', 'Broker': 'BROKER', 'Lender': 'LENDER', 'Other': 'OTHER' }[initialProfile?.professionalRelationship] || 'SALESPERSON'));
   const [licenseExpirationDate, setLicenseExpirationDate] = useState(initialProfile?.licenseExpirationDate || '');
-  const [brokerageRelationship, setBrokerageRelationship] = useState(initialProfile?.brokerageRelationship || 'AFFILIATED');
+  const [brokerageRelationship, setBrokerageRelationship] = useState(initialProfile?.brokerageRelationship || (initialProfile?.brokerageAffiliated === false ? 'INDEPENDENT' : 'AFFILIATED'));
   const [responsibleBroker, setResponsibleBroker] = useState(initialProfile?.responsibleBroker || '');
   const [brokerLicenseNumber, setBrokerLicenseNumber] = useState(initialProfile?.brokerLicenseNumber || '');
   const [brokerageAddress, setBrokerageAddress] = useState(initialProfile?.brokerageAddress || '');
   const [bio, setBio] = useState(initialProfile?.bio || '');
   const [phone, setPhone] = useState(initialProfile?.phoneNumber || '');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(Array.isArray(initialProfile?.specialties) ? initialProfile.specialties.filter(tag => EXPERTISE_OPTIONS.includes(tag)) : []);
   const [declarations, setDeclarations] = useState({});
   const [consents, setConsents] = useState({});
   const [documentFiles, setDocumentFiles] = useState({});
@@ -795,7 +795,7 @@ export default function OnboardingFlow({ onCancel, onComplete, initialEmail = ''
                 <div className="rm-form-field">
                   <label>Professional role *</label>
                   <select value={professionalType} onChange={e => setProfessionalType(e.target.value)} required>
-                    <option value="SALESPERSON">Salesperson / Sales Associate</option><option value="BROKER">Broker</option><option value="ASSOCIATE_BROKER">Associate Broker</option><option value="OTHER">Other</option>
+                    <option value="SALESPERSON">Salesperson / Sales Associate</option><option value="BROKER">Broker</option><option value="ASSOCIATE_BROKER">Associate Broker</option><option value="LENDER">Lender</option><option value="OTHER">Other</option>
                   </select>
                 </div>
 

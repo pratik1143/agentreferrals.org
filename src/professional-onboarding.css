@@ -86,3 +86,14 @@
 @media(prefers-reduced-motion:reduce){.po-welcome-main,.po-welcome-list span{transition:none!important;animation:none!important}}
 .po-save-row{display:flex;align-items:center;flex-wrap:wrap;gap:5px 12px;margin-top:11px}.po-save-row .po-save-indicator{margin-top:0}.po-save-error{flex:1 1 280px;color:#a84045;font-size:10px;line-height:1.45}.po-save-retry{padding:5px 9px;border:1px solid #c8dcf5;border-radius:7px;background:#f5f9ff;color:#1d66c6;font-size:10px;font-weight:650}.po-save-retry:hover{border-color:#75aaf0;background:#eaf3ff}.po-save-row.has-error{padding:7px 10px;border:1px solid #f1d0d0;border-radius:9px;background:#fff8f7}
 .po-phone-control{display:flex;min-width:0;gap:8px}.po-phone-control select{flex:0 0 42%;min-width:0;padding:0 10px;font-size:12px}.po-phone-control input{flex:1;min-width:0}.po-phone-control select:focus,.po-phone-control input:focus{border-color:#5a9afa;box-shadow:0 0 0 3px #4288f51c}.po-phone-control input[aria-invalid=true]{border-color:#db6868}
+
+.po-chip-input,.po-chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.po-chips{margin-top:8px}
+.po-chip-input{min-height:44px;padding:6px 10px;border:1px solid var(--po-line,#dce7f5);border-radius:12px;background:#fff;cursor:text}
+.po-chip-input:focus-within{border-color:var(--po-blue,#1769f5);box-shadow:0 0 0 3px #1769f51f}
+.po-chip-input[aria-invalid="true"]{border-color:#d64550}
+.po-chip-input input{flex:1 1 140px;min-width:120px;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;padding:6px 2px!important;font:inherit}
+.po-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 6px 5px 10px;border-radius:99px;background:#eaf2ff;color:var(--po-blue,#1769f5);font-size:13px;font-weight:600}
+.po-chip em{font-style:normal;font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;background:#1769f5;color:#fff}
+.po-chip button{display:inline-grid;place-items:center;width:18px;height:18px;border:0;border-radius:50%;background:#1769f51f;color:inherit;cursor:pointer;padding:0}
+.po-chip button:hover{background:#1769f53a}

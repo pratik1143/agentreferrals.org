@@ -417,7 +417,7 @@ export const submitProfessionalVerification = onCall(callable, async request => 
     const profile = profileSnap.data();
     if (!['PROFESSIONAL', 'professional'].includes(profile.role)) fail('permission-denied', 'Only professional accounts can submit verification.');
     if (profile.verificationStatus === 'approved') fail('failed-precondition', 'This professional account is already verified.');
-    if (priorSnap.exists && !['REQUIRES_CHANGES', 'REJECTED'].includes(priorSnap.data().status)) fail('failed-precondition', 'A verification submission is already being reviewed.');
+    if (priorSnap.exists && !['REQUIRES_CHANGES', 'REJECTED', 'REMOVED'].includes(priorSnap.data().status)) fail('failed-precondition', 'A verification submission is already being reviewed.');
     if (!text(profile.firstName, 80) || !text(profile.lastName, 80) || !text(profile.phoneNumber, 40)) fail('invalid-argument', 'Add your legal name and phone number to your profile.');
     if (!text(profile.licenseNumber, 100) || !text(profile.licenseType, 80) || !text(profile.brokerageRelationship, 40)) fail('invalid-argument', 'Complete your license and brokerage details.');
     if (!['AFFILIATED', 'INDEPENDENT', 'OTHER'].includes(profile.brokerageRelationship)) fail('invalid-argument', 'Choose a valid brokerage relationship.');
@@ -651,6 +651,40 @@ export const rejectProfessionalVerificationSubmission = onCall(callable, async r
     return { ok: true, status: 'REJECTED', requiresFullResubmission: true };
   });
   return result;
+});
+
+export const removeProfessionalVerification = onCall(callable, async request => {
+  const uid = text(request.data?.userId, 150);
+  const reason = text(request.data?.reason, 1000);
+  if (!uid || !reason) fail('invalid-argument', 'A professional account and a reason are required.');
+  const actor = await authorize(request, 'VERIFICATION_REJECT');
+  const userRef = db.collection('users').doc(uid);
+  const submissionRef = db.collection('verification_submissions').doc(uid);
+  const notificationRef = db.collection('notifications').doc();
+  return db.runTransaction(async tx => {
+    const [userSnap, submissionSnap] = await Promise.all([tx.get(userRef), tx.get(submissionRef)]);
+    if (!userSnap.exists) fail('not-found', 'Professional user not found.');
+    const user = userSnap.data();
+    if (!['PROFESSIONAL', 'professional'].includes(user.role)) fail('failed-precondition', 'Only professional accounts can have a verification removed.');
+    const wasApproved = String(user.verificationStatus || '').toLowerCase() === 'approved';
+    if (wasApproved && actor.role !== ROLES.SUPER_ADMIN) fail('permission-denied', 'Only a Super Admin can remove an approved verification.');
+    if (!wasApproved && !submissionSnap.exists && !user.verificationSubmittedAt && !user.verificationStatus && !user.professionalVerificationStatus) fail('failed-precondition', 'This professional has no verification to remove.');
+    const before = { verificationStatus: user.verificationStatus || null, submissionStatus: submissionSnap.data()?.status || null };
+    tx.update(userRef, {
+      verificationStatus: FieldValue.delete(), professionalVerificationStatus: FieldValue.delete(), verificationSubmittedAt: FieldValue.delete(),
+      verificationItems: FieldValue.delete(), verificationDocuments: FieldValue.delete(), verificationSubmissionId: FieldValue.delete(),
+      verificationReason: FieldValue.delete(), verificationRestartRequired: FieldValue.delete(), verificationPolicyConfigurationRequired: FieldValue.delete(),
+      accountStatus: 'PENDING', onboardingStatus: user.onboardingCompleted === true ? 'COMPLETED' : (user.onboardingStatus || 'IN_PROGRESS'),
+      verificationRemovedBy: actor.uid, verificationRemovedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp(),
+    });
+    if (submissionSnap.exists) {
+      tx.update(submissionRef, { status: 'REMOVED', removalReason: reason, removedBy: actor.uid, removedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
+      tx.create(submissionRef.collection('events').doc(), { eventType: 'VERIFICATION_REMOVED', actorId: actor.uid, actorRole: actor.role, userId: uid, reason, timestamp: FieldValue.serverTimestamp() });
+    }
+    tx.set(notificationRef, { userId: uid, category: 'Verification', title: 'Verification was reset', message: `An administrator reset your professional verification. You can start it again from your account. Reason: ${reason}`, unread: true, createdAt: FieldValue.serverTimestamp() });
+    tx.create(db.collection('audit_logs').doc(), { actorUid: actor.uid, actorRole: actor.role, actorEmail: actor.email, action: 'PROFESSIONAL_VERIFICATION_REMOVED', collection: 'verification_submissions', targetId: uid, reason, before, after: { verificationStatus: null, submissionStatus: submissionSnap.exists ? 'REMOVED' : null }, createdAt: FieldValue.serverTimestamp() });
+    return { ok: true, status: 'REMOVED' };
+  });
 });
 
 export const adminDashboard = onCall(callable, async request => {

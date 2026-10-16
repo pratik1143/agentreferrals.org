@@ -12,7 +12,7 @@ const statusOf = user => {
   if (value === 'pending_review' || value === 'submitted') return 'pending';
   return value || 'not_submitted';
 };
-const labels = { all: 'All submissions', pending: 'Awaiting review', approved: 'Approved', requires_changes: 'Changes requested', rejected: 'Rejected' };
+const labels = { all: 'All professionals', not_submitted: 'Not submitted', pending: 'Awaiting review', approved: 'Approved', requires_changes: 'Changes requested', rejected: 'Rejected' };
 const dateOf = user => {
   const value = user.verificationSubmittedAt || user.createdAt;
   const date = value && typeof value.toDate === 'function' ? value.toDate() : (value ? new Date(value) : null);
@@ -37,6 +37,7 @@ const POLICY_REQUIREMENT_FIELDS = [
   ['backgroundCheckRequired', 'Background check'], ['licenseExpirationRequired', 'License expiration date'],
   ['brokerLicenseRequired', 'Responsible broker license number'],
 ];
+const isProfessionalAccount = user => String(user.role || '').toUpperCase() === 'PROFESSIONAL';
 const verificationItemLabel = item => item?.label || 'Verification item';
 
 export default function AdminVerification({ users = [], activity = [], onOpen, role }) {
@@ -166,6 +167,35 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
     }
   };
 
+  const handleRemoveVerification = async (targetUser, event) => {
+    if (event) event.stopPropagation();
+    if (!targetUser || actionBusyId) return;
+    const reason = window.prompt(`Remove verification for ${nameOf(targetUser)}? They return to "Not submitted" and can submit again. Enter a reason:`, 'Verification removed by administrator.');
+    if (!reason || !reason.trim()) return;
+    setActionBusyId(targetUser.id);
+    setActionNotice('');
+    setReviewMessage('');
+    try {
+      if (!functions) throw new Error('The secure verification service is unavailable. Reload the portal and try again.');
+      const result = await httpsCallable(functions, 'removeProfessionalVerification')({ userId: targetUser.id, reason: reason.trim() });
+      if (result.data?.ok !== true) throw new Error('The server did not confirm the removal. Refresh the directory and try again.');
+      setRefreshedUsers(prev => (prev || users).map(u => u.id === targetUser.id ? { ...u, verificationStatus: undefined, professionalVerificationStatus: undefined, verificationSubmittedAt: undefined, verificationItems: undefined, verificationDocuments: undefined, accountStatus: 'PENDING' } : u));
+      setActionNotice(`Verification removed for ${nameOf(targetUser)}. They can submit verification again.`);
+      setReviewMessage('');
+      setTimeout(() => setActionNotice(''), 5000);
+    } catch (err) {
+      console.error('Verification removal failed:', err);
+      const code = String(err?.code || '').replace(/^functions\//, '');
+      const explanation = code === 'permission-denied' ? 'Only a Super Admin can remove an approved verification. Sign in with a Super Admin account and retry.'
+        : code === 'unauthenticated' ? 'Your session expired. Sign in again and retry.'
+        : code === 'internal' || code === 'unavailable' || code === 'not-found' ? 'The removal service is not reachable. Deploy the latest Cloud Functions (removeProfessionalVerification) and retry.'
+        : err.message || 'Please try again.';
+      setActionNotice(`Could not remove verification for ${nameOf(targetUser)}: ${explanation}`);
+    } finally {
+      setActionBusyId('');
+    }
+  };
+
   useEffect(() => { setRefreshedUsers(null); }, [users]);
   const [submissionRejectReason, setSubmissionRejectReason] = useState('');
   const [rejectingSubmission, setRejectingSubmission] = useState(false);
@@ -177,7 +207,7 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
   const [policyBusy, setPolicyBusy] = useState(false);
   const [policyMessage, setPolicyMessage] = useState('');
   const isSuperAdmin = role === 'SUPER_ADMIN';
-  const submissions = useMemo(() => (refreshedUsers || users).filter(user => statusOf(user) !== 'not_submitted'), [users, refreshedUsers]);
+  const submissions = useMemo(() => (refreshedUsers || users).filter(user => statusOf(user) !== 'not_submitted' || isProfessionalAccount(user)), [users, refreshedUsers]);
   const counts = useMemo(() => Object.fromEntries(Object.keys(labels).map(key => [key, key === 'all' ? submissions.length : submissions.filter(user => statusOf(user) === key).length])), [submissions]);
   const regions = useMemo(() => [...new Set(submissions.map(user => user.licenseState).filter(Boolean))].sort(), [submissions]);
   const brokerages = useMemo(() => [...new Set(submissions.map(user => user.brokerageName).filter(Boolean))].sort(), [submissions]);
@@ -235,11 +265,12 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
     finally { setRefreshing(false); }
   };
   const cards = [
-    { key: 'all', label: 'Total submissions', note: 'Credentials submitted for review', icon: FileCheck2, tone: 'blue' },
+    { key: 'all', label: 'All professionals', note: 'Signed up and submitted', icon: FileCheck2, tone: 'blue' },
     { key: 'pending', label: 'Awaiting review', note: 'Need your attention', icon: Clock3, tone: 'amber' },
     { key: 'approved', label: 'Approved', note: 'Credentials verified', icon: CheckCircle2, tone: 'green' },
     { key: 'requires_changes', label: 'Changes requested', note: 'Waiting for resubmission', icon: RefreshCw, tone: 'orange' },
-    { key: 'rejected', label: 'Rejected', note: 'Did not meet requirements', icon: XCircle, tone: 'red' }
+    { key: 'rejected', label: 'Rejected', note: 'Did not meet requirements', icon: XCircle, tone: 'red' },
+    { key: 'not_submitted', label: 'Not submitted', note: 'Signed up, verification not started', icon: UserRound, tone: 'slate' }
   ];
   const chooseFilter = value => { setFilter(value); setPage(1); };
   const resetFilters = () => { setFilter('all'); setRegion('all'); setBrokerage('all'); setSearch(''); setSort('newest'); setPage(1); };
@@ -385,7 +416,8 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
                   <button type="button" className="verificationReview" onClick={event => { event.stopPropagation(); setSelectedId(user.id); setDetailTab('overview'); }}>
                     <Eye size={13}/> Review
                   </button>
-                  {status !== 'approved' ? (
+                  {status !== 'not_submitted' && (status !== 'approved' || isSuperAdmin) && <button type="button" className="verificationRemoveBtn" disabled={actionBusyId === user.id} onClick={event => handleRemoveVerification(user, event)} title="Remove verification"><XCircle size={13}/><span>Remove</span></button>}
+                  {status === 'not_submitted' ? (<span className="verificationPendingPill"><Clock3 size={12}/> Awaiting submission</span>) : status !== 'approved' ? (
                     <button 
                       type="button" 
                       className="verificationApproveBtn" 
@@ -416,7 +448,7 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
           <span className="verificationAccountMeta"><small>PROFESSIONAL ACCOUNT</small><b>{selected.id}</b></span>
           <span className={'verificationStatus ' + statusOf(selected)}><i/>{titleCase(statusOf(selected))}</span>
           <div className="verificationDrawerHeadActions" style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-            {statusOf(selected) !== 'approved' && (
+            {!['approved', 'not_submitted'].includes(statusOf(selected)) && (
               <button 
                 type="button" 
                 className="verificationApproveBtn" 
@@ -427,7 +459,13 @@ export default function AdminVerification({ users = [], activity = [], onOpen, r
                 <span>Approve Client</span>
               </button>
             )}
-            {statusOf(selected) !== 'rejected' && (
+            {statusOf(selected) !== 'not_submitted' && (statusOf(selected) !== 'approved' || isSuperAdmin) && (
+              <button type="button" className="verificationRemoveBtn" disabled={actionBusyId === selected.id} onClick={e => handleRemoveVerification(selected, e)}>
+                <XCircle size={13} />
+                <span>Remove verification</span>
+              </button>
+            )}
+            {!['rejected', 'not_submitted'].includes(statusOf(selected)) && (
               <button 
                 type="button" 
                 className="verificationRejectBtn" 

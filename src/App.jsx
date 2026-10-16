@@ -518,7 +518,7 @@ export default function App() {
       if (window.location.pathname === '/verify-email') window.history.replaceState({}, '', '/onboarding');
       return <ProfessionalOnboarding initialMode="onboarding" initialProfile={profile} onCancel={handleLogout} onComplete={() => { setForceEditProfile(false); setAuthMode(null); setAuthRevision(value => value + 1); }} />;
     }
-    if (forceEditProfile && !alreadyApproved && hasSubmittedVerification) {
+    if (forceEditProfile && !alreadyApproved) {
       return (
         <OnboardingFlow
           initialMode="signup"
