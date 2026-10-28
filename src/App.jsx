@@ -6,7 +6,7 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged,
 import { collection, doc, getDoc, limit, onSnapshot, orderBy, query, serverTimestamp, setDoc, where } from 'firebase/firestore';
 import 'leaflet/dist/leaflet.css';
 import ConnectionJourney from './ConnectionJourney';
-import { isProfessionalRole, PLATFORM_ROLES } from './roles';
+import { hasPlatformAccess, isProfessionalRole, PLATFORM_ROLES } from './roles';
 import ProfessionalPanel from './ProfessionalPanel';
 import AdminPortal from './AdminPortal';
 import FernlySuperAdmin from './FernlySuperAdmin';
@@ -559,9 +559,10 @@ export default function App() {
       );
     }
 
-    // This existing page remains the next product stage after onboarding.
-    const isApproved = profile?.verificationStatus === 'approved';
-    if (!isApproved) {
+    // Verification is paused (see PROFESSIONAL_VERIFICATION_REQUIRED), so a
+    // completed profile goes straight to the dashboard. The pending gate stays
+    // for when verification is required again.
+    if (!hasPlatformAccess(profile)) {
       return (
         <VerificationPendingGate
           user={user}

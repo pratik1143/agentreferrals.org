@@ -12,6 +12,17 @@ export const FUTURE_SCOPED_ROLES = Object.freeze({
   VERIFICATION_REVIEWER: 'VERIFICATION_REVIEWER',
 });
 
+// Professional verification is paused: finishing profile onboarding opens the
+// dashboard. The verification screens and admin review remain in place; set
+// this to true (and restore the matching checks in firestore.rules and
+// functions/index.mjs) to require admin approval again.
+export const PROFESSIONAL_VERIFICATION_REQUIRED = false;
+
+export function hasPlatformAccess(profile) {
+  if (String(profile?.verificationStatus || '').toLowerCase() === 'approved') return true;
+  return !PROFESSIONAL_VERIFICATION_REQUIRED && (profile?.onboardingCompleted === true || Boolean(profile?.verificationSubmittedAt));
+}
+
 export function isProfessionalRole(role) {
   // Keep accounts created by the original prototype working during migration.
   return role === PLATFORM_ROLES.PROFESSIONAL || role === 'professional';

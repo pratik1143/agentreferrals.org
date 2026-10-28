@@ -8,6 +8,7 @@ import {
   BadgeCheck, Eye, Copy, Lock, Download, Home, Compass, LayoutGrid
 } from 'lucide-react';
 import './coterie.css';
+import { hasPlatformAccess } from './roles';
 
 // SVG Sprite containing Coterie utility icons
 export function CoterieSvgSprite() {
@@ -90,6 +91,8 @@ export default function CoteriePortal({
   onOpenAgreementModal,
   onDownloadAgreement,
   onManageReferral,
+  onEditReferral,
+  viewRequest,
   onApplicantDecision,
   onWithdrawApplication,
   onPauseReferral,
@@ -108,7 +111,9 @@ export default function CoteriePortal({
   // Modals & Popovers
   const [notifTrayOpen, setNotifTrayOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [expandedMyRefId, setExpandedMyRefId] = useState(null);
+  // Applicants show by default; the owner can still collapse a referral's list.
+  const [collapsedMyRefIds, setCollapsedMyRefIds] = useState(() => new Set());
+  const [decidingApplicationId, setDecidingApplicationId] = useState(null);
 
   // Filters for Views
   const [marketSearch, setMarketSearch] = useState('');
@@ -187,10 +192,23 @@ export default function CoteriePortal({
     }, 180);
   };
 
+  // The parent asks for a tab after actions such as publishing or accepting an applicant.
+  useEffect(() => {
+    if (viewRequest?.view && TABS.some(tab => tab.id === viewRequest.view)) handleViewChange(viewRequest.view);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewRequest]);
+
+  const decideApplication = async (app, status) => {
+    setDecidingApplicationId(app.id);
+    try { await onApplicantDecision(app, status); } finally { setDecidingApplicationId(null); }
+  };
+
   // User Profile derived info
   const userName = dbProfile?.displayName || user?.displayName || user?.email?.split('@')[0] || 'Professional';
   const userInitials = userName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'AR';
-  const isVerified = dbProfile?.verificationStatus === 'approved';
+  // Verification is paused: a completed profile counts as active (see roles.js).
+  const isVerified = hasPlatformAccess(dbProfile);
+  const isLicenseApproved = dbProfile?.verificationStatus === 'approved';
 
   // --------------------------------------------------------------------------
   // REAL-TIME FIRESTORE DATA CALCULATIONS (Strictly real data, zero dummy data)
@@ -600,7 +618,7 @@ export default function CoteriePortal({
                 <h2>Profile Readiness</h2>
               </div>
               <span className={`coterie-verif-badge-pill ${isVerified ? 'approved' : 'pending'}`}>
-                <ShieldCheck size={13} /> {isVerified ? 'Verified' : 'Pending'}
+                <ShieldCheck size={13} /> {isLicenseApproved ? 'Verified' : isVerified ? 'Active' : 'Pending'}
               </span>
             </div>
 
@@ -617,7 +635,7 @@ export default function CoteriePortal({
                 <span className="coterie-ring-number">{profilePercent}%</span>
               </div>
               <div className="coterie-readiness-copy">
-                <h3>{isVerified ? 'Verified Professional' : 'Profile Status'}</h3>
+                <h3>{isLicenseApproved ? 'Verified Professional' : isVerified ? 'Active Professional' : 'Profile Status'}</h3>
                 <p>{missingFieldsCount > 0 ? `${missingFieldsCount} fields remaining for full verification` : 'Your agent profile is completely set up.'}</p>
               </div>
             </div>
@@ -873,13 +891,7 @@ export default function CoteriePortal({
                 </div>
 
                 <div className="coterie-market-foot">
-                  <div className="coterie-creator-info">
-                    <div className="coterie-avatar-circle">{r.creatorName?.[0] || 'A'}</div>
-                    <div>
-                      <b>{r.creatorName || 'Agent'}</b>
-                      <small>{r.creatorBrokerage || 'Referring Broker'}</small>
-                    </div>
-                  </div>
+                  {/* Referrals are anonymous: the posting agent is not shown to other agents. */}
                   <div className="coterie-market-btns">
                     <button className="coterie-btn-sm-outline" onClick={() => onOpenReferral(r)}>
                       Details
@@ -1116,18 +1128,7 @@ export default function CoteriePortal({
 
                 {/* Footer with Referring Agent & Premium Action Buttons */}
                 <div className="coterie-market-foot">
-                  <div className="coterie-creator-info">
-                    <div className="coterie-avatar-circle">
-                      {(r.creatorName?.[0] || 'A').toUpperCase()}
-                    </div>
-                    <div className="coterie-creator-text">
-                      <div className="coterie-creator-name-row">
-                        <b>{r.creatorName || 'Referring Agent'}</b>
-                        <BadgeCheck size={13} className="coterie-verified-icon" />
-                      </div>
-                      <small>{r.creatorBrokerage || 'Independent Brokerage'}</small>
-                    </div>
-                  </div>
+                  {/* Referrals are anonymous: the posting agent is not shown to other agents. */}
 
                   <div className="coterie-market-btns">
                     <button
@@ -1232,7 +1233,7 @@ export default function CoteriePortal({
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {filteredMyReferrals.map(r => {
               const applicantsForThis = rawApplications.filter(a => a.referralId === r.id);
-              const isExpanded = expandedMyRefId === r.id;
+              const isExpanded = !collapsedMyRefIds.has(r.id);
               const statusRaw = String(r.status || 'Active').toLowerCase();
 
               return (
@@ -1261,11 +1262,20 @@ export default function CoteriePortal({
                       <button
                         type="button"
                         className="coterie-btn-secondary"
-                        onClick={() => setExpandedMyRefId(isExpanded ? null : r.id)}
+                        onClick={() => setCollapsedMyRefIds(current => { const next = new Set(current); if (next.has(r.id)) next.delete(r.id); else next.add(r.id); return next; })}
+                        aria-expanded={isExpanded}
                       >
                         <Users size={14} />
                         <span>{applicantsForThis.length} {applicantsForThis.length === 1 ? 'Applicant' : 'Applicants'}</span>
                         <ChevronDown size={14} style={{ transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                      </button>
+
+                      <button
+                        type="button"
+                        className="coterie-btn-sm-outline"
+                        onClick={() => onEditReferral?.(r)}
+                      >
+                        Edit
                       </button>
 
                       <button
@@ -1310,6 +1320,10 @@ export default function CoteriePortal({
                       <small>CATEGORY</small>
                       <b>{toTitleCase(r.category || `${r.clientType || 'Buyer'} Referral`)}</b>
                     </div>
+                    <div className="coterie-spec-cell coterie-spec-description">
+                      <small>DESCRIPTION</small>
+                      <p>{[r.description, r.preferences].filter(Boolean).join('\n\n') || 'No description added yet.'}</p>
+                    </div>
                   </div>
 
                   {/* Expandable Applicants Section */}
@@ -1348,7 +1362,8 @@ export default function CoteriePortal({
                                   <button
                                     type="button"
                                     className="coterie-btn-sm-outline"
-                                    onClick={() => onApplicantDecision(app, 'SHORTLISTED')}
+                                    disabled={decidingApplicationId === app.id}
+                                    onClick={() => decideApplication(app, 'SHORTLISTED')}
                                   >
                                     Shortlist
                                   </button>
@@ -1357,9 +1372,10 @@ export default function CoteriePortal({
                                   <button
                                     type="button"
                                     className="coterie-btn-sm-primary"
-                                    onClick={() => onApplicantDecision(app, 'ACCEPTED')}
+                                    disabled={decidingApplicationId === app.id}
+                                    onClick={() => decideApplication(app, 'ACCEPTED')}
                                   >
-                                    Accept &amp; Create Agreement
+                                    {decidingApplicationId === app.id ? 'Creating agreement…' : <>Accept &amp; Create Agreement</>}
                                   </button>
                                 )}
                                 {app.status === 'ACCEPTED' && (

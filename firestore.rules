@@ -2,10 +2,16 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
+    // Professional verification is paused: a completed profile (or an earlier
+    // verification submission) is enough. To require admin approval again,
+    // keep only the verificationStatus == 'approved' check and set
+    // PROFESSIONAL_VERIFICATION_REQUIRED in src/roles.js and functions/index.mjs.
     function verifiedMember() {
       return signedIn() && request.auth.token.email_verified == true
         && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.verificationStatus == 'approved'
+        && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('verificationStatus', '') == 'approved'
+          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('onboardingCompleted', false) == true
+          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.keys().hasAny(['verificationSubmittedAt']))
         && !(get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('accountStatus', '') in ['on_hold', 'suspended']);
     }
     function isAdmin() {
@@ -135,7 +141,10 @@ service cloud.firestore {
             'preferences', 'creatorName', 'creatorBrokerage', 'creatorEmail', 'updatedAt', 'status'
           ])
           && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['status'])
-            || (resource.data.status == 'draft' && request.resource.data.status in ['draft', 'published'])));
+            || (resource.data.status == 'draft' && request.resource.data.status in ['draft', 'published'])
+            // Owners pause, resume and close their live referrals from My Referrals.
+            || (resource.data.status in ['published', 'open', 'active', 'Active', 'Published', 'paused', 'Paused']
+              && request.resource.data.status in ['Active', 'Paused', 'Closed'])));
       allow delete: if isSuperAdmin() || (verifiedMember() && ownReferral());
     }
     match /applications/{id} {

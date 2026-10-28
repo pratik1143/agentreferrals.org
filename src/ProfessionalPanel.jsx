@@ -24,6 +24,8 @@ import './coterie.css';
 import './professional-workspace-polish.css';
 import './portal-mobile.css';
 import CoteriePortal from './CoteriePortal';
+import Combobox from './Combobox';
+import { STATE_OPTIONS, matchCity, stateCodeFor, useCities } from './us-locations';
 
 const PIPELINE_STAGES = [
   { key: 'SELECTED', label: 'Selected', icon: UserCheck, desc: 'Professional accepted' },
@@ -57,6 +59,13 @@ const formatMoney = (val) => {
   const normalizedValue = typeof val === 'number' && numericValue > 1000000 ? numericValue / 100 : numericValue;
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(normalizedValue);
 };
+// Formats a typed price as "$400,000" while the user types.
+const formatPriceInput = value => {
+  const digits = String(value ?? '').replace(/\.\d*$/, '').replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 12);
+  return digits ? `$${Number(digits).toLocaleString('en-US')}` : '';
+};
+const EMPTY_POST_FORM = { type: 'Buyer', city: '', state: '', zip: '', propertyType: 'Residential', minValue: '', maxValue: '', fee: '25', preference: '', description: '' };
+const POST_STEPS = ['Type', 'Location', 'Property', 'Fee', 'Details', 'Review'];
 const formatPostedTime = value => {
   const date = value?.toDate?.() || (value instanceof Date ? value : null);
   if (!date || !Number.isFinite(date.getTime())) return null;
@@ -281,18 +290,8 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
 
   // Post Referral Form state
   const [postStep, setPostStep] = useState(0);
-  const [postForm, setPostForm] = useState({
-    type: 'Buyer',
-    city: '',
-    state: '',
-    zip: '',
-    propertyType: 'Residential',
-    minValue: '',
-    maxValue: '',
-    fee: '25',
-    preference: '',
-    description: ''
-  });
+  const [postForm, setPostForm] = useState(EMPTY_POST_FORM);
+  const postCities = useCities(postForm.state);
 
   // Settings & Profile Form Local Buffer
   const [editProfileForm, setEditProfileForm] = useState({
@@ -541,13 +540,25 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
     });
   }, [rawReferrals, deferredSearch, typeFilter, propTypeFilter, sortBy, feeFilter, locationFilter, budgetFilter]);
 
+  // CoteriePortal owns its tab state; this asks it to switch tabs.
+  const [portalViewRequest, setPortalViewRequest] = useState(null);
+
+  // Notices were set throughout but never shown in the Coterie layout; show them as a toast.
+  useEffect(() => {
+    if (!notice) return undefined;
+    const timer = window.setTimeout(() => setNotice(''), 6000);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
+
   // Navigation Helper
   const navigateTo = (targetPage, initialSubTab = 'All', preserveDraft = false) => {
     if (targetPage === 'post-referral' && !preserveDraft) {
       setEditingReferralId(null);
       setPostStep(0);
-      setPostForm({ type: 'Buyer', city: '', state: '', zip: '', propertyType: 'Residential', minValue: '', maxValue: '', fee: '25', preference: '', description: '' });
+      setPostForm(EMPTY_POST_FORM);
     }
+    const portalView = { dashboard: 'dashboard', marketplace: 'marketplace', 'my-referrals': 'my-referrals', applications: 'my-applications', agreements: 'agreements' }[targetPage];
+    if (portalView) setPortalViewRequest({ view: portalView, at: Date.now() });
     setPage(targetPage);
     setSubTab(initialSubTab);
     const route = targetPage === 'agreements' ? '/agreements' : `/${targetPage}`;
@@ -581,34 +592,47 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
     }
   };
 
+  // Location step: a state from the list first, then a city from that state's list.
+  const postLocationProblem = () => {
+    const code = stateCodeFor(postForm.state);
+    if (!code) return 'Choose the state from the list.';
+    if (postForm.city.trim().length < 2) return 'Choose the city.';
+    if (postCities.status === 'ready' && !matchCity(postCities.cities, postForm.city)) return `Choose a city from the ${code} list.`;
+    return '';
+  };
+
   const handlePublishReferral = async () => {
     if (!db || !user) return;
     const feePercent = Number(postForm.fee);
     const minValue = postForm.minValue ? Number(postForm.minValue.replace(/[^\d.]/g, '')) : null;
     const maxValue = postForm.maxValue ? Number(postForm.maxValue.replace(/[^\d.]/g, '')) : null;
-    if (postForm.city.trim().length < 2 || postForm.city.trim().length > 100 || postForm.state.trim().length < 2 || postForm.state.trim().length > 100 || !Number.isFinite(feePercent) || feePercent < 5 || feePercent > 50
+    const locationProblem = postLocationProblem();
+    if (locationProblem || !Number.isFinite(feePercent) || feePercent <= 0 || feePercent > 100
       || (postForm.zip.trim() && !/^\d{5}(-\d{4})?$/.test(postForm.zip.trim()))
       || (minValue != null && (!Number.isFinite(minValue) || minValue <= 0)) || (maxValue != null && (!Number.isFinite(maxValue) || maxValue <= 0))
       || (minValue != null && maxValue != null && minValue > maxValue)) {
-      setNotice('Check the city/state, optional 5- or 9-digit ZIP, referral fee (5–50%), and positive price range before publishing.');
-      setPostStep(!postForm.city.trim() || !postForm.state.trim() ? 1 : 3);
+      setNotice(locationProblem || 'Check the optional 5- or 9-digit ZIP, referral fee (1–100%), and positive price range before publishing.');
+      setPostStep(locationProblem ? 1 : 3);
       return;
     }
+    // Editing a live referral keeps its current status (published, paused…).
+    const editingReferral = editingReferralId ? rawReferrals.find(r => r.id === editingReferralId) : null;
+    const keepStatus = editingReferral && String(editingReferral.status || '').toLowerCase() !== 'draft';
     setIsSubmitting(true);
     try {
       const newRefPayload = {
         title: `${postForm.city.trim()} ${postForm.propertyType || 'Real Estate'} ${postForm.type} Referral`,
         category: `${postForm.type} referral`,
         clientType: postForm.type,
-        city: postForm.city.trim(),
-        state: postForm.state.trim(),
+        city: matchCity(postCities.cities, postForm.city) || postForm.city.trim(),
+        state: stateCodeFor(postForm.state),
         zip: postForm.zip.trim(),
         propertyType: postForm.propertyType,
         minValue: postForm.minValue,
         maxValue: postForm.maxValue,
         estimatedValueCents: maxValue ? Math.round(maxValue * 100) : null,
         feePercent,
-        status: 'published',
+        ...(keepStatus ? {} : { status: 'published' }),
         description: postForm.description.trim(),
         preferences: postForm.preference.trim(),
         creatorProfessionalId: user.uid,
@@ -628,22 +652,18 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
       // Add to audit activity log
       await addDoc(collection(db, 'activity'), {
         userId: user.uid,
-        type: 'REFERRAL_PUBLISHED',
-        title: 'Referral Published',
-        description: `You published "${newRefPayload.title}" to the marketplace.`,
+        type: keepStatus ? 'REFERRAL_UPDATED' : 'REFERRAL_PUBLISHED',
+        title: keepStatus ? 'Referral Updated' : 'Referral Published',
+        description: keepStatus ? `You updated "${newRefPayload.title}".` : `You published "${newRefPayload.title}" to the marketplace.`,
         referralId,
         createdAt: serverTimestamp()
       });
 
-      setNotice('✓ Referral created and published to the real database!');
       setPostStep(0);
       setEditingReferralId(null);
-      setPostForm({
-        type: 'Buyer', city: '', state: '', zip: '',
-        propertyType: 'Residential', minValue: '', maxValue: '', fee: '25', preference: '', description: ''
-      });
+      setPostForm(EMPTY_POST_FORM);
       navigateTo('my-referrals', 'Published');
-      setNotice('Referral published successfully.');
+      setNotice(keepStatus ? 'Referral updated.' : 'Referral published successfully.');
     } catch (err) {
       console.error('Error publishing referral:', err);
       setNotice(`Failed to publish referral: ${err.message}`);
@@ -660,13 +680,13 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
         title: `${postForm.city.trim() ? `${postForm.city.trim()} ` : ''}${postForm.type} Referral`,
         category: `${postForm.type} referral`,
         clientType: postForm.type,
-        city: postForm.city.trim(),
-        state: postForm.state.trim(),
+        city: matchCity(postCities.cities, postForm.city) || postForm.city.trim(),
+        state: stateCodeFor(postForm.state) || postForm.state.trim(),
         zip: postForm.zip.trim(),
         propertyType: postForm.propertyType,
         minValue: postForm.minValue,
         maxValue: postForm.maxValue,
-        feePercent: parseInt(postForm.fee) || 25,
+        feePercent: Number(postForm.fee) > 0 && Number(postForm.fee) <= 100 ? Number(postForm.fee) : 25,
         status: 'draft',
         description: postForm.description.trim(),
         preferences: postForm.preference.trim(),
@@ -686,7 +706,7 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
       setNotice('✓ Draft saved to database.');
       setEditingReferralId(null);
       setPostStep(0);
-      setPostForm({ type: 'Buyer', city: '', state: '', zip: '', propertyType: 'Residential', minValue: '', maxValue: '', fee: '25', preference: '', description: '' });
+      setPostForm(EMPTY_POST_FORM);
       navigateTo('my-referrals', 'Drafts');
       setNotice('Your referral draft is saved and ready to continue later.');
     } catch (err) {
@@ -697,11 +717,14 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
     }
   };
 
-  const startEditDraft = referral => {
+  // Opens the wizard on an existing referral (draft or live). Older referrals
+  // kept preferences separately; they are folded into the single details field.
+  const startEditReferral = referral => {
+    const description = [referral.description, referral.preferences].map(text => String(text || '').trim()).filter(Boolean).join('\n\n');
     setPostForm({
-      type: referral.clientType || 'Buyer', city: referral.city || '', state: referral.state || '', zip: referral.zip || '',
-      propertyType: referral.propertyType || 'Residential', minValue: referral.minValue ?? '', maxValue: referral.maxValue ?? '',
-      fee: String(referral.feePercent ?? '25'), preference: referral.preferences || '', description: referral.description || ''
+      type: referral.clientType || 'Buyer', city: referral.city || '', state: stateCodeFor(referral.state) || referral.state || '', zip: referral.zip || '',
+      propertyType: referral.propertyType || 'Residential', minValue: formatPriceInput(referral.minValue), maxValue: formatPriceInput(referral.maxValue),
+      fee: String(referral.feePercent ?? '25'), preference: '', description
     });
     setEditingReferralId(referral.id);
     setPostStep(0);
@@ -766,7 +789,7 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
       const code = String(err?.code || '').replace(/^functions\//, '');
       const reference = err?.details?.errorReference;
       const message = code === 'unauthenticated' ? 'Your session expired. Sign in again, then resubmit your application.'
-        : code === 'permission-denied' ? 'Only email-verified, approved professionals can apply to referral opportunities.'
+        : code === 'permission-denied' ? (err.message || 'Your account cannot apply to referrals right now. Contact support for help.')
         : code === 'failed-precondition' || code === 'invalid-argument' ? err.message
         : code === 'unavailable' || code === 'deadline-exceeded' ? 'The application service did not respond. Your details are still here; try again in a moment.'
         : code === 'internal' ? `We could not save this application. Your details are still here; try again.${reference ? ` Support reference: ${reference}` : ''}`
@@ -782,14 +805,21 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
     try {
       const decide = httpsCallable(functions, 'decideReferralApplication');
       const result = await decide({ applicationId: application.id, status: newStatus });
-      setNotice(newStatus === 'ACCEPTED'
-        ? `Applicant accepted. Agreement ${result.data?.agreementNumber || ''} is ready for your review.`
-        : `Applicant updated to: ${newStatus}`);
-      if (newStatus === 'ACCEPTED') navigateTo('agreements');
       setSelectedApplicant(null);
+      setShowManageReferralModal(null);
+      if (newStatus === 'ACCEPTED') {
+        // Take the owner straight to the new agreement so the next step is obvious.
+        navigateTo('agreements');
+        if (result.data?.agreementId) openAgreement(rawAgreements.find(item => item.id === result.data.agreementId) || { id: result.data.agreementId, referringProfessionalId: user.uid, status: 'DRAFT' });
+      }
+      setNotice(newStatus === 'ACCEPTED'
+        ? `Applicant accepted. Agreement ${result.data?.agreementNumber || ''} is ready for your review and signature.`
+        : newStatus === 'SHORTLISTED' ? 'Applicant shortlisted.' : `Applicant updated to: ${newStatus}`);
+      return true;
     } catch (err) {
       console.error('Error updating applicant status:', err);
       setNotice(err?.message || 'Failed to update applicant status. Please try again.');
+      return false;
     }
   };
 
@@ -1075,7 +1105,7 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
               <div className="pp-dashboard-opportunity-list">
                 {marketplaceReferrals.slice(0, 3).map(ref => (
                   <article className="pp-dashboard-opportunity" key={ref.id}>
-                    <div className="pp-dashboard-opportunity-copy"><span className="pp-dashboard-tag">{ref.clientType || 'Referral'}{ref.feePercent != null ? ` · ${ref.feePercent}% fee` : ''}</span><h3>{ref.title || 'Referral opportunity'}</h3><p><MapPin size={14} /> {[ref.city, ref.state, ref.zip].filter(Boolean).join(', ') || 'Location not provided'}{ref.propertyType ? ` · ${ref.propertyType}` : ''}</p>{(ref.minValue || ref.maxValue) && <small>Budget: {ref.minValue ? formatMoney(ref.minValue) : '—'} – {ref.maxValue ? formatMoney(ref.maxValue) : '—'}</small>}<small className="pp-dashboard-posted-by">{ref.creatorName ? `Posted by ${ref.creatorName}` : 'Posted by professional'}{formatPostedTime(ref.createdAt) ? ` · ${formatPostedTime(ref.createdAt).replace('Posted ', '')}` : ''}</small></div>
+                    <div className="pp-dashboard-opportunity-copy"><span className="pp-dashboard-tag">{ref.clientType || 'Referral'}{ref.feePercent != null ? ` · ${ref.feePercent}% fee` : ''}</span><h3>{ref.title || 'Referral opportunity'}</h3><p><MapPin size={14} /> {[ref.city, ref.state, ref.zip].filter(Boolean).join(', ') || 'Location not provided'}{ref.propertyType ? ` · ${ref.propertyType}` : ''}</p>{(ref.minValue || ref.maxValue) && <small>Budget: {ref.minValue ? formatMoney(ref.minValue) : '—'} – {ref.maxValue ? formatMoney(ref.maxValue) : '—'}</small>}{formatPostedTime(ref.createdAt) && <small className="pp-dashboard-posted-by">{formatPostedTime(ref.createdAt)}</small>}</div>
                     <div className="pp-dashboard-opportunity-actions"><button className="pp-btn pp-btn-outline" onClick={() => setSelectedReferral(ref)}>Details</button><button className="pp-btn pp-btn-primary" onClick={() => startApplyProcess(ref)}>Apply <ArrowRight size={14} /></button></div>
                   </article>
                 ))}
@@ -1239,10 +1269,6 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
               {r.description && <p className="pp-market-desc">{r.description}</p>}
 
               <div className="pp-market-card-foot">
-                <div className="pp-creator-tag">
-                  <span className="pp-market-creator-avatar" aria-hidden="true"><UserRound size={18} /></span>
-                  <span><b>{r.creatorName || 'Name not provided'}</b><small>{r.creatorBrokerage || 'Referring professional'}</small></span>
-                </div>
                 <div className="pp-market-actions">
                   <button className="pp-btn-sm pp-btn-outline" onClick={() => setSelectedReferral(r)}>
                     View Details
@@ -1339,7 +1365,7 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
                 </div>
                 {r.description && <p className="pp-owned-referral-description">{r.description}</p>}
                 <div className="pp-owned-referral-actions">
-                  {String(r.status || '').toLowerCase() === 'draft' && <button className="pp-btn-sm pp-btn-outline" onClick={() => startEditDraft(r)}>Edit draft</button>}
+                  {String(r.status || '').toLowerCase() === 'draft' && <button className="pp-btn-sm pp-btn-outline" onClick={() => startEditReferral(r)}>Edit draft</button>}
                   <button className="pp-btn-sm pp-btn-outline" onClick={() => setSelectedReferral(r)}>View details</button>
                   {String(r.status || '').toLowerCase() !== 'draft' && <button className="pp-btn-sm pp-btn-primary" onClick={() => setShowManageReferralModal(r)}>View applications <ArrowRight size={13} /></button>}
                 </div>
@@ -2220,15 +2246,19 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
   // VIEW: 15. POST REFERRAL (7-STEP WIZARD)
   // -------------------------------------------------------------
   const renderPostReferral = () => {
-    const steps = ['Type', 'Location', 'Property', 'Fee', 'Preferences', 'Details', 'Review'];
+    const steps = POST_STEPS;
+    const lastStep = steps.length - 1;
+    const editingReferral = editingReferralId ? rawReferrals.find(r => r.id === editingReferralId) : null;
+    const editingLive = Boolean(editingReferral) && String(editingReferral.status || '').toLowerCase() !== 'draft';
+    const stateCode = stateCodeFor(postForm.state);
 
     return (
       <div className="pp-post-view">
         <div className="pp-page-header">
           <div>
-            <span className="pp-eyebrow-chip">STEP {postStep + 1} OF 7 · CREATE REFERRAL</span>
-            <h1>{editingReferralId ? 'Edit referral draft' : 'Post a Referral'}</h1>
-            <p>{editingReferralId ? 'Continue where you left off, then publish when it is ready.' : 'Publish a client opportunity directly to the real database.'}</p>
+            <span className="pp-eyebrow-chip">STEP {postStep + 1} OF {steps.length} · {editingReferralId ? 'EDIT REFERRAL' : 'CREATE REFERRAL'}</span>
+            <h1>{editingLive ? 'Edit referral' : editingReferralId ? 'Edit referral draft' : 'Post a Referral'}</h1>
+            <p>{editingLive ? 'Update the details, then save your changes.' : editingReferralId ? 'Continue where you left off, then publish when it is ready.' : 'Publish a client opportunity directly to the real database.'}</p>
           </div>
         </div>
 
@@ -2275,20 +2305,25 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
             <div className="pp-wizard-step">
               <h2>2. Where is the opportunity located?</h2>
               <div className="pp-form-fields-2col">
-                <label>City *
-                  <input
-                    required
-                    placeholder="e.g. Austin"
-                    value={postForm.city}
-                    onChange={e => setPostForm({ ...postForm, city: e.target.value })}
+                <label>State *
+                  <Combobox
+                    value={postForm.state}
+                    onInput={value => setPostForm(form => ({ ...form, state: value.slice(0, 30) }))}
+                    onSelect={code => setPostForm(form => ({ ...form, state: code, city: form.state === code ? form.city : '' }))}
+                    options={STATE_OPTIONS}
+                    placeholder="e.g. TX or Texas"
+                    emptyText="No matching state"
                   />
                 </label>
-                <label>State *
-                  <input
-                    required
-                    placeholder="e.g. Texas"
-                    value={postForm.state}
-                    onChange={e => setPostForm({ ...postForm, state: e.target.value })}
+                <label>City *
+                  <Combobox
+                    value={postForm.city}
+                    onInput={value => setPostForm(form => ({ ...form, city: value }))}
+                    onSelect={city => setPostForm(form => ({ ...form, city }))}
+                    options={postCities.cities}
+                    disabled={!stateCode}
+                    placeholder={stateCode ? 'Start typing a city' : 'Choose a state first'}
+                    emptyText={postCities.status === 'loading' ? 'Loading cities…' : postCities.status === 'error' ? 'City list unavailable. Type the full city name.' : `No matching city in ${stateCode}`}
                   />
                 </label>
                 <label>ZIP Code
@@ -2317,10 +2352,10 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
                   </select>
                 </label>
                 <label>Minimum Price
-                  <input placeholder="$400,000" value={postForm.minValue} onChange={e => setPostForm({ ...postForm, minValue: e.target.value })} />
+                  <input inputMode="numeric" placeholder="$400,000" value={postForm.minValue} onChange={e => setPostForm({ ...postForm, minValue: formatPriceInput(e.target.value) })} />
                 </label>
                 <label>Maximum Price
-                  <input placeholder="$600,000" value={postForm.maxValue} onChange={e => setPostForm({ ...postForm, maxValue: e.target.value })} />
+                  <input inputMode="numeric" placeholder="$600,000" value={postForm.maxValue} onChange={e => setPostForm({ ...postForm, maxValue: formatPriceInput(e.target.value) })} />
                 </label>
               </div>
             </div>
@@ -2345,38 +2380,23 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
                 </div>
                 <p className="pp-fee-explainer">Referral fee is the agreed percentage of the receiving agent’s commission for this referral.</p>
                 <label style={{ marginTop: '16px' }}>Custom Fee Percentage (%)
-                  <input type="number" min="5" max="50" value={postForm.fee} onChange={e => setPostForm({ ...postForm, fee: e.target.value })} />
+                  <input type="number" inputMode="decimal" min="1" max="100" step="any" value={postForm.fee} onChange={e => setPostForm({ ...postForm, fee: e.target.value })} />
                 </label>
               </div>
             </div>
           )}
 
-          {/* Step 5: Professional Preferences */}
+          {/* Step 5: Details (one field for the opportunity and what the poster is looking for) */}
           {postStep === 4 && (
             <div className="pp-wizard-step">
-              <h2>5. Preferences for Receiving Agent</h2>
+              <h2>5. Referral Details</h2>
               <label className="pp-single-field">
-                Required Experience / Specialties
+                Describe the opportunity and the agent you are looking for (keep client contact info private)
                 <textarea
-                  rows="4"
-                  placeholder="e.g. 5+ years experience in this neighborhood..."
-                  value={postForm.preference}
-                  onChange={e => setPostForm({ ...postForm, preference: e.target.value })}
-                />
-              </label>
-            </div>
-          )}
-
-          {/* Step 6: Description */}
-          {postStep === 5 && (
-            <div className="pp-wizard-step">
-              <h2>6. Public Opportunity Description</h2>
-              <label className="pp-single-field">
-                Context (Keep client contact info private)
-                <textarea
-                  rows="5"
+                  rows="6"
                   required
-                  placeholder="Share relevant criteria without disclosing private client phone/email..."
+                  maxLength={5000}
+                  placeholder="e.g. First-time buyers relocating in March, looking for a 3-bed home near good schools. Prefer an agent with 5+ years in this area…"
                   value={postForm.description}
                   onChange={e => setPostForm({ ...postForm, description: e.target.value })}
                 />
@@ -2384,18 +2404,17 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
             </div>
           )}
 
-          {/* Step 7: Review & Publish */}
-          {postStep === 6 && (
+          {/* Step 6: Review & Publish */}
+          {postStep === 5 && (
             <div className="pp-wizard-step">
-              <h2>7. Review Your Referral</h2>
+              <h2>6. Review Your Referral</h2>
               <div className="pp-review-card">
                 <div className="pp-review-row"><b>Type:</b> <span>{postForm.type} Referral</span></div>
-                <div className="pp-review-row"><b>Location:</b> <span>{postForm.city}, {postForm.state} {postForm.zip}</span></div>
+                <div className="pp-review-row"><b>Location:</b> <span>{[postForm.city, [stateCode || postForm.state, postForm.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ')}</span></div>
                 <div className="pp-review-row"><b>Property:</b> <span>{postForm.propertyType}</span></div>
                 <div className="pp-review-row"><b>Price:</b> <span>{postForm.minValue || postForm.maxValue ? `${postForm.minValue ? formatMoney(postForm.minValue) : 'No minimum'} – ${postForm.maxValue ? formatMoney(postForm.maxValue) : 'No maximum'}` : 'Not provided'}</span></div>
                 <div className="pp-review-row"><b>Fee:</b> <span className="text-primary font-bold">{postForm.fee}%</span></div>
-                {postForm.preference && <div className="pp-review-row"><b>Preferences:</b> <p>{postForm.preference}</p></div>}
-                <div className="pp-review-row"><b>Description:</b> <p>{postForm.description}</p></div>
+                <div className="pp-review-row"><b>Details:</b> <p>{postForm.description}</p></div>
               </div>
             </div>
           )}
@@ -2404,21 +2423,23 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
             <button
               type="button"
               className="pp-btn pp-btn-outline"
-              onClick={() => postStep > 0 ? setPostStep(postStep - 1) : navigateTo('dashboard')}
+              onClick={() => postStep > 0 ? setPostStep(postStep - 1) : setPage('dashboard')}
             >
               {postStep === 0 ? 'Cancel' : '← Back'}
             </button>
             <div className="pp-wizard-right-actions">
-              <button type="button" className="pp-btn pp-btn-ghost" onClick={handleSaveDraft} disabled={isSubmitting}>
-                Save as Draft
-              </button>
-              {postStep < 6 ? (
+              {!editingLive && (
+                <button type="button" className="pp-btn pp-btn-ghost" onClick={handleSaveDraft} disabled={isSubmitting}>
+                  Save as Draft
+                </button>
+              )}
+              {postStep < lastStep ? (
                 <button
                   type="button"
                   className="pp-btn pp-btn-primary"
                   onClick={() => {
-                    if (postStep === 1 && (!postForm.city.trim() || !postForm.state.trim())) {
-                      setNotice('Please enter both city and state.');
+                    if (postStep === 1 && postLocationProblem()) {
+                      setNotice(postLocationProblem());
                       return;
                     }
                     if (postStep === 2) {
@@ -2429,10 +2450,15 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
                         return;
                       }
                     }
-                    if (postStep === 3 && (!Number.isFinite(Number(postForm.fee)) || Number(postForm.fee) < 5 || Number(postForm.fee) > 50)) {
-                      setNotice('Referral fee must be between 5% and 50%.');
+                    if (postStep === 3 && (String(postForm.fee).trim() === '' || !Number.isFinite(Number(postForm.fee)) || Number(postForm.fee) <= 0 || Number(postForm.fee) > 100)) {
+                      setNotice('Enter a referral fee between 1% and 100%.');
                       return;
                     }
+                    if (postStep === 4 && postForm.description.trim().length < 10) {
+                      setNotice('Add a few details about this referral (at least 10 characters).');
+                      return;
+                    }
+                    setNotice('');
                     setPostStep(postStep + 1);
                   }}
                 >
@@ -2440,7 +2466,7 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
                 </button>
               ) : (
                 <button type="button" className="pp-btn pp-btn-primary" onClick={handlePublishReferral} disabled={isSubmitting}>
-                  {isSubmitting ? (editingReferralId ? 'Publishing...' : 'Publishing...') : editingReferralId ? 'Update & Publish' : 'Publish Referral Now'} <Check size={16} />
+                  {isSubmitting ? (editingLive ? 'Saving...' : 'Publishing...') : editingLive ? 'Save Changes' : editingReferralId ? 'Update & Publish' : 'Publish Referral Now'} <Check size={16} />
                 </button>
               )}
             </div>
@@ -2486,7 +2512,7 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
                 <p>{r.preferences}</p>
               </div>
             )}
-            <div className="pp-modal-section pp-detail-posted-by"><h3>Posted by</h3><div className="pp-detail-author-avatar">{(r.creatorName || 'P').trim().charAt(0).toUpperCase()}</div><div><b>{r.creatorName || 'Professional name not provided'}</b><p>{r.creatorBrokerage || 'Brokerage not provided'}</p></div></div>
+            {/* Referrals are anonymous: the poster is only revealed to the agent they accept, through the agreement. */}
           </div>
           <div className="pp-modal-footer pp-detail-drawer-footer">
             {isReferralOwner ? <button className="pp-btn pp-btn-primary" onClick={() => { setSelectedReferral(null); setShowManageReferralModal(r); }}><Users size={15} /> View applications ({ownerApplications.length})</button> : <>
@@ -2504,7 +2530,8 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
     const r = applyModalReferral;
 
     return (
-      <div className="pp-modal-overlay" onClick={() => setApplyModalReferral(null)}>
+      // No close on outside click: a stray click must not discard a half-written application.
+      <div className="pp-modal-overlay">
         {/* Single, clear application workspace: referral context beside the application form. */}
         <div className="pp-modal-dialog pp-application-full-dialog" onClick={e => e.stopPropagation()}>
             <div className="pp-app-flow-nav">
@@ -2547,10 +2574,10 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
                 <span><Clock size={14} /> {r.createdAt?.toDate ? `Posted ${r.createdAt.toDate().toLocaleDateString()}` : 'Post date not provided'}</span>
               </div>
 
-              <details className="pp-opp-description-box pp-apply-description">
-                <summary>Description and opportunity context</summary>
-                <p>{r.description || 'No description was provided for this referral.'}</p>
-              </details>
+              <div className="pp-opp-description-box pp-apply-description">
+                <h4>Referral details</h4>
+                <p>{[r.description, r.preferences].filter(Boolean).join('\n\n') || 'No description was provided for this referral.'}</p>
+              </div>
             </div>
 
             {/* APPLICATION FORM & BROKER INFO */}
@@ -2831,7 +2858,9 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
         onOpenReferral={(r) => setSelectedReferral(r)}
         onApplyReferral={(r) => startApplyProcess(r)}
         onSaveReferral={(r) => handleToggleSave(r.id)}
-        onPostReferralClick={() => setPage('post-referral')}
+        onPostReferralClick={() => { setEditingReferralId(null); setPostStep(0); setPostForm(EMPTY_POST_FORM); setPage('post-referral'); }}
+        onEditReferral={startEditReferral}
+        viewRequest={portalViewRequest}
         onOpenProfile={() => setPage('profile')}
         onOpenAgreementModal={(ag) => openAgreement(ag)}
         onDownloadAgreement={(ag) => handleDownloadAgreement(ag)}
@@ -2874,9 +2903,9 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
         onOpenNotification={handleOpenNotification}
       />
 
-      {/* Slide-out modal for Post Referral */}
+      {/* Slide-out modal for Post Referral. Only the X (or finishing) closes it; an outside click must not lose the form. */}
       {page === 'post-referral' && (
-        <div className="coterie-modal-backdrop" onClick={() => setPage('dashboard')}>
+        <div className="coterie-modal-backdrop">
           <div className="coterie-modal-box coterie-modal-lg" onClick={e => e.stopPropagation()}>
             <div className="coterie-modal-head">
               <h2>Post a Referral</h2>
@@ -2939,6 +2968,13 @@ export default function ProfessionalPanel({ user, profile, connectionError, onLo
       {renderApplyModal()}
       {renderManageReferralModal()}
       {renderAgreementModal()}
+
+      {notice && (
+        <div className="pp-toast" role="status" aria-live="polite">
+          <span>{notice}</span>
+          <button type="button" aria-label="Dismiss message" onClick={() => setNotice('')}><X size={14} /></button>
+        </div>
+      )}
     </div>
   );
 }

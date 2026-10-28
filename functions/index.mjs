@@ -29,6 +29,13 @@ const callable = {
 };
 const text = (value, max = 500) => typeof value === 'string' ? value.trim().slice(0, max) : '';
 const fail = (code, message) => { throw new HttpsError(code, message); };
+// Professional verification is paused: a completed profile (or an earlier
+// verification submission) can post, apply and sign. Set this to true to
+// require admin approval again (also src/roles.js and firestore.rules).
+const PROFESSIONAL_VERIFICATION_REQUIRED = false;
+const isActiveProfessional = profile => ['PROFESSIONAL', 'professional'].includes(profile.role)
+  && (String(profile.verificationStatus || '').toLowerCase() === 'approved'
+    || (!PROFESSIONAL_VERIFICATION_REQUIRED && (profile.onboardingCompleted === true || Boolean(profile.verificationSubmittedAt))));
 const serialize = value => {
   if (value instanceof FieldValue) return new Date().toISOString();
   if (value?.toDate) return value.toDate().toISOString();
@@ -76,8 +83,8 @@ export const submitReferralApplication = onCall(callable, async request => {
   if (['on_hold', 'suspended'].includes(String(profileSnap.data()?.accountStatus || '').toLowerCase())) fail('permission-denied', 'Your account is on hold while it is under review. Contact support for help.');
   if (!account.emailVerified) fail('failed-precondition', 'Verify your email before applying for referrals.');
   const profile = profileSnap.data() || {};
-  if (!['PROFESSIONAL', 'professional'].includes(profile.role) || String(profile.verificationStatus || '').toLowerCase() !== 'approved') {
-    fail('permission-denied', 'Only approved professionals can apply to referral opportunities.');
+  if (!isActiveProfessional(profile)) {
+    fail('permission-denied', 'Finish your professional profile before applying to referral opportunities.');
   }
   const referralRef = db.collection('referrals').doc(referralId);
   const applicationId = createHash('sha256').update(`${uid}:${referralId}`).digest('hex');
@@ -185,8 +192,8 @@ export const decideReferralApplication = onCall(callable, async request => {
   const applicantAccount = status === 'ACCEPTED' ? await auth.getUser(applicantUid).catch(() => null) : null;
   const profile = profileSnap.data() || {};
   const applicantProfile = applicantProfileSnap?.data() || {};
-  if (!['PROFESSIONAL', 'professional'].includes(profile.role) || String(profile.verificationStatus || '').toLowerCase() !== 'approved') {
-    fail('permission-denied', 'Only approved professionals can review referral applications.');
+  if (!isActiveProfessional(profile)) {
+    fail('permission-denied', 'Finish your professional profile before reviewing referral applications.');
   }
   let result = { ok: true, status };
   const counterRef = db.doc('system_settings/agreement_number_counter');
@@ -1079,8 +1086,8 @@ export const signReferralAgreement = onCall(callable, async request => {
   }
   const profileSnap = await db.collection('users').doc(uid).get();
   const profile = profileSnap.data() || {};
-  if (!['PROFESSIONAL', 'professional'].includes(profile.role) || String(profile.verificationStatus || '').toLowerCase() !== 'approved') {
-    fail('permission-denied', 'Only approved professionals may sign a referral agreement.');
+  if (!isActiveProfessional(profile)) {
+    fail('permission-denied', 'Finish your professional profile before signing a referral agreement.');
   }
   const ref = db.collection('agreements').doc(id);
   let shouldFinalize = false;
